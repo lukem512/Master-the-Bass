@@ -1,0 +1,48 @@
+package com.example.drawing;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.graphics.Color;
+import android.util.DisplayMetrics;
+import android.view.Menu;
+
+public class MainActivity extends Activity {
+	DisplayMetrics displaymetrics = null;
+	CanvasView view;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		getDisplayMetrics();
+		
+		view = new CanvasView(this, getScreenWidth(), getScreenHeight());
+		view.setBackgroundColor(Color.WHITE);
+		
+		setContentView(view);
+		
+		// redraw!
+		view.invalidate();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
+	private void getDisplayMetrics() {
+		displaymetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+	}
+	
+	public int getScreenHeight() {;
+		// TODO remove menu bar from this height
+		return displaymetrics.heightPixels;
+	}
+	
+	public int getScreenWidth() {
+		return displaymetrics.widthPixels;
+	}
+}
