@@ -43,17 +43,20 @@ public class MainActivity extends Activity {
 		
 		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {
 			b.setText(getString(R.string.btnSoundCtrl_stop));
+			
+			// TODO - spawn a separate thread
+			// https://developer.android.com/guide/components/processes-and-threads.html
+			try {
+				byte[] buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
+				playAudio(buffer);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Toast t = Toast.makeText(this, "Damn, sound didnt work.", Toast.LENGTH_LONG);
+				t.show();
+			}
 		} else {
+			stopAudio();
 			b.setText(getString(R.string.btnSoundCtrl_play));
-		}
-		
-		try {
-			byte[] buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
-			playAudio(buffer);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Toast t = Toast.makeText(this, "Damn, sound didnt work.", Toast.LENGTH_LONG);
-			t.show();
 		}
 		
 		// TODO - set callback so we can change text when sound finishes
@@ -92,7 +95,7 @@ public class MainActivity extends Activity {
 	private void createAudioTrack() {
 		int streamType = AudioManager.STREAM_MUSIC;
 		int sampleRateHz = 8000;
-		int channelConfig = AudioFormat.CHANNEL_OUT_MONO;
+		int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
 		int audioFormat = AudioFormat.ENCODING_PCM_16BIT; // 16-bit signed
 		int mode = AudioTrack.MODE_STREAM;
 		
@@ -112,6 +115,9 @@ public class MainActivity extends Activity {
 			System.arraycopy(pcm, i*audioBufferSize, buffer, 0, audioBufferSize);
 			audio.write(buffer, 0, audioBufferSize);
 		}
+	}
+	
+	public void stopAudio() {
 		audio.stop();
 	}
 	
