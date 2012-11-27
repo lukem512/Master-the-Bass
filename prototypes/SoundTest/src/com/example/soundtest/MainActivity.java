@@ -19,6 +19,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+/////////////////////////////////////////////////////////////
+//
+// TODO
+//
+// Load file using worker thread starting at onCreate
+// Set play button to enabled when file has been loaded
+// Play audio in worker thread when play button is pressed
+// Stop audio when stop button is pressed
+//
+/////////////////////////////////////////////////////////////
+
 public class MainActivity extends Activity {
 	private AudioTrack audio;
 	private int audioBufferSize;
@@ -47,6 +58,12 @@ public class MainActivity extends Activity {
 			// TODO - spawn a separate thread
 			// https://developer.android.com/guide/components/processes-and-threads.html
 			try {
+				new Thread(new Runnable() {
+			        public void run() {
+			        	// TODO - play audio here
+			        }
+			    }).start();
+				
 				byte[] buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
 				playAudio(buffer);
 			} catch (Exception e) {
