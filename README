@@ -4,3 +4,9 @@ Luke Mitchell, Petro Turin, Ricky McGeehan, Steve Rogers, Jon Rankin, Guy Howcro
 
 Description: An Android app that will allow users to manipulate a bassline tangibly by moving their phone in an up and down motion, whilst applying filters and other effects using touch-screen gestures.
 
+The directory structure in use is as follows:
+	
+	prototypes - rapid prototyped designs, used to test code and implementations that will be of use in the project
+	timesheets - contains a sub-directory for each member of the project team in which they can store their weekly timesheets
+	trunk - the main code tree
+	
