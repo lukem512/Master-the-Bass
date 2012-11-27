@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.AudioTrack.OnPlaybackPositionUpdateListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
@@ -33,6 +34,9 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	private AudioTrack audio;
 	private int audioBufferSize;
+	private boolean bufferFilled = false;
+	private boolean resumeHasRun = false;
+	private byte[] buffer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,52 @@ public class MainActivity extends Activity {
 		createAudioTrack();
 		
 		setContentView(R.layout.activity_main);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		// Pause any playing audio
+		pauseAudio();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		if (!resumeHasRun) {
+			
+			// Spawn a thread to load the audio file
+			final Thread tAudioBuffer = new Thread (new Runnable() {
+				public void run() {
+					while (!bufferFilled) {
+						try {
+							buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
+							bufferFilled = true;
+						} catch (IOException e) {
+							e.printStackTrace();
+							bufferFilled = false;
+						}
+					}
+				}
+			});
+			tAudioBuffer.start();
+			
+			resumeHasRun = true;
+		} else {	
+			audio.play();
+		}
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 
 	@Override
@@ -52,27 +102,20 @@ public class MainActivity extends Activity {
 	public void btnSoundCtrlClick(View view) {
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
 		
-		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {
-			b.setText(getString(R.string.btnSoundCtrl_stop));
-			
-			// TODO - spawn a separate thread
-			// https://developer.android.com/guide/components/processes-and-threads.html
-			try {
-				new Thread(new Runnable() {
+		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {			
+			// Spawn a separate audio playing thread
+			if (bufferFilled) {
+				final Thread tAudioPlayer = new Thread(new Runnable() {
 			        public void run() {
-			        	// TODO - play audio here
+			        	playAudio(buffer);
 			        }
-			    }).start();
+			    });
+				tAudioPlayer.start();
 				
-				byte[] buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
-				playAudio(buffer);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Toast t = Toast.makeText(this, "Damn, sound didnt work.", Toast.LENGTH_LONG);
-				t.show();
+				b.setText(getString(R.string.btnSoundCtrl_stop));
 			}
 		} else {
-			stopAudio();
+			stopAudioImmediately();
 			b.setText(getString(R.string.btnSoundCtrl_play));
 		}
 		
@@ -125,17 +168,27 @@ public class MainActivity extends Activity {
 		byte[] buffer;
 		int i;
 		
+		// Begin playback
 		audio.play();
-		// write in a loop until buffer has been completely written
+		
+		// Write in a loop until buffer has been completely written
 		for (i=0; i<Math.ceil(pcm.length/audioBufferSize); i++) {
 			buffer = new byte[audioBufferSize];
 			System.arraycopy(pcm, i*audioBufferSize, buffer, 0, audioBufferSize);
 			audio.write(buffer, 0, audioBufferSize);
 		}
+		
+		// Stop playing after the buffer has been exhausted
+		// i.e. at the end of the audio
+		audio.stop();
 	}
 	
 	public void stopAudio() {
 		audio.stop();
+	}
+	
+	public void pauseAudio() {
+		audio.pause();
 	}
 	
 	public void stopAudioImmediately() {
