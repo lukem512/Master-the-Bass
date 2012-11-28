@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -59,6 +60,13 @@ public class MainActivity extends Activity {
 		if (!resumeHasRun) {
 			// First time onResume is run is when app loads
 			
+			// Disable buttons until file has been loaded
+			Button btnSoundCtrl = (Button) findViewById(R.id.btnSoundCtrl);
+			Button btnSoundStop = (Button) findViewById(R.id.btnSoundStop);
+			
+			btnSoundCtrl.setEnabled(true);
+			btnSoundStop.setEnabled(true);
+			
 			// Spawn a thread to load the audio file
 			final Thread tAudioBuffer = new Thread (new Runnable() {
 				public void run() {
@@ -71,9 +79,34 @@ public class MainActivity extends Activity {
 							bufferFilled = false;
 						}
 					}
+					
+					Log.d("tAudioBuffer", "Audio file has been loaded into buffer.");
 				}
 			});
 			tAudioBuffer.start();
+			
+			//Spawn a thread to enable buttons when file is loaded
+			final Thread tAudioBufferWatcher = new Thread (new Runnable() {
+				public void run() {
+					while (!bufferFilled) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							return;
+						}
+					}
+					
+					Button btnSoundCtrl = (Button) findViewById(R.id.btnSoundCtrl);
+					Button btnSoundStop = (Button) findViewById(R.id.btnSoundStop);
+					
+					btnSoundCtrl.setEnabled(true);
+					btnSoundStop.setEnabled(true);
+					
+					Log.d("tAudioBufferWatcher", "Buttons enabled!");
+				}
+			});
+			tAudioBufferWatcher.start();
 			
 			// Set flag to ensure setup code is not repeated
 			resumeHasRun = true;
