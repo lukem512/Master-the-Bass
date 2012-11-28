@@ -26,7 +26,6 @@ import android.widget.Toast;
 //
 // TODO
 //
-// Set play button to enabled when file has been loaded
 // Callback when audio playback is complete to update button
 //
 /////////////////////////////////////////////////////////////
