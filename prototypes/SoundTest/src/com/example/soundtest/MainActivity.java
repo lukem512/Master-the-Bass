@@ -27,10 +27,11 @@ import android.widget.Toast;
 // TODO
 //
 // Callback when audio playback is complete to update button
+// Are all the if (audio != null) checks needed in playAudio()?
 //
 /////////////////////////////////////////////////////////////
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AudioTrack.OnPlaybackPositionUpdateListener {
 	private AudioTrack audio = null;
 	private int audioBufferSize;
 	private boolean bufferFilled = false;
@@ -238,6 +239,9 @@ public class MainActivity extends Activity {
 		
 		// Create new AudioTrack
 		audio = new AudioTrack(streamType, sampleRateHz, channelConfig, audioFormat, audioBufferSize, mode);
+		
+		// Hook callbacks
+		audio.setPlaybackPositionUpdateListener(this);
 	}
 	
 	private void releaseAudioTrack() {
@@ -262,6 +266,11 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 				return;
 			}
+		}
+		
+		// Set up the callback notifier for when the playback completes
+		if (audio != null) {
+			audio.setNotificationMarkerPosition(pcm.length);
 		}
 			
 		// Write in a loop until buffer has been completely written
@@ -354,6 +363,28 @@ public class MainActivity extends Activity {
 			audio.flush();
 			stopAudio();
 		}
+	}
+	
+	// Returns the time taken to reach a frame in milliseconds
+	// given the sample rate
+	public int framesToMillis(int frames, int sampleRate) {
+		return (int) Math.round((frames / sampleRate) * 1000.0);
+	}
+	
+	// AudioTrack.OnPlaybackPositionUpdateListener Methods
+
+	@Override
+	public void onMarkerReached(AudioTrack track) {
+		// The playback has completed, set the button value to reflect this
+		Button btnSoundCtrl = (Button) findViewById(R.id.btnSoundCtrl);
+		btnSoundCtrl.setText(getString(R.string.btnSoundCtrl_play));
+		
+		Log.d("onMarkerReached", "Playback has completed.");
+	}
+
+	@Override
+	public void onPeriodicNotification(AudioTrack track) {
+		// Auto-generated method stub
 	}
 	
 	// Interesting audioTrack functions:
