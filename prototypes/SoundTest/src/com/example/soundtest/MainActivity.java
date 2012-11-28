@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -24,24 +25,22 @@ import android.widget.Toast;
 //
 // TODO
 //
-// Load file using worker thread starting at onCreate
 // Set play button to enabled when file has been loaded
-// Play audio in worker thread when play button is pressed
-// Stop audio when stop button is pressed
+// Callback when audio playback is complete to update button
 //
 /////////////////////////////////////////////////////////////
 
 public class MainActivity extends Activity {
-	private AudioTrack audio;
+	private AudioTrack audio = null;
 	private int audioBufferSize;
 	private boolean bufferFilled = false;
 	private boolean resumeHasRun = false;
+	private boolean audioPaused = false;
 	private byte[] buffer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		createAudioTrack();
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -49,8 +48,6 @@ public class MainActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		
-		// Pause any playing audio
 		pauseAudio();
 	}
 	
@@ -59,6 +56,7 @@ public class MainActivity extends Activity {
 		super.onResume();
 		
 		if (!resumeHasRun) {
+			// First time onResume is run is when app loads
 			
 			// Spawn a thread to load the audio file
 			final Thread tAudioBuffer = new Thread (new Runnable() {
@@ -76,20 +74,40 @@ public class MainActivity extends Activity {
 			});
 			tAudioBuffer.start();
 			
+			// Set flag to ensure setup code is not repeated
 			resumeHasRun = true;
-		} else {	
-			audio.play();
+		} else {
+			// Subsequent onResume event behaviour
+			resumeAudio();
 		}
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		resumeAudio();
+	}
+	
+	@Override
+	public void onRestart() {
+		super.onRestart();
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
+		pauseAudio();
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		stopAudioImmediately();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -99,27 +117,45 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
+	public void btnSoundStopClick(View view) {
+		// Stop audio
+		stopAudioImmediately();
+		
+		Button b = (Button) findViewById(R.id.btnSoundCtrl);
+		if (b.getText() == getString(R.string.btnSoundCtrl_pause)) {
+			b.setText(getString(R.string.btnSoundCtrl_play));
+		}
+	}
+	
 	public void btnSoundCtrlClick(View view) {
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
 		
-		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {			
-			// Spawn a separate audio playing thread
-			if (bufferFilled) {
-				final Thread tAudioPlayer = new Thread(new Runnable() {
-			        public void run() {
-			        	playAudio(buffer);
-			        }
-			    });
-				tAudioPlayer.start();
+		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {
+			if (audioPaused) {
+				resumeAudio();
+			} else {
+				// Instantiate AudioTrack object
+				createAudioTrack();
 				
-				b.setText(getString(R.string.btnSoundCtrl_stop));
+				// Spawn a separate audio playing thread
+				if (bufferFilled) {
+					final Thread tAudioPlayer = new Thread(new Runnable() {
+				        public void run() {
+				        	playAudio(buffer);
+				        }
+				    });
+					tAudioPlayer.start();
+				}
 			}
+			
+			// Set button text to reflect audio playing
+			b.setText(getString(R.string.btnSoundCtrl_pause));
 		} else {
-			stopAudioImmediately();
+			pauseAudio();
+			
+			// Set button text to reflect audio pausing
 			b.setText(getString(R.string.btnSoundCtrl_play));
 		}
-		
-		// TODO - set callback so we can change text when sound finishes
 	}
 	
 	// Read binary file
@@ -152,48 +188,133 @@ public class MainActivity extends Activity {
 	
 	// AudioTrack wrapper functions
 	
-	private void createAudioTrack() {
+	// Sets up an AudioTrack object
+	// and populates the global instance
+	private void createAudioTrack() {		
 		int streamType = AudioManager.STREAM_MUSIC;
 		int sampleRateHz = 8000;
 		int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
 		int audioFormat = AudioFormat.ENCODING_PCM_16BIT; // 16-bit signed
 		int mode = AudioTrack.MODE_STREAM;
 		
+		// Get buffer size from API
 		audioBufferSize = AudioTrack.getMinBufferSize(sampleRateHz, channelConfig, audioFormat);
 		
+		// Ensure old resources are released
+		stopAudioImmediately();
+		
+		// Create new AudioTrack
 		audio = new AudioTrack(streamType, sampleRateHz, channelConfig, audioFormat, audioBufferSize, mode);
 	}
 	
+	private void releaseAudioTrack() {
+		if (audio != null) {
+			audio.release();
+			audio = null;
+		}
+	}
+	
+	// Plays a PCM byte array by streaming it
+	// to an AudioTrack object
 	public void playAudio(byte[] pcm) {
 		byte[] buffer;
 		int i;
 		
 		// Begin playback
-		audio.play();
-		
+		if (audio != null) {
+			try {
+				audio.play();
+			}
+			catch (IllegalStateException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+			
 		// Write in a loop until buffer has been completely written
+		// Includes an internal check to see if the audio track has been
+		// released.	
 		for (i=0; i<Math.ceil(pcm.length/audioBufferSize); i++) {
 			buffer = new byte[audioBufferSize];
 			System.arraycopy(pcm, i*audioBufferSize, buffer, 0, audioBufferSize);
-			audio.write(buffer, 0, audioBufferSize);
+			
+			// Loop if soft paused
+			do {
+				if (audio != null) {
+					if (!audioPaused) {
+						try {
+							audio.write(buffer, 0, audioBufferSize);
+						}
+						catch (IllegalStateException e) {
+							e.printStackTrace();
+							return;
+						}
+					}
+				} else {
+					// The AudioTrack has been killed, stop attempting playback
+					return;
+				}
+			} while (audioPaused);
 		}
 		
 		// Stop playing after the buffer has been exhausted
 		// i.e. at the end of the audio
-		audio.stop();
+		if (audio != null) {
+			audio.stop();
+		}
 	}
 	
-	public void stopAudio() {
-		audio.stop();
-	}
-	
+	// Pauses audio playback
 	public void pauseAudio() {
-		audio.pause();
+		if (audio != null) {
+			softPauseAudio();
+			audio.pause();
+		}
 	}
 	
+	public void resumeAudio() {
+		if (audio != null) {
+			softResumeAudio();
+			audio.play();
+		}
+	}
+	
+	public void softPauseAudio() {
+		if (audio != null) {
+			audioPaused = true;
+		}
+	}
+	
+	// Resumes audio playback
+	public void softResumeAudio() {
+		if (audio != null) {
+			audioPaused = false;
+		}
+	}
+	
+	// Stops the audio playback.
+	// This is immediate for stored audio
+	// and at the end of the written buffer
+	// for streamed audio. Resources are
+	// release after the audio stops.
+	public void stopAudio() {
+		if (audio != null) {
+			audioPaused = false;
+			audio.stop();
+			releaseAudioTrack();
+		}
+	}
+	
+	// Immediately stops the audio playback for streamed audio
+	// This requires pausing the audio and flushing
+	// the buffer - as merely stopping will play
+	// until the buffer has been played.
 	public void stopAudioImmediately() {
-		audio.pause();
-		audio.flush();
+		if (audio != null) {
+			audio.pause();
+			audio.flush();
+			stopAudio();
+		}
 	}
 	
 	// Interesting audioTrack functions:

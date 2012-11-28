@@ -8,9 +8,20 @@
         android:id="@+id/btnSoundCtrl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="70dp"
         android:onClick="btnSoundCtrlClick"
         android:text="@string/btnSoundCtrl_play" />
+
+    <Button
+        android:id="@+id/btnSoundStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/btnSoundCtrl"
+        android:onClick="btnSoundStopClick"
+        android:text="@string/btnSoundStop_stop" />
 
 </RelativeLayout>

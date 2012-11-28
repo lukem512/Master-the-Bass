@@ -15,7 +15,8 @@ public final class R {
     }
     public static final class id {
         public static final int btnSoundCtrl=0x7f070000;
-        public static final int menu_settings=0x7f070001;
+        public static final int btnSoundStop=0x7f070001;
+        public static final int menu_settings=0x7f070002;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -25,8 +26,9 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int btnSoundCtrl_pause=0x7f040003;
         public static final int btnSoundCtrl_play=0x7f040001;
-        public static final int btnSoundCtrl_stop=0x7f040003;
+        public static final int btnSoundStop_stop=0x7f040004;
         public static final int menu_settings=0x7f040002;
     }
     public static final class style {
