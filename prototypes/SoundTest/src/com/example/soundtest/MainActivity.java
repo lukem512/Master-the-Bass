@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 	private boolean resumeHasRun = false;
 	private boolean audioPaused = false;
 	private byte[] buffer;
+	private Thread tAudioPlayer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +140,7 @@ public class MainActivity extends Activity {
 				
 				// Spawn a separate audio playing thread
 				if (bufferFilled) {
-					final Thread tAudioPlayer = new Thread(new Runnable() {
+					tAudioPlayer = new Thread(new Runnable() {
 				        public void run() {
 				        	playAudio(buffer);
 				        }
@@ -301,6 +302,12 @@ public class MainActivity extends Activity {
 		if (audio != null) {
 			audioPaused = false;
 			audio.stop();
+			
+			// Kill worker thread
+			tAudioPlayer.interrupt();
+			tAudioPlayer = null;
+			
+			// Release assets
 			releaseAudioTrack();
 		}
 	}
