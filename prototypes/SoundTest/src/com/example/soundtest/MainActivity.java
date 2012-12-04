@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
 		sm.stopAudioImmediately();
 		
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
-		if (sm.isPaused()) {
+		if (b.getText() == getString(R.string.btnSoundCtrl_pause)) {
 			b.setText(getString(R.string.btnSoundCtrl_play));
 		}
 	}
