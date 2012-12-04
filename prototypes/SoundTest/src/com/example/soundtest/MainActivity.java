@@ -1,9 +1,6 @@
 package com.example.soundtest;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import android.os.Bundle;
 import android.os.Environment;
