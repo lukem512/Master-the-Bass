@@ -7,20 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
-import android.media.AudioTrack.OnPlaybackPositionUpdateListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 /////////////////////////////////////////////////////////////
 //
@@ -31,18 +25,21 @@ import android.widget.Toast;
 //
 /////////////////////////////////////////////////////////////
 
-public class MainActivity extends Activity implements AudioTrack.OnPlaybackPositionUpdateListener {
-	private AudioTrack audio = null;
-	private int audioBufferSize;
+public class MainActivity extends Activity {
 	private boolean bufferFilled = false;
 	private boolean resumeHasRun = false;
-	private boolean audioPaused = false;
 	private byte[] buffer;
 	private Thread tAudioPlayer;
+	
+	private SoundManager sm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Instantiate SoundManager
+		sm = new SoundManager();
+		Log.d("onResume", "SoundManager instantiated");
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -50,7 +47,7 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 	@Override
 	public void onPause() {
 		super.onPause();
-		pauseAudio();
+		sm.pauseAudio();
 	}
 	
 	@Override
@@ -112,14 +109,14 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 			resumeHasRun = true;
 		} else {
 			// Subsequent onResume event behaviour
-			resumeAudio();
+			sm.resumeAudio();
 		}
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
-		resumeAudio();
+		sm.resumeAudio();
 	}
 	
 	@Override
@@ -130,13 +127,13 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 	@Override
 	public void onStop() {
 		super.onStop();
-		pauseAudio();
+		sm.pauseAudio();
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		stopAudioImmediately();
+		sm.stopAudioImmediately();
 	}
 	
 	@Override
@@ -153,7 +150,7 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 	
 	public void btnSoundStopClick(View view) {
 		// Stop audio
-		stopAudioImmediately();
+		sm.stopAudioImmediately();
 		
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
 		if (b.getText() == getString(R.string.btnSoundCtrl_pause)) {
@@ -165,17 +162,14 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
 		
 		if (b.getText() == getString(R.string.btnSoundCtrl_play)) {
-			if (audioPaused) {
-				resumeAudio();
+			if (sm.isPaused()) {
+				sm.resumeAudio();
 			} else {
-				// Instantiate AudioTrack object
-				createAudioTrack();
-				
 				// Spawn a separate audio playing thread
 				if (bufferFilled) {
 					tAudioPlayer = new Thread(new Runnable() {
 				        public void run() {
-				        	playAudio(buffer);
+				        	sm.playAudio(buffer);
 				        }
 				    });
 					tAudioPlayer.start();
@@ -185,7 +179,7 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 			// Set button text to reflect audio playing
 			b.setText(getString(R.string.btnSoundCtrl_pause));
 		} else {
-			pauseAudio();
+			sm.pauseAudio();
 			
 			// Set button text to reflect audio pausing
 			b.setText(getString(R.string.btnSoundCtrl_play));
@@ -219,176 +213,4 @@ public class MainActivity extends Activity implements AudioTrack.OnPlaybackPosit
 	    
 	    return result;
 	}
-	
-	// AudioTrack wrapper functions
-	
-	// Sets up an AudioTrack object
-	// and populates the global instance
-	private void createAudioTrack() {		
-		int streamType = AudioManager.STREAM_MUSIC;
-		int sampleRateHz = 8000;
-		int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
-		int audioFormat = AudioFormat.ENCODING_PCM_16BIT; // 16-bit signed
-		int mode = AudioTrack.MODE_STREAM;
-		
-		// Get buffer size from API
-		audioBufferSize = AudioTrack.getMinBufferSize(sampleRateHz, channelConfig, audioFormat);
-		
-		// Ensure old resources are released
-		stopAudioImmediately();
-		
-		// Create new AudioTrack
-		audio = new AudioTrack(streamType, sampleRateHz, channelConfig, audioFormat, audioBufferSize, mode);
-		
-		// Hook callbacks
-		audio.setPlaybackPositionUpdateListener(this);
-	}
-	
-	private void releaseAudioTrack() {
-		if (audio != null) {
-			audio.release();
-			audio = null;
-		}
-	}
-	
-	// Plays a PCM byte array by streaming it
-	// to an AudioTrack object
-	public void playAudio(byte[] pcm) {
-		byte[] buffer;
-		int i;
-		
-		// Begin playback
-		if (audio != null) {
-			try {
-				audio.play();
-			}
-			catch (IllegalStateException e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-		
-		// Set up the callback notifier for when the playback completes
-		if (audio != null) {
-			audio.setNotificationMarkerPosition(pcm.length);
-		}
-			
-		// Write in a loop until buffer has been completely written
-		// Includes an internal check to see if the audio track has been
-		// released.	
-		for (i=0; i<Math.ceil(pcm.length/audioBufferSize); i++) {
-			buffer = new byte[audioBufferSize];
-			System.arraycopy(pcm, i*audioBufferSize, buffer, 0, audioBufferSize);
-			
-			// Loop if soft paused
-			do {
-				if (audio != null) {
-					if (!audioPaused) {
-						try {
-							audio.write(buffer, 0, audioBufferSize);
-						}
-						catch (IllegalStateException e) {
-							e.printStackTrace();
-							return;
-						}
-					}
-				} else {
-					// The AudioTrack has been killed, stop attempting playback
-					return;
-				}
-			} while (audioPaused);
-		}
-		
-		// Stop playing after the buffer has been exhausted
-		// i.e. at the end of the audio
-		if (audio != null) {
-			audio.stop();
-		}
-	}
-	
-	// Pauses audio playback
-	public void pauseAudio() {
-		if (audio != null) {
-			softPauseAudio();
-			audio.pause();
-		}
-	}
-	
-	public void resumeAudio() {
-		if (audio != null) {
-			softResumeAudio();
-			audio.play();
-		}
-	}
-	
-	public void softPauseAudio() {
-		if (audio != null) {
-			audioPaused = true;
-		}
-	}
-	
-	// Resumes audio playback
-	public void softResumeAudio() {
-		if (audio != null) {
-			audioPaused = false;
-		}
-	}
-	
-	// Stops the audio playback.
-	// This is immediate for stored audio
-	// and at the end of the written buffer
-	// for streamed audio. Resources are
-	// release after the audio stops.
-	public void stopAudio() {
-		if (audio != null) {
-			audioPaused = false;
-			audio.stop();
-			
-			// Kill worker thread
-			tAudioPlayer.interrupt();
-			tAudioPlayer = null;
-			
-			// Release assets
-			releaseAudioTrack();
-		}
-	}
-	
-	// Immediately stops the audio playback for streamed audio
-	// This requires pausing the audio and flushing
-	// the buffer - as merely stopping will play
-	// until the buffer has been played.
-	public void stopAudioImmediately() {
-		if (audio != null) {
-			audio.pause();
-			audio.flush();
-			stopAudio();
-		}
-	}
-	
-	// Returns the time taken to reach a frame in milliseconds
-	// given the sample rate
-	public int framesToMillis(int frames, int sampleRate) {
-		return (int) Math.round((frames / sampleRate) * 1000.0);
-	}
-	
-	// AudioTrack.OnPlaybackPositionUpdateListener Methods
-
-	@Override
-	public void onMarkerReached(AudioTrack track) {
-		// The playback has completed, set the button value to reflect this
-		Button btnSoundCtrl = (Button) findViewById(R.id.btnSoundCtrl);
-		btnSoundCtrl.setText(getString(R.string.btnSoundCtrl_play));
-		
-		Log.d("onMarkerReached", "Playback has completed.");
-	}
-
-	@Override
-	public void onPeriodicNotification(AudioTrack track) {
-		// Auto-generated method stub
-	}
-	
-	// Interesting audioTrack functions:
-	// setLoopPoints - loop a particular part of the PCM (including infinite looping)
-	// attachAuxEffect - attaches and 'auxiliary audio effect' to the sound
-	// android.media.audiofx.AudioEffect
 }

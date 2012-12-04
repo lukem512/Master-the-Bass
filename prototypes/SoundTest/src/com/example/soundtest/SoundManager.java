@@ -25,6 +25,8 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	public SoundManager() {
 		// Create a track to speed up initial playback
 		createAudioTrack();
+		
+		Log.d("SoundManager", "Constructed successfully!");
 	}
 	
 	/* AudioTrack wrapper functions */
