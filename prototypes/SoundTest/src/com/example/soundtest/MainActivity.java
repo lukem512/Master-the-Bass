@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
 	private boolean bufferFilled = false;
 	private boolean resumeHasRun = false;
 	private byte[] buffer;	
+	private FileManager fm;
 	private SoundManager sm;
 
 	@Override
@@ -26,7 +27,11 @@ public class MainActivity extends Activity {
 		
 		// Instantiate SoundManager
 		sm = new SoundManager();
-		Log.d("onResume", "SoundManager instantiated");
+		Log.d("onCreate", "SoundManager instantiated");
+		
+		// Instantiate FileManager
+		fm = new FileManager();
+		Log.d("onCreate", "FileManager instantiated");
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -56,7 +61,7 @@ public class MainActivity extends Activity {
 				public void run() {
 					while (!bufferFilled) {
 						try {
-							buffer = readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
+							buffer = fm.readBinaryFile(Environment.getExternalStorageDirectory().getPath()+"/bjork.raw");
 							bufferFilled = true;
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -164,33 +169,5 @@ public class MainActivity extends Activity {
 			// Set button text to reflect audio pausing
 			b.setText(getString(R.string.btnSoundCtrl_play));
 		}
-	}
-	
-	// Read binary file
-	
-	public byte[] readBinaryFile(String filename) throws IOException {
-		File fp = new File(filename);
-		int fpLen = (int) fp.length();
-		FileInputStream fis = new FileInputStream(fp);
-		return pumpBinaryFile(fis, fpLen);
-	}
-	
-	public byte[] pumpBinaryFile(InputStream in, int size) throws IOException {
-		int bufferSize = 1024, done = 0;
-	    byte[] buffer = new byte[bufferSize];
-	    byte[] result = new byte[size];
-	    
-	    while (done < size) {
-	        int read = in.read(buffer);
-	        if (read == -1) {
-	            throw new IOException("Something went horribly wrong");
-	        }
-	        System.arraycopy(buffer, 0, result, done, read);
-	        done += read;
-	    }
-	    
-	    in.close();
-	    
-	    return result;
 	}
 }
