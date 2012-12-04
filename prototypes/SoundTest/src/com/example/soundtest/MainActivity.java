@@ -2,10 +2,8 @@ package com.example.soundtest;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,21 +14,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-/////////////////////////////////////////////////////////////
-//
-// TODO
-//
-// Callback when audio playback is complete to update button
-// Are all the if (audio != null) checks needed in playAudio()?
-//
-/////////////////////////////////////////////////////////////
-
 public class MainActivity extends Activity {
 	private boolean bufferFilled = false;
 	private boolean resumeHasRun = false;
-	private byte[] buffer;
-	private Thread tAudioPlayer;
-	
+	private byte[] buffer;	
 	private SoundManager sm;
 
 	@Override
@@ -153,7 +140,7 @@ public class MainActivity extends Activity {
 		sm.stopAudioImmediately();
 		
 		Button b = (Button) findViewById(R.id.btnSoundCtrl);
-		if (b.getText() == getString(R.string.btnSoundCtrl_pause)) {
+		if (sm.isPaused()) {
 			b.setText(getString(R.string.btnSoundCtrl_play));
 		}
 	}
@@ -165,15 +152,8 @@ public class MainActivity extends Activity {
 			if (sm.isPaused()) {
 				sm.resumeAudio();
 			} else {
-				// Spawn a separate audio playing thread
-				if (bufferFilled) {
-					tAudioPlayer = new Thread(new Runnable() {
-				        public void run() {
-				        	sm.playAudio(buffer);
-				        }
-				    });
-					tAudioPlayer.start();
-				}
+				// Play the audio
+				sm.playAudio(buffer);
 			}
 			
 			// Set button text to reflect audio playing

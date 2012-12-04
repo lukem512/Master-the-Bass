@@ -14,6 +14,11 @@ import android.util.Log;
 //
 /////////////////////////////////////////////////////////////
 
+//Interesting audioTrack functions:
+// setLoopPoints - loop a particular part of the PCM (including infinite looping)
+// attachAuxEffect - attaches and 'auxiliary audio effect' to the sound
+// android.media.audiofx.AudioEffect
+
 public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener {
 	private AudioTrack audio = null;
 	private int audioBufferSize;
@@ -62,10 +67,20 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	
 	// Plays a PCM byte array by streaming it
 	// to an AudioTrack object
-	public void playAudio(byte[] pcm) {
+	public void playAudio(final byte[] pcm) {
+		tAudioPlayer = new Thread(new Runnable() {
+	        public void run() {
+	        	playAudioThread(pcm);
+	        }
+	    });
+		tAudioPlayer.start();
+	}
+	
+	private void playAudioThread(byte[] pcm) {
 		byte[] buffer;
 		int i;
 		
+		// Instantiate audio if needed
 		if (audio == null) {
 			createAudioTrack();
 		}
@@ -83,7 +98,7 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 		
 		// Set up the callback notifier for when the playback completes
 		if (audio != null) {
-			audio.setNotificationMarkerPosition(pcm.length);
+			audio.setNotificationMarkerPosition(pcm.length); // TODO - this doesn't work
 		}
 			
 		// Write in a loop until buffer has been completely written
@@ -96,7 +111,7 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 			// Loop if soft paused
 			do {
 				if (audio != null) {
-					if (!audioPaused) {
+					if (!isPaused()) {
 						try {
 							audio.write(buffer, 0, audioBufferSize);
 						}
@@ -109,7 +124,7 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 					// The AudioTrack has been killed, stop attempting playback
 					return;
 				}
-			} while (audioPaused);
+			} while (isPaused());
 		}
 		
 		// Stop playing after the buffer has been exhausted
@@ -163,7 +178,7 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	// release after the audio stops.
 	public void stopAudio() {
 		if (audio != null) {
-			audioPaused = false;
+			// Stop playback
 			audio.stop();
 			
 			// Kill worker thread
@@ -172,6 +187,9 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 			
 			// Release assets
 			releaseAudioTrack();
+			
+			// Reset flag
+			audioPaused = false;
 		}
 	}
 	
@@ -204,9 +222,4 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	public void onPeriodicNotification(AudioTrack track) {
 		// Auto-generated method stub
 	}
-	
-	// Interesting audioTrack functions:
-	// setLoopPoints - loop a particular part of the PCM (including infinite looping)
-	// attachAuxEffect - attaches and 'auxiliary audio effect' to the sound
-	// android.media.audiofx.AudioEffect
 }
