@@ -23,13 +23,16 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	private AudioTrack audio = null;
 	private int audioBufferSize;
 	private boolean audioPaused = false;
-	private Thread tAudioPlayer;
+	private Thread tAudioPlayer = null;
 	
 	/* Constructor */
 	
 	public SoundManager() {
 		// Create a track to speed up initial playback
 		createAudioTrack();
+		
+		// Set worker thread to null
+		tAudioPlayer = null;
 		
 		Log.d("SoundManager", "Constructed successfully!");
 	}
@@ -78,7 +81,7 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 	
 	private void playAudioThread(byte[] pcm) {
 		byte[] buffer;
-		int i;
+		int i, length, pos;
 		
 		// Instantiate audio if needed
 		if (audio == null) {
@@ -100,20 +103,28 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 		if (audio != null) {
 			audio.setNotificationMarkerPosition(pcm.length); // TODO - this doesn't work
 		}
+		
+		pos = 0;
 			
 		// Write in a loop until buffer has been completely written
 		// Includes an internal check to see if the audio track has been
 		// released.	
 		for (i=0; i<Math.ceil(pcm.length/audioBufferSize); i++) {
-			buffer = new byte[audioBufferSize];
-			System.arraycopy(pcm, i*audioBufferSize, buffer, 0, audioBufferSize);
+			if (pcm.length < (pos + audioBufferSize)) {
+				length = pcm.length - pos;
+			} else {
+				length = audioBufferSize;
+			}
+			
+			buffer = new byte[length];
+			System.arraycopy(pcm, pos, buffer, 0, length);
 			
 			// Loop if soft paused
 			do {
 				if (audio != null) {
 					if (!isPaused()) {
 						try {
-							audio.write(buffer, 0, audioBufferSize);
+							audio.write(buffer, 0, length);
 						}
 						catch (IllegalStateException e) {
 							e.printStackTrace();
@@ -125,6 +136,8 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 					return;
 				}
 			} while (isPaused());
+			
+			pos += length;
 		}
 		
 		// Stop playing after the buffer has been exhausted
@@ -181,8 +194,14 @@ public class SoundManager implements AudioTrack.OnPlaybackPositionUpdateListener
 			// Stop playback
 			audio.stop();
 			
+			Log.d("stopAudio", "Audio stopped.");
+			
 			// Kill worker thread
-			tAudioPlayer.interrupt();
+			if (tAudioPlayer != null) {
+				Log.d("stopAudio", "Killing worker thread...");
+				tAudioPlayer.interrupt();
+				Log.d("stopAudio", "Dead!");
+			}
 			tAudioPlayer = null;
 			
 			// Release assets
