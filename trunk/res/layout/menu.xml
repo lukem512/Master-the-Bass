@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:title="Calibrate..."
+	android:id="@+id/calibrate">
+		<menu>
+		<item android:title="X"
+		android:id="@+id/calX"/>
+		<item android:title="Y"
+		android:id="@+id/calY"/>
+		<item android:title="Z"
+		android:id="@+id/calZ"/>
+		</menu>
+	</item>
+	<item android:title="Reset"
+	android:id="@+id/reset"/>
+	<item android:title="Switch View"
+	android:id="@+id/switchView"/>
+	</menu>
+	
