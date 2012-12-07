@@ -21,6 +21,7 @@
         android:shadowDx= "1.2"
         android:shadowDy= "2"
         android:shadowRadius= "3" 
+        android:onClick="btnSoundCtrlClick"
         />
 
    
@@ -39,6 +40,8 @@
          android:text="@string/sound_stop"
          android:textColor="#FFFFFF"
          android:textSize="25sp"
-         android:textStyle="bold"  />
+         android:textStyle="bold"
+         android:onClick="btnSoundStopClick"
+         />
 
 </RelativeLayout>
