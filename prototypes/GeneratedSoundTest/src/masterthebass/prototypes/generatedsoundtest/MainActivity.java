@@ -2,18 +2,25 @@ package masterthebass.prototypes.generatedsoundtest;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
-	private SoundManager sm;
+	private AudioOutputManager am;
+	private Thread toneGeneratorThread, playThread;
+	private boolean tone_stop = true;
+	private double base = 400;
+	private double vol = 0.7;
+	private double dur = 0.2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// Instantiate SoundManager
-		sm = new SoundManager();
+		// Instantiate managers
+		am = new AudioOutputManager();
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -27,70 +34,79 @@ public class MainActivity extends Activity {
 	
 	// Listener for btnCtrl click event
 	public void btnCtrlOnClick(View view) {
-		byte[] pcm;
-		int numFreq = 20;
-		double base = 400;
-		double vol = 0.7;
-		double dur = 0.2;
+		Button b = (Button) findViewById(R.id.button1);
 		
-		sm.playAudio();
-		
-		// TODO - generate a tone
-		for (int i=0; i<=numFreq; i++) {
-			pcm = genTone(dur, base+i, vol);
-			sm.bufferAudio(pcm);
-		}
-		
-		for (int i=numFreq; i>=0; i--) {
-			pcm = genTone(dur, base+i, vol);
-			sm.bufferAudio(pcm);
-		}
-		
-		for (int i=0; i<=numFreq; i++) {
-			pcm = genTone(dur, base-i, vol);
-			sm.bufferAudio(pcm);
-		}
-		
-		for (int i=numFreq; i>=0; i--) {
-			pcm = genTone(dur, base-i, vol);
-			sm.bufferAudio(pcm);
+		if (tone_stop) {	
+			// Play the audio, when the buffer is ready
+			playThread = new Thread(playTone);
+			playThread.start();
+			
+			// generate a tone
+			tone_stop = false;
+			toneGeneratorThread = new Thread(toneGenerator);
+			toneGeneratorThread.start();
+			
+			// set text
+			b.setText(getString(R.string.btnCtrl_text_stop));
+		} else {			
+			// stop worker thread
+			toneGeneratorThread.interrupt();
+			playThread.interrupt();
+			
+			// stop audio
+			am.stop();
+			tone_stop = true;
+			
+			// set text
+			b.setText(getString(R.string.btnCtrl_text_go));
 		}
 	}
-
-	// Generate a tone that is duration seconds long at specified frequency
-	// Volume is specified between 0.0 and 1.0, where 1.0 is maximum
-	// http://stackoverflow.com/questions/2413426/playing-an-arbitrary-tone-with-android
-	private byte[] genTone(double duration, double frequency, double volume) {
-		int sampleRate = sm.getSampleRate();
-		int numSamples = (int) Math.ceil(sampleRate * duration);
-		double sample[] = new double[numSamples];
-		byte generatedSnd[] = new byte[2 * numSamples];
-		
-		// sanity check volume
-		if (volume < 0.0) {
-			volume = 0.0;
-		} else if (volume > 1.0) {
-			volume = 1.0;
+	
+	Runnable playTone = new Runnable() {
+		public void run() {
+			while (!am.play()) {
+				Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+				try {
+					Thread.sleep(80);
+				} catch (InterruptedException e) {
+					Log.d("playTone", "Play thread interruped.");
+					return;
+				}
+			}
+			Log.d("playTone", "Tone playback started.");
 		}
-		
-		int idx = 0;
-		
-        // fill out the array
-        for (int i = 0; i < numSamples; ++i) {
-            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/frequency));
-        }
+	};
+	
+	Runnable toneGenerator = new Runnable()
+    {   
+        public void run()
+        {      	
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            
+            int samples = (int) Math.ceil(am.getSampleRate() * dur);
+            byte [] noiseData = new byte[samples];
 
-        // convert to 16 bit pcm sound array
-        // assumes the sample buffer is normalised.
-        for (final double dVal : sample) {
-            // scale to maximum amplitude
-            final short val = (short) ((dVal * 32767 * volume));
-            // in 16 bit wav PCM, first byte is the low order byte
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-
+            int i = 0;
+            boolean up = true;
+            while(!tone_stop)
+            {             
+            	if (i == 20 || i == -20) {
+                	up = !up;
+                }
+            	
+            	noiseData = SoundManager.generateTone(dur, base+i, vol, am.getSampleRate());
+            	am.buffer(noiseData);
+            	
+            	Log.d("toneGen", "Wrote frequency " + (base+i) + " to buffer.");
+                
+                if (up) i++; else i--;
+                
+				if (Thread.interrupted()) {
+					Log.d("toneGen", "Tone generation thread interrupted.");
+                	return;
+                }
+            }
         }
-        
-        return generatedSnd;
-    }
+    };
+
 }
