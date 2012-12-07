@@ -41,7 +41,7 @@ public class SoundManager{
         int idx = 0;
         int ramp = numSamples / 20 ;                                    // Amplitude ramp as a percent of sample count
         
-        Log.d("genTone", "Ramp is " + ramp + " samples.");
+        //Log.d("genTone", "Ramp is " + ramp + " samples.");
         
         for (i = 0; i< ramp; ++i) {                                     // Ramp amplitude up (to avoid clicks)
             double dVal = sample[i];
@@ -52,7 +52,7 @@ public class SoundManager{
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
-        Log.d("genTone", "Ramped up!");
+        //Log.d("genTone", "Ramped up!");
 
         for (i = i; i< numSamples - ramp; ++i) {                        // Max amplitude for most of the samples
             double dVal = sample[i];
@@ -63,7 +63,7 @@ public class SoundManager{
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
-        Log.d("genTone", "Generated tone body.");
+        //Log.d("genTone", "Generated tone body.");
 
         for (i = i; i< numSamples; ++i) {                               // Ramp amplitude down
             double dVal = sample[i];
@@ -74,7 +74,7 @@ public class SoundManager{
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
-        Log.d("genTone", "Ramped down!");
+        //Log.d("genTone", "Ramped down!");
         
         return generatedSnd;
     }

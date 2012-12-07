@@ -1,5 +1,8 @@
 package masterthebass.prototypes.generatedsoundtest;
 
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -9,11 +12,12 @@ import android.widget.Button;
 
 public class MainActivity extends Activity {
 	private AudioOutputManager am;
-	private Thread toneGeneratorThread, playThread;
+	private LinkedList<byte[]> sampleList;
+	private Thread toneGeneratorThread, playThread, bufferThread;
 	private boolean tone_stop = true;
 	private double base = 400;
 	private double vol = 0.7;
-	private double dur = 0.2;
+	private double dur = 0.05;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,7 @@ public class MainActivity extends Activity {
 		
 		// Instantiate managers
 		am = new AudioOutputManager();
+		sampleList = new LinkedList<byte[]>();
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -41,6 +46,10 @@ public class MainActivity extends Activity {
 			playThread = new Thread(playTone);
 			playThread.start();
 			
+			bufferThread = new Thread(toneBufferer);
+			bufferThread.start();
+			
+			
 			// generate a tone
 			tone_stop = false;
 			toneGeneratorThread = new Thread(toneGenerator);
@@ -52,6 +61,7 @@ public class MainActivity extends Activity {
 			// stop worker thread
 			toneGeneratorThread.interrupt();
 			playThread.interrupt();
+			bufferThread.interrupt();
 			
 			// stop audio
 			am.stop();
@@ -77,15 +87,14 @@ public class MainActivity extends Activity {
 		}
 	};
 	
-	Runnable toneGenerator = new Runnable()
-    {   
-        public void run()
-        {      	
-            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+	Runnable toneBufferer = new Runnable() {
+		public void run() {
+			Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+			
+			int sampleRate = am.getSampleRate();
+			int samples = (int) Math.ceil(sampleRate * dur);
+            byte [] sampleData = new byte[samples];
             
-            int samples = (int) Math.ceil(am.getSampleRate() * dur);
-            byte [] noiseData = new byte[samples];
-
             int i = 0;
             boolean up = true;
             while(!tone_stop)
@@ -94,12 +103,40 @@ public class MainActivity extends Activity {
                 	up = !up;
                 }
             	
-            	noiseData = SoundManager.generateTone(dur, base+i, vol, am.getSampleRate());
-            	am.buffer(noiseData);
+            	//Log.d ("toneBuf", "Generating frequency.");
+            	for (int j=0; j<10; j++) {
+            		sampleData = SoundManager.generateTone(dur, base+i, vol, sampleRate);
+            		sampleList.add(sampleData);
+            		
+            		if (Thread.interrupted()) {
+    					Log.d("toneBuf", "Tone buffering thread interrupted.");
+                    	return;
+                    }
+            	}
             	
-            	Log.d("toneGen", "Wrote frequency " + (base+i) + " to buffer.");
+            	//Log.d("toneBuf", "Wrote frequency " + (base+i) + " to buffer.");
                 
                 if (up) i++; else i--;
+            }
+		}
+	};
+	
+	Runnable toneGenerator = new Runnable()
+    {   
+        public void run() {      	
+            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+            
+            byte[] sampleData;
+            while(!tone_stop)
+            {             
+            	try {
+            		sampleData = (byte[]) sampleList.removeFirst();
+            		am.buffer(sampleData);
+            		Log.d("toneGen", "Wrote frequency to buffer.");
+            	}
+            	catch (NoSuchElementException e) {
+            		Log.w("toneGen", "Sample list is empty!");
+            	}
                 
 				if (Thread.interrupted()) {
 					Log.d("toneGen", "Tone generation thread interrupted.");

@@ -116,7 +116,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	
 	public void buffer(byte[] pcm) {
 		byte[] buffer;
-		int length, pos, writes;
+		int length, pos, writes, written;
 		
 		pos = 0; 
 		writes = (int) Math.ceil(pcm.length/bufferSize);
@@ -125,7 +125,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			writes = 1;
 		}
 		
-		Log.d(logTag+".buffer", "Writing " + pcm.length + " bytes into buffer , this will require " + writes + " loop iteration(s).");
+		//Log.d(logTag+".buffer", "Writing " + pcm.length + " bytes into buffer , this will require " + writes + " loop iteration(s).");
 		
 		// Write in a loop until buffer has been completely written
 		for (int i=0; i<writes; i++) {
@@ -142,7 +142,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			
 			// Loop if soft paused	
 			try {
-				audio.write(buffer, 0, length);
+				written = audio.write(buffer, 0, length);
 			}
 			catch (IllegalStateException e) {
 				e.printStackTrace();
@@ -150,13 +150,13 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 				return;
 			}
 			
-			pos += length;
-			numSamplesBuffered += length;
+			pos += written;
+			numSamplesBuffered += written;
 			
-			Log.d(logTag+".buffer", "Wrote " + length + " bytes successfully.");
+			//Log.d(logTag+".buffer", "Wrote " + length + " bytes successfully.");
 		}
 		
-		Log.d(logTag+".buffer", "Exiting...");
+		//Log.d(logTag+".buffer", "Exiting...");
 	}
 	
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */
