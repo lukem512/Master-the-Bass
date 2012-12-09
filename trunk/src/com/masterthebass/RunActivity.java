@@ -85,7 +85,8 @@ public class RunActivity extends Activity {
 			
 			byte[] buffer;
 			try {
-				buffer = fm.readBinaryFile(FileManager.getSDPath() + "/bjork.raw");
+				// Read audio file from SD card
+				buffer = fm.readBinaryFile(FileManager.getSDPath() + "/wub.wav");
 			} catch (IOException e) {
 				Log.e(logTag+"."+threadTag+".run", "Could not read PCM audio file.");
 				e.printStackTrace();
