@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
 			Button btnSoundCtrl = (Button) findViewById(R.id.btnSoundCtrl);
 			Button btnSoundStop = (Button) findViewById(R.id.btnSoundStop);
 			
-			btnSoundCtrl.setEnabled(true);
-			btnSoundStop.setEnabled(true);
+			btnSoundCtrl.setEnabled(false);
+			btnSoundStop.setEnabled(false);
 			
 			// Spawn a thread to load the audio file
 			final Thread tAudioBuffer = new Thread (new Runnable() {
