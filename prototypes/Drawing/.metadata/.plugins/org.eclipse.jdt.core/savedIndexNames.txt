@@ -1,0 +1,7 @@
+INDEX VERSION 1.126+/Users/Jonny/Documents/Development/Android/MasterBass/Master-the-Bass/prototypes/Drawing/.metadata/.plugins/org.eclipse.jdt.core
+765453901.index
+1382622845.index
+1869659548.index
+3967046378.index
+1431946454.index
+2634196306.index

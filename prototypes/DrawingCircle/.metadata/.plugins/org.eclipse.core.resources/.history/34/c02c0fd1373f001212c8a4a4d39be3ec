@@ -1,0 +1,7 @@
+package com.example.drawcircle;
+
+import android.view.View;
+
+public class Ball extends Activity {
+
+}

@@ -1,0 +1,54 @@
+package com.example.drawingcircle;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
+
+public class MainActivity extends Activity {
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        FrameLayout main = (FrameLayout) findViewById(R.id.main_view);
+        main.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent e) {
+                float x = e.getX();
+            	float y = e.getY();
+                FrameLayout flView = (FrameLayout) v;
+            	flView.addView(new Ball(flView.getContext(), x,y,25));
+            	try {
+					Thread.sleep(200);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	flView.addView(new Ball(flView.getContext(), x,y,30));
+            	try {
+					Thread.sleep(200);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	flView.addView(new Ball(flView.getContext(), x,y,35));
+            	try {
+					Thread.sleep(200);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	flView.addView(new Ball(flView.getContext(), x,y,40));
+            	return true;
+            }
+        });
+
+    }
+ 
+}
+    
+ 
+    
+    
+	

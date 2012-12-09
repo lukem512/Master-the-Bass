@@ -1,0 +1,13 @@
+package com.example.drawcircle;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.View;
+ 
+public class Ball extends View {
+	  private final float x;
+	  private final float y;
+	  private final int r;
+	  private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+}

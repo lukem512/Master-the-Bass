@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SoundTest</string>
+    <string name="btnSoundCtrl_play">Play</string>
+    <string name="menu_settings">Settings</string>
+    <string name="btnSoundCtrl_stop">Stop</string>
+
+</resources>

@@ -1,0 +1,4 @@
+INDEX VERSION 1.126+/Users/Jonny/Documents/Development/Android/MasterBass/Master-the-Bass/prototypes/DrawingCircle/.metadata/.plugins/org.eclipse.jdt.core
+3995443398.index
+1431946454.index
+1671999575.index
