@@ -41,37 +41,40 @@ public class SoundManager{
         int idx = 0;
         int ramp = numSamples / 20 ;                                    // Amplitude ramp as a percent of sample count
         
+        ramp=0;
         //Log.d("genTone", "Ramp is " + ramp + " samples.");
         
-        for (i = 0; i< ramp; ++i) {                                     // Ramp amplitude up (to avoid clicks)
+        // Ramp amplitude (volume) up to target volume
+        for (i = 0; i < ramp; i++) {
             double dVal = sample[i];
-                                                                        // Ramp up to maximum
             final short val = (short) ((dVal * 32767 * (i/ramp) * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
+            
+            // in 16 bit WAV PCM, first byte is the low order byte
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
         //Log.d("genTone", "Ramped up!");
 
-        for (i = i; i< numSamples - ramp; ++i) {                        // Max amplitude for most of the samples
+        while (i < (numSamples - ramp)) {
             double dVal = sample[i];
-                                                                        // scale to maximum amplitude
             final short val = (short) ((dVal * 32767 * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+            
+            i++;
         }
         
         //Log.d("genTone", "Generated tone body.");
 
-        for (i = i; i< numSamples; ++i) {                               // Ramp amplitude down
+        // Ramp amplitude (volume) down to 0
+        while (i  <numSamples) {
             double dVal = sample[i];
-                                                                        // Ramp down to zero
             final short val = (short) ((dVal * 32767 * ((numSamples-i)/ramp) * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+            
+            i++;
         }
         
         //Log.d("genTone", "Ramped down!");
