@@ -95,6 +95,8 @@ public class MainActivity extends Activity {
 			int samples = (int) Math.ceil(sampleRate * dur);
             byte [] sampleData = new byte[samples];
             
+            FileManager fm = new FileManager();
+            
             int i = 0;
             boolean up = true;
             while(!tone_stop)
@@ -103,10 +105,12 @@ public class MainActivity extends Activity {
                 	up = !up;
                 }
             	
-            	//Log.d ("toneBuf", "Generating frequency.");
+            	Log.d ("toneBuf", "Generating frequency.");
+            	
             	for (int j=0; j<10; j++) {
             		sampleData = SoundManager.generateTone(dur, base+i, vol, sampleRate);
             		sampleList.add(sampleData);
+            		fm.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
             		
             		if (Thread.interrupted()) {
     					Log.d("toneBuf", "Tone buffering thread interrupted.");
@@ -114,7 +118,7 @@ public class MainActivity extends Activity {
                     }
             	}
             	
-            	//Log.d("toneBuf", "Wrote frequency " + (base+i) + " to buffer.");
+            	Log.d("toneBuf", "Wrote frequency " + (base+i) + " to buffer.");
                 
                 if (up) i++; else i--;
             }
@@ -135,7 +139,7 @@ public class MainActivity extends Activity {
             		Log.d("toneGen", "Wrote frequency to buffer.");
             	}
             	catch (NoSuchElementException e) {
-            		Log.w("toneGen", "Sample list is empty!");
+            		//Log.w("toneGen", "Sample list is empty!");
             	}
                 
 				if (Thread.interrupted()) {
