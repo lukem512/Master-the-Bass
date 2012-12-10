@@ -152,7 +152,7 @@ public class Accelerometer extends Activity implements SensorEventListener {
 			return;
 		} 
 		
-	    if (event.sensor.equals(mSensor))
+	    if (event.sensor.equals(mSensor))			//if reading from the accelerometer
 	    {
 			//if (event.sensor.getType() != Sensor.TYPE_LINEAR_ACCELERATION)
 	        //    return;
@@ -160,7 +160,7 @@ public class Accelerometer extends Activity implements SensorEventListener {
 			calibrate = event;
 			final float NOISE = (float) 1.0;
 			
-			switch (mDisplay.getRotation())
+			switch (mDisplay.getRotation())			//Changes accelerometer sensor read based on orientation of the device
 			{
 		        case Surface.ROTATION_0:
 		            mSensorX = -event.values[0];
@@ -188,7 +188,7 @@ public class Accelerometer extends Activity implements SensorEventListener {
 				float deltaY = Math.abs(mLastY - mSensorY);
 				float deltaZ = Math.abs(mLastZ - mSensorZ);
 				
-				if (deltaX < NOISE)
+				if (deltaX < NOISE)				//Removes noise
 					deltaX = mLastX;
 				else
 					deltaX = mSensorX;
@@ -211,10 +211,10 @@ public class Accelerometer extends Activity implements SensorEventListener {
 				actualAccel.setText("Accel   : " + totalAccel);
 			
 	    }
-	    else if (event.sensor.equals(oSensor))
+	    else if (event.sensor.equals(oSensor))			//if reading from the orientation sensor
 	    {
 	    	oLastX = oSensorX;
-		    	switch (mDisplay.getRotation())
+		    	switch (mDisplay.getRotation())			//Changes orientation sensor read based on orientation of the device
 				{
 				    case Surface.ROTATION_0:
 			            oSensorX = -event.values[0];
@@ -246,12 +246,12 @@ public class Accelerometer extends Activity implements SensorEventListener {
 		{
 			totalDif = totalAccel;
 		}
-		if( totalDif > totalAccel && (( !isNegative && lIsNegative ) || ( isNegative && !lIsNegative )) )
-		{
+		if( totalDif > totalAccel && (( !isNegative && lIsNegative ) || ( isNegative && !lIsNegative )) ) 
+		{ //if one sound generation movement has been completed
 			moveCount ++;
 			if(writing )
-			{
-				Log.i(TAG2, "Speed Max: " + totalDif);
+			{ //output the max acceleration
+				Log.i(TAG2, "Accel. Max: " + totalDif);
 				i++;
 			}
 			totalDif = 0;
