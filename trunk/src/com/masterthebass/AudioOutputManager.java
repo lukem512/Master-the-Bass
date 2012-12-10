@@ -52,6 +52,11 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		return createAudioTrack (channel, format, (int) (bufDuration * nativeSampleRate), mode);
 	}
 	
+	private AudioTrack createAudioTrack(int channel, int format, int mode) {
+		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
+		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
+	}
+	
 	private AudioTrack createAudioTrack(int channel, int format, int bufSize, int mode) {
 		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
 		Log.d(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
@@ -64,11 +69,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		Log.d(logTag+".createAudioTrack", "Setting buffer size to " + bufferSize + " bytes.");
 		
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, bufSize, mode);
-	}
-	
-	private AudioTrack createAudioTrack(int channel, int format, int mode) {
-		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
-		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
 	}
 	
 	private void stopStreaming() {
