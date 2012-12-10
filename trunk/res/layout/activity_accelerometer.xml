@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.03"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/x_accel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="X Acceleration: 0.0"
+            android:textSize="14pt" />
+
+        <TextView
+            android:id="@+id/y_accel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Y Acceleration: 0.0"
+            android:textSize="14pt" />
+
+        <TextView
+            android:id="@+id/z_accel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Z Acceleration: 0.0"
+            android:textSize="14pt" />
+
+        <TextView
+            android:id="@+id/actual_acceleration"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Acceleration   : 0.0"
+            android:textSize="14pt" />
+        <TextView
+            android:id="@+id/x_orientation"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="X Orientation	 : 0.0"
+            android:textSize="14pt" />
+        <TextView
+            android:id="@+id/no_shakes"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="No. of Moves  : 0.0"
+            android:textSize="14pt" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/startData"
+            android:layout_width="121dp"
+            android:layout_height="104dp"
+            android:text="@string/startData"
+            android:textSize="14pt" />
+
+    </LinearLayout>
+
+</LinearLayout>

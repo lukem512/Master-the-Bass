@@ -26,6 +26,11 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, RunActivity.class);
     	startActivity(intent);
     	}
+	
+	public void accelerometer(View view) {
+    	Intent intent = new Intent(this, Accelerometer.class);
+    	startActivity(intent);
+    	}
     
     /** Called when the user clicks the Settings button */
     public void settings(View view) {
