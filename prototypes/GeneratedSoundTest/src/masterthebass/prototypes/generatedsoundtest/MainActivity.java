@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends Activity {
+	private SoundManager sm;
 	private AudioOutputManager am;
 	private LinkedList<byte[]> sampleList;
 	private Thread toneGeneratorThread, playThread, bufferThread;
@@ -25,6 +26,7 @@ public class MainActivity extends Activity {
 		
 		// Instantiate managers
 		am = new AudioOutputManager();
+		sm = new SoundManager();
 		sampleList = new LinkedList<byte[]>();
 		
 		setContentView(R.layout.activity_main);
@@ -89,7 +91,7 @@ public class MainActivity extends Activity {
 	
 	Runnable toneBufferer = new Runnable() {
 		public void run() {
-			Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
 			
 			int sampleRate = am.getSampleRate();
 			int samples = (int) Math.ceil(sampleRate * dur);
@@ -97,7 +99,7 @@ public class MainActivity extends Activity {
             
             FileManager fm = new FileManager();
             
-            int i = 0;
+            double i = 0.0;
             boolean up = true;
             while(!tone_stop)
             {             
@@ -108,9 +110,9 @@ public class MainActivity extends Activity {
             	Log.d ("toneBuf", "Generating frequency.");
             	
             	for (int j=0; j<10; j++) {
-            		sampleData = SoundManager.generateTone(dur, base+i, vol, sampleRate);
+            		sampleData = sm.generateTone(dur, base+i, vol, sampleRate);
             		sampleList.add(sampleData);
-            		fm.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
+            		//fm.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
             		
             		if (Thread.interrupted()) {
     					Log.d("toneBuf", "Tone buffering thread interrupted.");
@@ -118,9 +120,9 @@ public class MainActivity extends Activity {
                     }
             	}
             	
-            	Log.d("toneBuf", "Wrote frequency " + (base+i) + " to buffer.");
+            	Log.d("toneBuf", "Wrote frequency " + (base+i) + " to sample list.");
                 
-                if (up) i++; else i--;
+                if (up) i+= 0.5; else i-=0.5;
             }
 		}
 	};
@@ -128,15 +130,15 @@ public class MainActivity extends Activity {
 	Runnable toneGenerator = new Runnable()
     {   
         public void run() {      	
-            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
-            
+        	android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+        	
             byte[] sampleData;
             while(!tone_stop)
             {             
             	try {
             		sampleData = (byte[]) sampleList.removeFirst();
             		am.buffer(sampleData);
-            		Log.d("toneGen", "Wrote frequency to buffer.");
+            		Log.d("toneGen", "Wrote generated frequency to buffer.");
             	}
             	catch (NoSuchElementException e) {
             		//Log.w("toneGen", "Sample list is empty!");
@@ -147,6 +149,8 @@ public class MainActivity extends Activity {
                 	return;
                 }
             }
+            
+            Log.d("toneGen", "Exiting...");
         }
     };
 

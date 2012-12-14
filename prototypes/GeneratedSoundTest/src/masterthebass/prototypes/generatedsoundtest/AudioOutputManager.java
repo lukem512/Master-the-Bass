@@ -43,6 +43,8 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	
 	private void getSampleRateFromHardware() {
 		nativeSampleRate = AudioTrack.getNativeOutputSampleRate(mode);
+		// FUDGE
+		nativeSampleRate = 8000;
 		Log.d(logTag+".getSampleRateFromHardware", "Native sample rate is " + nativeSampleRate + " Hz.");
 	}
 	
