@@ -5,6 +5,7 @@
     android:versionName="1.0" >
     
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -21,30 +22,16 @@
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.masterthebass.RunActivity"
-            android:label="@string/title_activity_run"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.uitest.MainActivity" />
-        </activity>
-        <activity
             android:name="com.masterthebass.SettingsActivity"
-            android:label="@string/title_activity_run"
+            android:label="@string/title_activity_settings"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.uitest.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.masterthebass.Accelerometer"
-            android:label="@string/title_activity_accelerometer"
-            android:screenOrientation="landscape" >
         </activity>
     </application>
 

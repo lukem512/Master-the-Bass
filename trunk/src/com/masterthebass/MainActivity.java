@@ -7,6 +7,20 @@ import android.view.Menu;
 import android.view.View;
 
 public class MainActivity extends Activity {
+	private AudioOutputManager audioman;
+	private SoundManager soundman;
+	private FileManager fileman;
+	private boolean resumeHasRun = false;
+	
+	/** Private helper methods */
+	   
+   	private void instantiate() {
+   		audioman = new AudioManager();
+   		soundman = new SoundManager();
+   		fileman = new FileManager();
+   	}
+   	
+   	/** Activity lifecycle/UI methods */
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -14,28 +28,61 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
     }
     
-   @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 		Intent intent = new Intent(this, SettingsActivity.class);
     	startActivity(intent);
         return true;
     }
+    
+    @Override
+    public void onStart() {
+    	// Called after onCreate() or onRestart()
+    }
+    
+    @Override
+    public void onResume() {
+    	// User or OS has navigated back to Activity
+    	
+    	if (!resumeHasRun) {
+    		// Run on first resume, called directly after onCreate() after loading
+    		instantiate();
+    		resumeHasRun = true;
+    	}
+    }
+    
+    @Override
+    public void onPause() {
+    	// Another Activity comes into foreground
+    }
+    
+    @Override
+    public void onStop() {
+    	// App closed due to lack of memory
+    }
+    
+    @Override
+    public void onRestart() {
+    	// User has navigated back to Activity
+    }
+    
+    @Override
+    public void onDestroy() {
+    	// App has been forcibly closed by OS
+    }
    
-    /** Called when the user clicks the Start button */
-	public void start(View view) {
-    	Intent intent = new Intent(this, RunActivity.class);
-    	startActivity(intent);
-    	}
-	
-	public void accelerometer(View view) {
-    	Intent intent = new Intent(this, Accelerometer.class);
-    	startActivity(intent);
-    	}
+   	/** Button onClick handlers */
     
     /** Called when the user clicks the Settings button */
-    public void settings(View view) {
+    public void btnSettingsClick (View view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	startActivity(intent);
+    }
+    
+    /** Called when the user clicks the Settings button */
+    public void btnFiltersClick(View view) {
+    	// TODO - Guy, Petro
+    	// Brings up the filters menu
     }
     
 }

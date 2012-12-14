@@ -2,20 +2,10 @@
 <resources>
 
     <string name="app_name">Master the Bass</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="start">Start</string>
-    <string name="settings">Settings</string>
-    <string name="accelerometer">Accelerometer</string>
-    <string name="title_activity_run">RunActivity</string>
-    <string name="sound">Sound</string>
-    <string name="soundon">Start music</string>
-    <string name="soundoff">Pause music</string>
-    <string name="sound_stop">Stop music</string>
-    <string name="title_activity_accelerometer">Accelerometer</string>
-    <string name="startData">Start Data</string>
-    <string name="stopData">Stop Data</string>
-    <string name="title_activity_accelerometer_view">AccelerometerView</string>
+    <string name="btnFilters_text">Filters</string>
+    <string name="btnSettings_text">Settings</string>
+    <string name="title_activity_main">Master the Bass</string>
+    <string name="title_activity_settings">Settings</string>
 
 </resources>
