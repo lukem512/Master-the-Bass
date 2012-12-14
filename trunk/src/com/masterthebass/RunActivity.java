@@ -14,6 +14,7 @@ import android.widget.Button;
 
 public class RunActivity extends Activity {
 	private AudioOutputManager am;
+	private SoundManager sm;
 	private FileManager fm;
 	private String logTag = "RunActivity";
 	private boolean resumeHasRun, tone_stop;
@@ -32,6 +33,7 @@ public class RunActivity extends Activity {
         // Instantiate manager
         am = new AudioOutputManager();
         fm = new FileManager();
+        sm = new SoundManager();
         
         // Set up linked list of samples
         sampleList = new LinkedList<byte[]>();
@@ -55,10 +57,10 @@ public class RunActivity extends Activity {
     	// loaded - such as prebuffering the audio file
 		if (!resumeHasRun) {
 			tToneLoad = new Thread(ToneLoad);
-			tToneLoad.start();
+			//tToneLoad.start();
 			
 			tToneGenerate = new Thread(ToneGenerate);
-			//tToneGenerate.start();
+			tToneGenerate.start();
 			
 			tToneBuffer = new Thread(ToneBuffer);
 			tToneBuffer.start();
@@ -118,7 +120,7 @@ public class RunActivity extends Activity {
 	        	
 	        	//Log.d ("toneBuf", "Generating frequency.");
 	        	for (int j=0; j<10; j++) {
-	        		sampleData = SoundManager.generateTone(dur, base+i, vol, sampleRate);
+	        		sampleData = sm.generateTone(dur, base+i, vol, sampleRate);
 	        		sampleList.add(sampleData);
 	        		
 	        		if (Thread.interrupted()) {

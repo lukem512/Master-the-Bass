@@ -3,6 +3,8 @@ package com.masterthebass;
 import android.util.Log;
 
 public class SoundManager{
+	private int period;
+	
 	
 	/* Members */
 	
@@ -11,19 +13,22 @@ public class SoundManager{
 	/* Constructor */
 	
 	public SoundManager() {
-		// TODO
+		resetPeriod();
 	}
 	
 	/* Public static methods */
 
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a byte array of the sound in 16-bit WAV PCM format
-	// TODO - remove clicks
-	//		- sine not stopping at ~0
-	public static byte[] generateTone(double duration, double frequency, double volume, int sampleRate) {
+	public byte[] generateTone(double duration, double frequency, double volume, int sampleRate) {
 		int numSamples = (int) Math.ceil(sampleRate * duration);
 		double sample[] = new double[numSamples];
 		byte generatedSnd[] = new byte[2 * numSamples];
+		int i, idx;
+		
+		double sampleByFreq = (sampleRate/frequency);
+		double twopi = (2*Math.PI);
+		int volValue = (int) (32767*volume);
 		
 		// Sanity check volume
 		if (volume < 0.0) {
@@ -31,51 +36,31 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
+		
+		Log.d(logTag+".generateTone", "Starting with period of " + period + ".");
 
-        // Fill out the array
-        for (int i = 0; i < numSamples; ++i) {
-            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/frequency));
-        }
-
-        int i;
-        int idx = 0;
-        int ramp = numSamples / 20 ;                                    // Amplitude ramp as a percent of sample count
-        
-        //Log.d(logTag+".generateTone", "Ramp is " + ramp + " samples.");
-        
-        for (i = 0; i< ramp; ++i) {                                     // Ramp amplitude up (to avoid clicks)
-            double dVal = sample[i];
-                                                                        // Ramp up to maximum
-            final short val = (short) ((dVal * 32767 * (i/ramp) * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
+        // Generate the sine wave
+		idx = 0;
+        for (i = 0; i < numSamples; i++) {	
+        	// Sine value
+            sample[i] = Math.sin(twopi * ((i+period)/sampleByFreq));
+            
+            // Scale to max amplitude
+            sample[i] = sample[i] * volValue;
+            
+            // Generate 16-bit sample
+            final short val = (short) (sample[i]);
             generatedSnd[idx++] = (byte) (val & 0x00ff);
             generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
-        //Log.d(logTag+".generateTone", "Ramped up!");
-
-        for (i = i; i< numSamples - ramp; ++i) {                        // Max amplitude for most of the samples
-            double dVal = sample[i];
-                                                                        // scale to maximum amplitude
-            final short val = (short) ((dVal * 32767 * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-        }
-        
-        //Log.d(logTag+".generateTone", "Generated tone body.");
-
-        for (i = i; i< numSamples; ++i) {                               // Ramp amplitude down
-            double dVal = sample[i];
-                                                                        // Ramp down to zero
-            final short val = (short) ((dVal * 32767 * ((numSamples-i)/ramp) * volume));
-                                                                        // in 16 bit wav PCM, first byte is the low order byte
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-        }
-        
-        //Log.d(logTag+".generateTone", "Ramped down!");
+        period += i;
         
         return generatedSnd;
     }
+
+	// Resets the period of the waveform
+	public void resetPeriod() {
+		period = 0;
+	}
 }
