@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 	/** Private helper methods */
 	   
    	private void instantiate() {
-   		audioman = new AudioManager();
+   		audioman = new AudioOutputManager();
    		soundman = new SoundManager();
    		fileman = new FileManager();
    	}
@@ -37,11 +37,15 @@ public class MainActivity extends Activity {
     
     @Override
     public void onStart() {
+    	super.onStart();
+    	
     	// Called after onCreate() or onRestart()
     }
     
     @Override
     public void onResume() {
+    	super.onResume();
+    	
     	// User or OS has navigated back to Activity
     	
     	if (!resumeHasRun) {
@@ -53,21 +57,29 @@ public class MainActivity extends Activity {
     
     @Override
     public void onPause() {
+    	super.onPause();
+    	
     	// Another Activity comes into foreground
     }
     
     @Override
     public void onStop() {
+    	super.onStop();
+    	
     	// App closed due to lack of memory
     }
     
     @Override
     public void onRestart() {
+    	super.onRestart();
+    	
     	// User has navigated back to Activity
     }
     
     @Override
     public void onDestroy() {
+    	super.onDestroy();
+    	
     	// App has been forcibly closed by OS
     }
    
