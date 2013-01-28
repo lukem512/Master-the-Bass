@@ -101,8 +101,10 @@ public class MainActivity extends Activity implements OnGestureListener{
     	startActivity(intent);
     }
     
+    //*********************gesture code****************************
+    
     public static final int gestureDelay = 500;
-	public static final String TAG = "com.test.gesturetest";
+	public static final String TAG = "com.masterthebass";
 	private GestureDetector gestureScanner;
 	private static final String[] gesturearray = new String[]{"NULL","NULL","NULL","NULL"};	
 	private static final String[] actionarray = new String[]{"NULL","NULL","NULL","NULL"};
