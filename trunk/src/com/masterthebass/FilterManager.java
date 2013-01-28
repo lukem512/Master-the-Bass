@@ -3,12 +3,12 @@ package com.masterthebass;
 public class FilterManager {
 	// TODO: implement
 	int[] getFiltersList () {
-		return null;	
+		return -1;	
 	}
 	
 	// TODO: implement
 	String getFilterName (int ID) {
-		return "";
+		return "Filter Name";
 	}
 	
 	// TODO: implement
