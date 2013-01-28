@@ -3,7 +3,8 @@ package com.masterthebass;
 public class FilterManager {
 	// TODO: implement
 	int[] getFiltersList () {
-		return -1;	
+		int[] IDs = {-1};
+		return IDs;	
 	}
 	
 	// TODO: implement
