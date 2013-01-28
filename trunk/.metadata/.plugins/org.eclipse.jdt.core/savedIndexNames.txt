@@ -1,0 +1,3 @@
+INDEX VERSION 1.126+/Users/guyhowcroft/Documents/uni/Master-the-Bass/trunk/.metadata/.plugins/org.eclipse.jdt.core
+765453901.index
+1340183353.index
