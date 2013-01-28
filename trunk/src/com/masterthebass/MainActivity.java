@@ -221,7 +221,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 		Log.e(TAG, "Single tap up");
 		return false;
 	}
-	
+	//added a comment
 	 //start the filter activity
 	 public void filters(View view) {
 	     Intent intent = new Intent(this, Filters.class);
