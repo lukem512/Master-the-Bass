@@ -24,6 +24,18 @@ Discussion regarding User Interface - Ricky has produced a mock-up of a sample U
 
 Discussion regarding FilterManager class - Guy to rename Filters, ListV and ListV2.
 
-	- 
+	- Basic Filter class in place and stub for Low Pass Filter.
+	
+	- Jon to do Low Pass Filter tonight and to work on Random Noise Filter. If possible, High Pass Filter, Echo, Reverb.
+	
+	- Audactiy is open source and contains lots of audio filters.
 
-Discussion regarding Accelerometer and Sound Creation - 
+Discussion regarding Accelerometer and Sound Creation - to get together tomorrow to start to implement the interface between accelerometer and sound creation. Steve to do some research on sensors. Luke to do some research on Low Frequency Oscillation.
+
+	- Sensor data required: orientation, speed, direction.
+	
+	- Current code detects acceleration in whatever plane best describes the phone orientation. This is the y-axis acceleration. This acceleration could be used to detect where in the 'shake' action the phone currently is - by detecting at which point the acceleration speeds up and slows down. This is assuming that the fastest point, i.e. with most acceleration, is the middle part of the action.
+	
+	- Data gathering so that we can plot acceleration for movement to a graph and test previous hypothesis.
+	
+	- Future release we can extend to other axis'.
