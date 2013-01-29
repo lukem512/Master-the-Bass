@@ -28,7 +28,7 @@ public class Filters extends Activity {
 		//sending tag so i know where to save in array
 	    String tag = button.getTag().toString();
 	    //now open new Activity with this tag
-	    Intent intent = new Intent(this, listV.class);
+	    Intent intent = new Intent(this, Gesturelist.class);
 	    Bundle b = new Bundle();
 	    b.putString("tag", tag);
 	    intent.putExtras(b);
@@ -41,7 +41,7 @@ public class Filters extends Activity {
 		//sending tag so i know where to save in array
 	    String tag = button.getTag().toString();
 	    //now open new Activity with this tag
-	     Intent intent = new Intent(this, listV2.class);
+	     Intent intent = new Intent(this, Filterlist.class);
 	     Bundle b = new Bundle();
 		 b.putString("tag", tag);
 		 intent.putExtras(b);

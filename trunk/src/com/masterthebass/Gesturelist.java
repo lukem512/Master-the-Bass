@@ -13,7 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class listV extends ListActivity{
+public class Gesturelist extends ListActivity{
 
 	public static final String TAG = "com.masterthebass";
 	@Override

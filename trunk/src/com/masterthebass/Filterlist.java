@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class listV2 extends ListActivity{
+public class Filterlist extends ListActivity{
 
 	public static final String TAG = "com.masterthebass";
 
