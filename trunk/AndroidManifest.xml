@@ -54,7 +54,7 @@
         </activity>
         
         <activity
-            android:name="com.masterthebass.Filters"
+            android:name="com.masterthebass.Filtersmenu"
             android:label="@string/title_activity_filters" 
         >
         </activity>
