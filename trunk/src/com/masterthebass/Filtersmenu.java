@@ -21,7 +21,7 @@ public class Filtersmenu extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_filters,menu);
 		return true;
-	}
+	} 
 	
 	public void viewlist(View view) {
 		Button button = (Button) view;
