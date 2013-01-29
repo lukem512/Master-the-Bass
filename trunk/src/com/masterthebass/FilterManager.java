@@ -1,18 +1,23 @@
 package com.masterthebass;
 
 public class FilterManager {
-	// TODO: implement
+	// Ctor
+	public FilterManager () {
+		// TODO: create an instance of every filter and add to a list
+	}
+	
+	// TODO: implement - return array of filter IDs
 	int[] getFiltersList () {
 		int[] IDs = {-1};
 		return IDs;	
 	}
 	
-	// TODO: implement
+	// TODO: implement - return the name of a filter given its ID
 	String getFilterName (int ID) {
 		return "Filter Name";
 	}
 	
-	// TODO: implement
+	// TODO: implement - toggle on/off of a filter given its ID
 	void toggleFilter (int ID) {
 	}
 	

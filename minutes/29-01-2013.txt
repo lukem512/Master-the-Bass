@@ -1,0 +1,29 @@
+Meeting Minutes
+29/01/2013
+---------------
+
+Discussion regarding User Interface - Ricky has produced a mock-up of a sample UI with a subwoofer as the background. We discussed the possibility of changing the colour of the button bar to a darker shade, or removing it altogether and embedding the buttons in the background. The colour of the green waveform in the logo was also discussed. The play/pause button is a good addition. Guidelines for Android UI were suggested by Jon and should be looked at to ensure that we comply. The edit button will be omitted for Beta as the functionality to edit is not in place.
+
+	- A menu-tree is needed to ensure navigation around the menus for the application. Ricky is doing this. Save (file IO) to pop up similar to a voice recording on a phone. Settings menu should contain filters and settings.
+
+	- Gestures could be done in reverse to disable the filter once it has been applied. This seems like it might be more intuitive, however it will limit the number of filters we can use. This would mean we have horizontal swipe, vertical swipe, tap and hold. Hold doesn't require an on/off gesture as it could only be active as it was being held. The tap gesture can be simply toggle on/off.
+
+	- Lock the orientation to portrait.
+	
+	- Rotary knobs would be difficult to use for settings as, although they would look awesome, they'd be difficult to use due to their small size on the screen. We need to justify some design decisions in a document.
+	
+	- Settings menu will look like an amplifier. There will only be 4 gestures so we don't really require a list of gestures, simply a button for the corresponding action and a toggle on/off. The toggles could look like kill switches with an 'LED' or label.
+	
+	- For the filters menu, we would like to allow
+	
+	- For min/max frequency we intend to use a double-slider. There is a link on Facebook. Guy to experiment and create a prototype.
+	
+	- The area for performing gestures is not clear on the current design.
+	
+	- Future idea - colours following gesture for visual feedback
+
+Discussion regarding FilterManager class - Guy to rename Filters, ListV and ListV2.
+
+	- 
+
+Discussion regarding Accelerometer and Sound Creation - 
