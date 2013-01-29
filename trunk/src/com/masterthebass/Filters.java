@@ -34,6 +34,7 @@ public class Filters extends Activity {
 	    intent.putExtras(b);
 	    startActivity(intent);
 	    }
+	//hello
 	
 	public void viewlist2(View view) {
 		Button button = (Button) view;

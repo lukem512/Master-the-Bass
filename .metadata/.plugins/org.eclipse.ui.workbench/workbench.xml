@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="13" version="2.0">
+<workbench progressCount="10" version="2.0">
 <workbenchAdvisor/>
-<window height="777" maximized="true" width="1217" x="0" y="23">
+<window height="768" width="1024" x="21" y="22">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="250"/>
@@ -16,7 +16,6 @@
 <coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="100" y="22"/>
 <coolItem id="org.eclipse.jdt.ui.JavaElementCreationActionSet" itemType="typeToolBarContribution" x="62" y="22"/>
 <coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="62" y="22"/>
-<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="98" y="22"/>
 <coolItem id="org.eclipse.wst.xml.ui.perspective.NewFileToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.debug.ui.launch.toolbar" itemType="typeToolBarContribution" x="-1" y="-1"/>
@@ -24,18 +23,15 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="152" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
-<page aggregateWorkingSetId="Aggregate for window 1354905037457" focus="true" label="Workspace - Java">
+<page aggregateWorkingSetId="Aggregate for window 1359462884390" focus="true" label="Workspace - Java">
 <editors>
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </editorArea>
@@ -47,9 +43,7 @@
 <viewState/>
 </view>
 <view id="com.android.ide.eclipse.ddms.views.HeapView" partName="Heap"/>
-<view id="com.android.ide.eclipse.ddms.views.LogCatView" partName="LogCat">
-<viewState/>
-</view>
+<view id="com.android.ide.eclipse.ddms.views.LogCatView" partName="LogCat"/>
 <view id="com.android.ide.eclipse.ddms.views.FileExplorerView" partName="File Explorer"/>
 <view id="com.android.ide.eclipse.ddms.views.NetworkStatsView" partName="Network Statistics"/>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
@@ -61,6 +55,9 @@
 <visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
 </viewState>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
 <viewState group_libraries="1" layout="2" linkWithEditor="0" rootMode="1" workingSetName="">
@@ -88,9 +85,6 @@
 </xmlDefinedFilters>
 </customFilters>
 </viewState>
-</view>
-<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
-<viewState/>
 </view>
 <view id="com.android.ide.eclipse.ddms.views.EmulatorControlView" partName="Emulator Control"/>
 <view id="org.eclipse.jdt.ui.SourceView" partName="Declaration"/>
@@ -137,21 +131,31 @@
 <view id="com.android.ide.eclipse.ddms.views.FileExplorerView"/>
 <view id="com.android.ide.eclipse.ddms.views.EmulatorControlView"/>
 <fastViewBars/>
-<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="devices">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="com.android.ide.eclipse.ddms.views.DeviceView:*" label="LabelNotFound"/>
+<layout>
+<mainWindow>
+<info folder="true" part="devices">
+<folder appearance="2" expanded="2">
+<page content="com.android.ide.eclipse.ddms.views.DeviceView:*" label="LabelNotFound"/>
 <page content="com.android.ide.eclipse.ddms.views.DeviceView" label="Devices"/>
 </folder>
 </info>
-<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="762" ratioRight="254" relationship="2" relative="devices">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="762" ratioRight="254" relationship="2" relative="devices">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="logcat" ratio="0.79941434" ratioLeft="546" ratioRight="137" relationship="4" relative="devices">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="com.android.ide.eclipse.ddms.views.LogCatView:*" label="LabelNotFound"/>
+<info folder="true" part="logcat" ratio="0.79941434" ratioLeft="546" ratioRight="137" relationship="4" relative="devices">
+<folder appearance="2" expanded="2">
+<page content="com.android.ide.eclipse.ddms.views.LogCatView:*" label="LabelNotFound"/>
 <page content="com.android.ide.eclipse.ddms.views.LogCatView" label="LogCat"/>
 </folder>
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.2992126" ratioLeft="304" ratioRight="712" relationship="2" relative="devices"/>
-<info folder="true" part="ddms-detail" ratio="0.5" ratioLeft="356" ratioRight="356" relationship="2" relative="org.eclipse.ui.editorss">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="com.android.ide.eclipse.ddms.views.ThreadView:*" label="LabelNotFound"/>
+<info folder="true" part="ddms-detail" ratio="0.5" ratioLeft="356" ratioRight="356" relationship="2" relative="org.eclipse.ui.editorss">
+<folder appearance="2" expanded="2">
+<page content="com.android.ide.eclipse.ddms.views.ThreadView:*" label="LabelNotFound"/>
 <page content="com.android.ide.eclipse.ddms.views.ThreadView" label="Threads"/>
 <page content="com.android.ide.eclipse.ddms.views.HeapView" label="Heap"/>
 <page content="com.android.ide.eclipse.ddms.views.AllocTrackerView" label="Allocation Tracker"/>
@@ -227,7 +231,6 @@
 <view id="org.eclipse.jdt.ui.JavadocView"/>
 <view id="org.eclipse.jdt.ui.SourceView"/>
 <view id="org.eclipse.ui.console.ConsoleView"/>
-<view id="com.android.ide.eclipse.ddms.views.LogCatView"/>
 <view id="org.eclipse.ui.views.ContentOutline"/>
 <fastViewBars/>
 <layout>
@@ -244,12 +247,11 @@
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@7ae0a3f2" ratio="0.75" ratioLeft="762" ratioRight="254" relationship="2" relative="left">
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="762" ratioRight="254" relationship="2" relative="left">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.25" ratioLeft="254" ratioRight="762" relationship="2" relative="left"/>
@@ -259,7 +261,6 @@
 <page content="org.eclipse.jdt.ui.JavadocView" label="Javadoc"/>
 <page content="org.eclipse.jdt.ui.SourceView" label="Declaration"/>
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
-<page content="com.android.ide.eclipse.ddms.views.LogCatView" label="LogCat"/>
 <page content="org.eclipse.search.ui.views.SearchView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.ProgressView" label="LabelNotFound"/>
@@ -268,7 +269,6 @@
 <part id="1"/>
 <part id="2"/>
 <part id="3"/>
-<part id="4"/>
 </presentation>
 </folder>
 </info>
@@ -287,14 +287,7 @@
 </perspective>
 </perspectives>
 <workingSets/>
-<navigationHistory>
-<editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/MainActivity/src/com/test/gesturetest/MainActivity.java"/>
-</editors>
-<item active="true" historyLabel="MainActivity.java" index="0">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-</navigationHistory>
+<navigationHistory/>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
 <workbenchWindowAdvisor/>
@@ -311,9 +304,5 @@
 </trimArea>
 </trimLayout>
 </window>
-<mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="MainActivity.java" tooltip="MainActivity/src/com/test/gesturetest/MainActivity.java">
-<persistable path="/MainActivity/src/com/test/gesturetest/MainActivity.java"/>
-</file>
-</mruList>
+<mruList/>
 </workbench>
