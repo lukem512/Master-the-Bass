@@ -16,7 +16,6 @@ import android.widget.Toast;
 public class listV extends ListActivity{
 
 	public static final String TAG = "com.masterthebass";
-//test
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
