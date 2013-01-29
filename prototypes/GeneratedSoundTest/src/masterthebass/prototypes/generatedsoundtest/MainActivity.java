@@ -111,6 +111,13 @@ public class MainActivity extends Activity {
             	
             	for (int j=0; j<10; j++) {
             		sampleData = sm.generateTone(dur, base+i, vol, sampleRate);
+            		
+            		//
+            		// TODO - apply filter here Jon.
+            		//
+            		//Filter f = FilterMan.getFilter (fid);
+            		//sampleData = f.applyFilter (sampleData);
+            		
             		sampleList.add(sampleData);
             		//fm.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
             		
