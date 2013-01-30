@@ -1,4 +1,4 @@
-package com.masterthebass;
+/*package com.masterthebass;
 
 public class Filter {
 private int Id;
@@ -45,4 +45,4 @@ void toggle{
 	
 	enabled = !enabled;
 }
-}
+} */

@@ -1,4 +1,4 @@
-package com.masterthebass;
+/*package com.masterthebass;
 
 public class LowPassFilter extends Filter {
 
@@ -10,3 +10,4 @@ public class LowPassFilter extends Filter {
 	}
 
 }
+*/
