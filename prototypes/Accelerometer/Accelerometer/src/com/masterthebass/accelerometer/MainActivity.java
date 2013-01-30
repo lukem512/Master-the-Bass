@@ -9,6 +9,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.app.Activity;
 import android.content.Context;
+import android.text.format.Time;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
@@ -41,7 +42,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private float caly = 0;
 	private float calz = 0;
 	
-	float totalAccel;
+	float totalAccel, prevTotalAccel;
+	Time timeA, timeB;
+	boolean useTimeA = true;
 	
 	private int moveCount = 0;
 	
@@ -63,10 +66,18 @@ public class MainActivity extends Activity implements SensorEventListener {
         mWakeLock = mPowerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, getClass().getName());	//
 		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							//
-		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_UI);						//
+		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);						//
 		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
 		oSensor = oSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);									//
-		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_UI);						//
+		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST);						//
+		
+		prevTotalAccel = 0;
+		
+		timeA = new Time();
+		timeA.setToNow();
+		
+		timeB = new Time();
+		timeB.setToNow();
 	
 	((Button)findViewById(R.id.startData)).setOnClickListener(new View.OnClickListener() {
 		@Override
@@ -90,8 +101,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	{
 		super.onResume();
 		mWakeLock.acquire(); //Restart the wake lock
-		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_UI); //Stop listening to sensors
-		oSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_UI); //Frees up sensors and saves battery power
+		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST); //Stop listening to sensors
+		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST); //Frees up sensors and saves battery power
 	}
 	
 	public void onPause() //When the app is paused
@@ -242,7 +253,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    else
 	    	lIsNegative = false;
 	    
-		if( totalDif < totalAccel )
+		/*if( totalDif < totalAccel )
 		{
 			totalDif = totalAccel;
 		}
@@ -255,7 +266,37 @@ public class MainActivity extends Activity implements SensorEventListener {
 				i++;
 			}
 			totalDif = 0;
+		}*/
+	    
+	    if (useTimeA) {
+	    	Log.d(TAG2, "setting timeA");
+			timeA.setToNow();
+		} else {
+			Log.d(TAG2, "setting timeB");
+			timeB.setToNow();
 		}
+	    
+	    if(writing && (prevTotalAccel != totalAccel || totalAccel == 0))
+		{
+			double dTime;
+			
+			if (useTimeA) {
+				dTime = (timeA.toMillis(false) - timeB.toMillis(false));
+			} else {
+				dTime = (timeB.toMillis(false) - timeA.toMillis(false));
+			}
+			
+			double grad = (totalAccel - prevTotalAccel)/(dTime);
+			i++;
+			
+			Log.i(TAG2, "Speed Max: " + totalAccel);
+			Log.i(TAG2, "Gradient: " + grad);
+			Log.i(TAG2, "timeA: " + timeA.toMillis(false));
+			Log.i(TAG2, "timeB: " + timeB.toMillis(false));
+		}
+	    
+	    prevTotalAccel = totalAccel;
+	    useTimeA = !useTimeA;
 	}
 	
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
