@@ -68,20 +68,7 @@ public class LowPassFilter2 extends Filter {
 		
 		 for (int i=0;i<count;i++)
 		  {
-		
-		 xv[0] = xv[1]; 
-		 xv[1] = xv[2]; 
-		 xv[2] = xv[3]; 
-		 xv[3] = xv[4]; 
-		 xv[4] = (short)(rawPCM[i]);
-		 yv[0] = yv[1]; 
-		 yv[1] = yv[2]; 
-		 yv[2] = yv[3]; 
-		 yv[3] = yv[4]; 
-		 yv[4] = (short)((xv[0] + xv[4]) - (ax[0] * xv[2]) + (ax[1] * yv[0]) +
-		                    (ax[2] * yv[1]) + (by[1] * yv[2]) +
-		                    (by[2] * yv[3]));
-	     rawPCM[i] =(byte) yv[4];
+			 
 	   }
 
 	 return rawPCM;
