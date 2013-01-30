@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
             FileManager fileman = new FileManager();
             
             // Get the low-pass filter
-            Filter f = fm.getFilter (0);
+            Filter f = fm.getFilter (1);
             
             // DEBUGGING
             Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");

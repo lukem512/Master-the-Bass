@@ -6,6 +6,7 @@ public class FilterManager {
 	public FilterManager () {
 		FilterArray = new Filter[1];
 		FilterArray[0] = new LowPassFilter(0, "LowPassFilter");
+		FilterArray[1] = new LowPassFilter2(1, "LowPassFilter2");
 		// TODO: create an instance of every filter and add to a list
 	}
 	
