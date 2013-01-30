@@ -13,12 +13,13 @@
 # generated files
 bin/
 gen/
-/trunk/bin/
-/trunk/gen/com/masterthebass/R.java
+trunk/bin/
+trunk/gen/com/masterthebass/R.java
 
 
 # Local configuration file (sdk path, etc)
 local.properties
+.metadata/
 
 # Eclipse project files
 .classpath
