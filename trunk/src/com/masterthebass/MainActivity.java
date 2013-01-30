@@ -1,6 +1,7 @@
 package com.masterthebass;
 
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
@@ -18,6 +19,10 @@ public class MainActivity extends Activity implements OnGestureListener{
 	private SoundManager soundman;
 	private FileManager fileman;
 	private boolean resumeHasRun = false;
+	private boolean vibration = false;
+	Vibrator v;
+
+	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	
 	/** Private helper methods */
 	   
@@ -34,6 +39,7 @@ public class MainActivity extends Activity implements OnGestureListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gestureScanner = new GestureDetector(this,this);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     }
     
     @Override
@@ -41,7 +47,9 @@ public class MainActivity extends Activity implements OnGestureListener{
 		// Inflate the menu; this adds items to the action bar if it is present.
     	getMenuInflater().inflate(R.menu.activity_main, menu);
 		Intent intent = new Intent(this, SettingsActivity.class);
-    	startActivity(intent);
+		//intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra(EXTRA_MESSAGE, vibration);
+        startActivityForResult(intent,1);
         return true;
     }
 	
@@ -97,8 +105,26 @@ public class MainActivity extends Activity implements OnGestureListener{
     
     /** Called when the user clicks the Settings button */
     public void btnSettingsClick (View view) {
-    	Intent intent = new Intent(this, SettingsActivity.class);
-    	startActivity(intent);
+		Intent intent = new Intent(this, SettingsActivity.class);
+		//intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra(EXTRA_MESSAGE, vibration);
+        startActivityForResult(intent,1);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (requestCode == 1) {
+
+    		if(resultCode == RESULT_OK){
+    			vibration = data.getBooleanExtra(SettingsActivity.EXTRA_MESSAGE, false);
+    			
+    		}
+
+    		if (resultCode == RESULT_CANCELED) {
+
+    			//Write code on no result return 
+
+    		}
+    	}
     }
     
     //*********************gesture code****************************
@@ -136,6 +162,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 
 	@Override
 	public boolean onDown(MotionEvent e) {
+		if (vibration) v.vibrate(300);
 		Log.e(TAG, "Down");		
 		return false;
 	}
@@ -163,11 +190,12 @@ public class MainActivity extends Activity implements OnGestureListener{
 		if ((lastGesture + gestureDelay) < System.currentTimeMillis())
 		{
 			lastGesture = System.currentTimeMillis();
-
+			
 			if (distanceX < -10)
 			{
 				for(int i = 0; i<4;i++){
 					if(gesturearray[i] == "Swipe Right"){
+						if (vibration) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Right", Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -177,6 +205,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 			{
 				for(int i = 0; i<4;i++){
 					if(gesturearray[i] == "Swipe Left"){
+						if (vibration) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Left", Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -187,6 +216,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 			{
 				for(int i = 0; i<4;i++){
 					if(gesturearray[i] == "Swipe Down"){
+						if (vibration) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -196,6 +226,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 			{
 				for(int i = 0; i<4;i++){
 					if(gesturearray[i] == "Swipe Up"){
+						if (vibration) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Up", Toast.LENGTH_SHORT);
 						toast.show();
 					}
@@ -216,6 +247,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 	public boolean onSingleTapUp(MotionEvent e) {
 		for(int i = 0; i<4;i++){
 			if(gesturearray[i] == "Tap"){
+				if (vibration) v.vibrate(300);
 				Toast toast = Toast.makeText(getApplicationContext(), "Tap", Toast.LENGTH_SHORT);
 				toast.show();
 			}
