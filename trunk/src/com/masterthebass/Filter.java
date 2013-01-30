@@ -1,48 +1,42 @@
 package com.masterthebass;
 
 public class Filter {
-private int Id;
-private String name;
-private boolean enabled;
-
-
-public Filter(int iD, String name){
-	this.name = name;
-	this.iD = ;
-}
-
-
-public boolean getState{
-	return enabled;
-}
-
-
-String getName{
-	return name;
-}
-
-String getID{
-	return Id;
-}
+	private int ID;
+	private String name;
+	private boolean enabled;
 	
-
-byte[] applyFilter (byte[] rawPCM){
+	public Filter(int ID, String name){
+		this.name = name;
+		this.ID = ID;
+	}
 	
-
-return rawPCM;
-}
-
-void enable{
-	enable = true;
-}
-
-void disable{
-	enable = false;
-}
+	public boolean getState (){
+		return enabled;
+	}
 	
-void toggle{
-	//toggle between ebabled and disabeld
 	
-	enabled = !enabled;
-}
+	String getName (){
+		return name;
+	}
+	
+	int getID (){
+		return ID;
+	}
+	
+	byte[] applyFilter (byte[] rawPCM){
+		return rawPCM;
+	}
+	
+	void enable (){
+		enabled = true;
+	}
+	
+	void disable (){
+		enabled = false;
+	}
+		
+	void toggle (){
+		//toggle between enabled and disabled
+		enabled = !enabled;
+	}
 }
