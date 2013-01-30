@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <item android:title="Calibrate"
+              android:id="@+id/cali"/>
+        <item android:title="Reset"
+              android:id="@+id/reset">
+        		<menu>
+                <item android:title="Reset Calibration"
+                      android:id="@+id/reset_cal"/>
+                <item android:title="Reset Counter"
+                      android:id="@+id/reset_count"/>
+                </menu>
+        </item> 
+</menu>
