@@ -13,7 +13,7 @@ public class LowPassFilter extends Filter {
 		sampleRate = 44100;
 		
 		// set default cutoff to 5000Hz
-		cutoffFrequency = 1000;
+		cutoffFrequency = 5000;
 	}
 
 	public void setSampleRate (int sampleRate) {

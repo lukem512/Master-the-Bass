@@ -13,7 +13,7 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 	private SoundManager sm;
 	private AudioOutputManager am;
-	private FilterManager fm;
+//	private FilterManager fm;
 	private LinkedList<byte[]> sampleList;
 	private Thread toneGeneratorThread, playThread, bufferThread;
 	private boolean tone_stop = true;
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 		// Instantiate managers
 		am = new AudioOutputManager();
 		sm = new SoundManager();
-		fm = new FilterManager();
+	//	fm = new FilterManager();
 		sampleList = new LinkedList<byte[]>();
 		
 		setContentView(R.layout.activity_main);
@@ -102,10 +102,10 @@ public class MainActivity extends Activity {
             FileManager fileman = new FileManager();
             
             // Get the low-pass filter
-            Filter f = fm.getFilter (1);
+          //  Filter f = fm.getFilter ();
             
             // DEBUGGING
-            Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
+         //   Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
             
             double i = 0.0;
             boolean up = true;
@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
             		sampleData = sm.generateTone(dur, base+i, vol, sampleRate);
             		
             		// apply the filter
-            		sampleData = f.applyFilter (sampleData);
+            //		sampleData = f.applyFilter (sampleData);
             		
             		sampleList.add(sampleData);
             		fileman.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);

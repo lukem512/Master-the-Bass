@@ -36,7 +36,7 @@ public class LowPassFilter2 extends Filter {
 		return cutoffFrequency;
 	}
 
-	void getLPCoefficientsButterworth2Pole(int samplerate, int cutoff, double ax[], double by[])
+/*	void getLPCoefficientsButterworth2Pole(int samplerate, int cutoff, double ax[], double by[])
 	{
 	    double sqrt2 = 1.4142135623730950488;
 	    double PI      = 3.1415926535897932385;
@@ -53,25 +53,38 @@ public class LowPassFilter2 extends Filter {
 	    ax[0] = (double) (1 * gain);
 	    ax[1] = (double) (2 * gain);
 	    ax[2] = (double) (1 * gain);
-	}
+	}*/
 	
+	public static byte[] lowPass(byte[] rawPCM, byte[] prev) {
+		byte ALPHA = (byte) 0.2;
+        if (rawPCM==null || prev==null) 
+            throw new NullPointerException("input and prev float arrays must be non-NULL");
+        if (rawPCM.length!=prev.length) 
+            throw new IllegalArgumentException("input and prev must be the same length");
+
+        for ( int i=0; i<rawPCM.length; i++ ) {
+            prev[i] = (byte) (prev[i] + ALPHA * (rawPCM[i] - prev[i]));
+        }
+        return prev;
+    }
 	
 	@Override
 	byte[] applyFilter (byte[] rawPCM){
-		short[] xv = new short[5];
-		short[] yv = new short[5];
-		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
-		byte newbyte;
-		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
-		
-		 for (int i=0;i<count;i++)
-		  {
-			 
-	   }
-
-	 return rawPCM;
+		   
+			int count = rawPCM.length;
+			byte[] prev = new byte[count];
+		    rawPCM = lowPass(rawPCM, prev);
+		    return rawPCM;
+		    
+		    
+		    /**
+		     * Filter the given input against the previous values and return a low-pass filtered result.
+		     * 
+		     * @param input float array to smooth.
+		     * @param prev float array representing the previous values.
+		     * @return float array smoothed with a low-pass filter.
+		     */
+		    
 	}
 
 }

@@ -1,12 +1,15 @@
 package masterthebass.prototypes.generatedsoundtest;
 
+
 import android.util.Log;
 
 public class SoundManager{
 	private double Final;
-	
-	
+
+
 	/* Members */
+	 
+
 	
 	private String logTag = "SoundManager";
 	
@@ -30,8 +33,7 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-
-		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final);
+		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, 1);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);
@@ -39,10 +41,12 @@ public class SoundManager{
         return generatedSnd;
     }
 	
-	private byte[] doGenerateTone (int numSamples, double frequency, double volume, int sampleRate, double offset) {
+	private byte[] doGenerateTone (int numSamples, double frequency, double volume, int sampleRate, double offset, int wave) {
 		double sample = 0.0;
 		byte generatedSnd[] = new byte[2 * numSamples];
 		int i, idx;
+		int sampleNumber = 0;
+		int samplesPerPeriod = (int) (sampleRate* (1.0/frequency));
 
 		double sampleByFreq = (sampleRate/frequency);
 		double twopi = (2*Math.PI);
@@ -50,9 +54,29 @@ public class SoundManager{
 
         // Generate the tone
 		idx = 0;
-        for (i = 0; i < numSamples; i++) {      	
+        for (i = 0; i < numSamples; i++) {  
+        	
+            switch (wave) {
+            
+            default:
+            case 0:
+              sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
+              break;
+       
+            case 1:
+              if (sampleNumber < (samplesPerPeriod/2)) {
+                sample = 1.0;
+              }  else  {
+                sample = -1.0;
+              }
+              sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
+              break;
+               
+            case 2:
+              sample = 2.0 * (sampleByFreq - Math.floor(sampleByFreq + 0.5));
+              break;
         	// Sine value
-            sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
+            }
             
             // Scale to max amplitude
             sample = sample * volValue;
