@@ -33,7 +33,7 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, 1);
+		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, 2);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);
@@ -55,16 +55,14 @@ public class SoundManager{
         // Generate the tone
 		idx = 0;
         for (i = 0; i < numSamples; i++) {  
-        	
+    		double x = ((i + offset)/sampleByFreq);
             switch (wave) {
             
-            // Sine wave
             default:
             case 0:
               sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
               break;
        
-            // Square wave
             case 1:
               if (sampleNumber < (samplesPerPeriod/2)) {
                 sample = 1.0;
@@ -74,10 +72,10 @@ public class SoundManager{
               sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
               break;
                
-            // Saw-tooth wave
             case 2:
-              sample = 2.0 * (sampleByFreq - Math.floor(sampleByFreq + 0.5));
+              sample = 2.0 * (x - Math.floor(x + 0.5));
               break;
+        	// Sine value
             }
             
             // Scale to max amplitude

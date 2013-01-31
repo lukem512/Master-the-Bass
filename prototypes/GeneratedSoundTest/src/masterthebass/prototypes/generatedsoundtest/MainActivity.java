@@ -17,9 +17,9 @@ public class MainActivity extends Activity {
 	private LinkedList<byte[]> sampleList;
 	private Thread toneGeneratorThread, playThread, bufferThread;
 	private boolean tone_stop = true;
-	private double base = 30;
+	private double base = 50;
 	private double vol = 0.7;
-	private double dur = 0.05;
+	private double dur = 0.1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
             boolean up = false;
             while(!tone_stop)
             {             
-            	if (i == 50 || i == 0) {
+            	if (i == 70 || i == 0) {
                 	up = !up;
                 }
             	
@@ -133,11 +133,10 @@ public class MainActivity extends Activity {
             	}
             	
             	f.setCutoffFrequency((i*100));
-            	Log.d("toneBuf", "I = " + (i));
             	
             	Log.d("toneBuf", "Wrote frequency " + (base+i) + " to sample list.");
                 
-                if (up) i++; else i--;
+                if (up) i+=7; else i-=7;
             }
 		}
 	};
