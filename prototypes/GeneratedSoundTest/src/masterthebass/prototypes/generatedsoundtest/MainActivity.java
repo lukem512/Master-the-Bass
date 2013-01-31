@@ -13,11 +13,11 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 	private SoundManager sm;
 	private AudioOutputManager am;
-//	private FilterManager fm;
+	private FilterManager fm;
 	private LinkedList<byte[]> sampleList;
 	private Thread toneGeneratorThread, playThread, bufferThread;
 	private boolean tone_stop = true;
-	private double base = 400;
+	private double base = 30;
 	private double vol = 0.7;
 	private double dur = 0.05;
 
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 		// Instantiate managers
 		am = new AudioOutputManager();
 		sm = new SoundManager();
-	//	fm = new FilterManager();
+		fm = new FilterManager();
 		sampleList = new LinkedList<byte[]>();
 		
 		setContentView(R.layout.activity_main);
@@ -102,26 +102,26 @@ public class MainActivity extends Activity {
             FileManager fileman = new FileManager();
             
             // Get the low-pass filter
-          //  Filter f = fm.getFilter ();
+            LowPassFilter f = (LowPassFilter) fm.getFilter (0);
             
             // DEBUGGING
          //   Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
             
-            double i = 0.0;
-            boolean up = true;
+            int i = 0;
+            boolean up = false;
             while(!tone_stop)
             {             
-            	if (i == 20 || i == -20) {
+            	if (i == 50 || i == 0) {
                 	up = !up;
                 }
             	
             	Log.d ("toneBuf", "Generating frequency.");
             	
-            	for (int j=0; j<10; j++) {
-            		sampleData = sm.generateTone(dur, base+i, vol, sampleRate);
+            	for (int j=0; j<1; j++) {
+            		sampleData = sm.generateTone(dur, base, vol, sampleRate);
             		
             		// apply the filter
-            //		sampleData = f.applyFilter (sampleData);
+            		sampleData = f.applyFilter (sampleData);
             		
             		sampleList.add(sampleData);
             		fileman.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
@@ -132,9 +132,12 @@ public class MainActivity extends Activity {
                     }
             	}
             	
+            	f.setCutoffFrequency((i*100));
+            	Log.d("toneBuf", "I = " + (i));
+            	
             	Log.d("toneBuf", "Wrote frequency " + (base+i) + " to sample list.");
                 
-                if (up) i+= 0.5; else i-=0.5;
+                if (up) i++; else i--;
             }
 		}
 	};

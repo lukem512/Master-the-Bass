@@ -58,11 +58,13 @@ public class SoundManager{
         	
             switch (wave) {
             
+            // Sine wave
             default:
             case 0:
               sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
               break;
        
+            // Square wave
             case 1:
               if (sampleNumber < (samplesPerPeriod/2)) {
                 sample = 1.0;
@@ -72,10 +74,10 @@ public class SoundManager{
               sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
               break;
                
+            // Saw-tooth wave
             case 2:
               sample = 2.0 * (sampleByFreq - Math.floor(sampleByFreq + 0.5));
               break;
-        	// Sine value
             }
             
             // Scale to max amplitude
