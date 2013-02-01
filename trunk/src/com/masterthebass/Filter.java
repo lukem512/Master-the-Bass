@@ -14,28 +14,27 @@ public class Filter {
 		return enabled;
 	}
 	
-	
-	String getName (){
+	public String getName (){
 		return name;
 	}
 	
-	int getID (){
+	public int getID (){
 		return ID;
 	}
 	
-	byte[] applyFilter (byte[] rawPCM){
+	public byte[] applyFilter (byte[] rawPCM){
 		return rawPCM;
 	}
 	
-	void enable (){
+	public void enable (){
 		enabled = true;
 	}
 	
-	void disable (){
+	public void disable (){
 		enabled = false;
 	}
 		
-	void toggle (){
+	public void toggle (){
 		//toggle between enabled and disabled
 		enabled = !enabled;
 	}
