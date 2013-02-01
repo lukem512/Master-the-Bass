@@ -13,7 +13,9 @@ public class FilterManager {
 		FilterList = new Hashtable<Integer, Filter>();
 		
 		// create an instance of every filter and add to a list
-		FilterList.put(0, new LowPassFilter(0, "LowPassFilter"));
+		FilterList.put(0, new LowPassFilter(0, "Low Pass Filter"));
+		FilterList.put(1, new NoiseFilter(1, "Noise Filter"));
+		FilterList.put(2, new NoiseFilter(2, "Extra Noise Filter", 50));
 	}
 	
 	// return array of filter IDs
