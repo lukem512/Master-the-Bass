@@ -41,12 +41,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private float mSensorX, mSensorY, mSensorZ, oSensorX; 
 	private float mLastX, mLastY, mLastZ, oLastX;
 	
-	private boolean isNegative, lIsNegative;
-	private boolean oSensorErrorLogged, mSensorErrorLogged;
-	
 	private float calx;
 	private float caly;
 	private float calz;
+	
+	private boolean isNegative, lIsNegative;
+	private boolean oSensorErrorLogged, mSensorErrorLogged;
+	private boolean logging = false;
 	
 	private WindowManager mWindowManager;
 	private Display mDisplay;
@@ -57,6 +58,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor oSensor;
 	
 	private int i;
+	
+	private int movingAverageCount;
+	private float[] gradMovingAverage;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -72,7 +76,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initSensors () {
    		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
-		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							//
+   		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
+		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
 		
 		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
@@ -85,6 +90,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		oSensorErrorLogged = false;
 		mSensorErrorLogged = false;
 		
+		logging = false;
+		
 		i = 0;
 		
 		calx = 0;
@@ -92,6 +99,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		calz = 0;
 		
 		prevTotalAccel = 0;
+		
+		movingAverageCount = 10;
+		gradMovingAverage = new float[movingAverageCount];
+		
+		for (int k = 0; k < movingAverageCount; k++) {
+			gradMovingAverage[k] = 0;
+		}
    	}
    	
    	/** Activity lifecycle/UI methods */
@@ -177,6 +191,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     public void btnSettingsClick (View view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	startActivity(intent);
+    }
+    
+    public void btnLoggingClick (View view) {
+    	logging = !logging;
     }
     
     //*********************gesture code****************************
@@ -331,10 +349,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			return;
 		} 
 		
+		// Process!
 	    if (event.sensor.equals(mSensor))
 	    {
-			//if (event.sensor.getType() != Sensor.TYPE_LINEAR_ACCELERATION)
-	        //    return;
 			Sensor source = event.sensor;
 			calibrate = event;
 			final float NOISE = (float) 1.0;
@@ -380,7 +397,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			else
 				deltaY = mSensorZ;
 			
-			totalAccel = FloatMath.sqrt((deltaX - calx) * (deltaX - calx) +
+			totalAccel = (float) Math.sqrt((deltaX - calx) * (deltaX - calx) +
 					  (deltaY - caly) * (deltaY - caly) +
 					  (deltaZ - calz) * (deltaZ - calz));			
 	    } else if (event.sensor.equals(oSensor)) {
@@ -431,12 +448,29 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				dTime = (timeB - timeA);
 			}
 			
-			double grad = (totalAccel - prevTotalAccel)/(dTime);
+			if (dTime < 1) {
+				dTime = 1;
+			}
+			
+			// Add to moving average
+			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);;
+			
 			i++;
 			
-			Log.i(LogTag, "Speed Max: " + totalAccel);
-			Log.i(LogTag, "Gradient: " + grad);
-			Log.i(LogTag, "timeDiff: " + dTime);
+			if (logging) {
+				
+				float grad = 0;
+				
+				for (int k = 0; k < movingAverageCount; k++) {
+					grad += gradMovingAverage[k];
+				}
+				
+				grad /= movingAverageCount;
+				
+				//Log.i(LogTag, "Acceleration Max: " + totalAccel);
+				Log.i(LogTag, "Gradient: " + grad);
+				//Log.i(LogTag, "timeDiff: " + dTime);
+			}
 		}
 	    
 	    prevTotalAccel = totalAccel;
