@@ -17,14 +17,16 @@ public class MainActivity extends Activity implements OnGestureListener{
 	private AudioOutputManager audioman;
 	private SoundManager soundman;
 	private FileManager fileman;
+	private FilterManager filterman;
 	private boolean resumeHasRun = false;
 	
 	/** Private helper methods */
 	   
    	private void instantiate() {
-   		audioman = new AudioOutputManager();
-   		soundman = new SoundManager();
-   		fileman = new FileManager();
+   		audioman 	= new AudioOutputManager();
+   		soundman	= new SoundManager();
+   		fileman 	= new FileManager();
+   		filterman 	= new FilterManager();
    	}
    	
    	/** Activity lifecycle/UI methods */
