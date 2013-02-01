@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
 			int samples = (int) Math.ceil(sampleRate * dur);
             byte [] sampleData = new byte[samples];
             
-            FileManager fileman = new FileManager();
+            //FileManager fileman = new FileManager();
             
             // Get the low-pass filter
             LowPassFilter f = (LowPassFilter) fm.getFilter (0);
@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
             		sampleData = f.applyFilter (sampleData);
             		
             		sampleList.add(sampleData);
-            		fileman.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
+            		//fileman.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
             		
             		if (Thread.interrupted()) {
     					Log.d("toneBuf", "Tone buffering thread interrupted.");
