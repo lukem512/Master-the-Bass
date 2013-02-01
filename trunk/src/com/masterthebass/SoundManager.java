@@ -7,6 +7,8 @@ public class SoundManager{
 
 	private String logTag = "SoundManager";
 	private double Final;
+	
+	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
 
 	/* Constructor */
 
@@ -23,10 +25,12 @@ public class SoundManager{
 	/* Private methods */
 
 	// Generates a 44.1KHz, stereo, signed 16-bit PCM tone at a given frequency for a given duration
-	private byte[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset) {
+	private byte[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
 		double sample = 0.0;
 		byte generatedSnd[] = new byte[2 * numSamples];
 		int i, idx;
+		int sampleNumber = 0;
+		int samplesPerPeriod = (int) (sampleRate* (1.0/frequency));
 
 		double sampleByFreq = (sampleRate/frequency);
 		double twopi = (2*Math.PI);
@@ -34,9 +38,38 @@ public class SoundManager{
 
         // Generate the tone
 		idx = 0;
-        for (i = 0; i < numSamples; i++) {      	
-        	// Sine value
-            sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
+        for (i = 0; i < numSamples; i++) {  
+    		double x = ((i + offset)/sampleByFreq);
+    		double twopix = twopi * x;
+    		
+            switch (wave) {
+            		// Sine wave
+	            	default:
+	            	case SINE:
+	            		sample = Math.sin(twopix);
+	            		break;
+	       
+	            	// Square wave
+	            	case SQUARE:
+	            		if (sampleNumber < (samplesPerPeriod/2)) {
+	            			sample = 1.0;
+	            		}  else  {
+	            			sample = -1.0;
+	            		}
+	            		sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
+	            		break;
+	            		
+            		// Square wave with harmonics
+		            // i.e. constructed from sine waves using FT
+	            	case HARMONIC_SQUARE:
+	            		sample = Math.sin(twopix) + Math.sin(3*twopix)/3 + Math.sin(5*twopix)/5 + Math.sin(7*twopix)/7 + Math.sin(9*twopix)/9;
+	            		break;
+	               
+	            	// Saw-tooth wave
+	            	case SAW_TOOTH:
+		            	sample = 2.0 * (x - Math.floor(x + 0.5));
+		              	break;
+            }
             
             // Scale to max amplitude
             sample = sample * volValue;
@@ -66,7 +99,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SAW_TOOTH);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);

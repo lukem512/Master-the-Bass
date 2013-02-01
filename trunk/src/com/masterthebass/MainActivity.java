@@ -65,8 +65,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// Audio generation variables
 	private Thread toneGeneratorThread, playThread;
 	private boolean tone_stop = true;
-	private double base = 120;
-	private double vol = 0.7;
+	private double base = 50;
+	private double vol = 1.0;
 	private double dur = 0.1;
 	
 	// Log output tag
@@ -83,8 +83,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initSensors () {
    		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
-   		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
-		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
+   		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
+		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
 		
 		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
@@ -507,9 +507,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
             
             // Change the cutoff (shelf) frequency
-            f.setCutoffFrequency((int) (Math.abs(grad*1000)+1000));
+            f.setCutoffFrequency((int) (Math.abs(grad)*5000));
             
-            Log.i(LogTag, "Setting cutoff frequency to : " + (int) (Math.abs(grad*1000)+1000));
+            Log.i(LogTag, "Setting cutoff frequency to : " + (int) (Math.abs(grad)*5000));
 			
 			//Log.i(LogTag, "Acceleration Max: " + totalAccel);
 			//Log.i(LogTag, "Gradient: " + grad);

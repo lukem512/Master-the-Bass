@@ -33,7 +33,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, 5.0, mode);
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, 1.0, mode);
 		audio.stop();
 
 		// Set flags
@@ -60,7 +60,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private AudioTrack createAudioTrack(int channel, int format, int bufSize, int mode) {
 		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
-		Log.d(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
+		Log.w(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
 
 		if (bufSize < minBufferSize) {
 			bufSize = minBufferSize;
