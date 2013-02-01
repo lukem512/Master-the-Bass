@@ -4,14 +4,13 @@ package masterthebass.prototypes.generatedsoundtest;
 import android.util.Log;
 
 public class SoundManager{
-	private double Final;
-
-
+	
 	/* Members */
-	 
-
 	
 	private String logTag = "SoundManager";
+	private double Final;
+	
+	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
 	
 	/* Constructor */
 	
@@ -33,7 +32,7 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, 2);
+		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SAW_TOOTH);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);
@@ -41,7 +40,7 @@ public class SoundManager{
         return generatedSnd;
     }
 	
-	private byte[] doGenerateTone (int numSamples, double frequency, double volume, int sampleRate, double offset, int wave) {
+	private byte[] doGenerateTone (int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
 		double sample = 0.0;
 		byte generatedSnd[] = new byte[2 * numSamples];
 		int i, idx;
@@ -56,26 +55,35 @@ public class SoundManager{
 		idx = 0;
         for (i = 0; i < numSamples; i++) {  
     		double x = ((i + offset)/sampleByFreq);
+    		double twopix = twopi * x;
+    		
             switch (wave) {
-            
-            default:
-            case 0:
-              sample = Math.sin(twopi * ((i + offset)/sampleByFreq));
-              break;
-       
-            case 1:
-              if (sampleNumber < (samplesPerPeriod/2)) {
-                sample = 1.0;
-              }  else  {
-                sample = -1.0;
-              }
-              sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
-              break;
-               
-            case 2:
-              sample = 2.0 * (x - Math.floor(x + 0.5));
-              break;
-        	// Sine value
+            		// Sine wave
+	            	default:
+	            	case SINE:
+	            		sample = Math.sin(twopix);
+	            		break;
+	       
+	            	// Square wave
+	            	case SQUARE:
+	            		if (sampleNumber < (samplesPerPeriod/2)) {
+	            			sample = 1.0;
+	            		}  else  {
+	            			sample = -1.0;
+	            		}
+	            		sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
+	            		break;
+	            		
+            		// Square wave with harmonics
+		            // i.e. constructed from sine waves using FT
+	            	case HARMONIC_SQUARE:
+	            		sample = Math.sin(twopix) + Math.sin(3*twopix)/3 + Math.sin(5*twopix)/5 + Math.sin(7*twopix)/7 + Math.sin(9*twopix)/9;
+	            		break;
+	               
+	            	// Saw-tooth wave
+	            	case SAW_TOOTH:
+		            	sample = 2.0 * (x - Math.floor(x + 0.5));
+		              	break;
             }
             
             // Scale to max amplitude
