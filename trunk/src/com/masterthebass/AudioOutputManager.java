@@ -156,7 +156,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			pos += written;
 			numBytesBuffered += written;
 
-			//Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
+			Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
 			if (Thread.interrupted()) {
 				Log.d(logTag+".buffer", "Thread was interrupted.");

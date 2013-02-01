@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -18,6 +17,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 
@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private boolean isNegative, lIsNegative;
 	private boolean oSensorErrorLogged, mSensorErrorLogged;
-	private boolean logging = false;
+	private boolean writing = false;
 	
 	private WindowManager mWindowManager;
 	private Display mDisplay;
@@ -61,6 +61,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
+	
+	// Audio generation variables
+	private Thread toneGeneratorThread, playThread;
+	private boolean tone_stop = true;
+	private double base = 120;
+	private double vol = 0.7;
+	private double dur = 0.1;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -90,7 +97,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		oSensorErrorLogged = false;
 		mSensorErrorLogged = false;
 		
-		logging = false;
+		writing = false;
 		
 		i = 0;
 		
@@ -193,8 +200,40 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	startActivity(intent);
     }
     
-    public void btnLoggingClick (View view) {
-    	logging = !logging;
+    public void btnToggleClick (View view) {
+    	Button b = (Button) findViewById(R.id.btnToggle);
+		
+		if (tone_stop) {	
+			tone_stop = false;
+			
+			// Play the audio, when the buffer is ready
+			playThread = new Thread(playTone);
+			playThread.start();			
+			
+			// generate a tone
+			toneGeneratorThread = new Thread(toneGenerator);
+			toneGeneratorThread.start();
+			
+			// set text
+			b.setText("Stop");
+			
+			// set sensor update to true
+			writing = true;
+		} else {			
+			// stop worker threads
+			toneGeneratorThread.interrupt();
+			playThread.interrupt();
+			
+			// stop audio
+			audioman.stop();
+			tone_stop = true;
+			
+			// set text
+			b.setText("Play");
+			
+			// set sensor update to false
+			writing = false;
+		}
     }
     
     //*********************gesture code****************************
@@ -326,8 +365,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
+		// Auto-generated method stub
 	}
 
 	@Override
@@ -438,7 +476,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			timeB = System.currentTimeMillis() ;
 		}
 	    
-	    if(prevTotalAccel != totalAccel || totalAccel == 0)
+	    if(writing && prevTotalAccel != totalAccel)
 		{
 			long dTime;
 			
@@ -456,27 +494,84 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);;
 			
 			i++;
+				
+			float grad = 0;
 			
-			if (logging) {
-				
-				float grad = 0;
-				
-				for (int k = 0; k < movingAverageCount; k++) {
-					grad += gradMovingAverage[k];
-				}
-				
-				grad /= movingAverageCount;
-				
-				//Log.i(LogTag, "Acceleration Max: " + totalAccel);
-				Log.i(LogTag, "Gradient: " + grad);
-				//Log.i(LogTag, "timeDiff: " + dTime);
+			for (int k = 0; k < movingAverageCount; k++) {
+				grad += gradMovingAverage[k];
 			}
+			
+			grad /= movingAverageCount;
+			
+			// Get the low-pass filter
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            
+            // Change the cutoff (shelf) frequency
+            f.setCutoffFrequency((int) (Math.abs(grad*1000)+1000));
+            
+            Log.i(LogTag, "Setting cutoff frequency to : " + (int) (Math.abs(grad*1000)+1000));
+			
+			//Log.i(LogTag, "Acceleration Max: " + totalAccel);
+			//Log.i(LogTag, "Gradient: " + grad);
+			//Log.i(LogTag, "timeDiff: " + dTime);				
 		}
 	    
 	    prevTotalAccel = totalAccel;
 	    useTimeA = !useTimeA;
 	}
-
-		
+	
+	/** Audio threads **/
+	
+	Runnable playTone = new Runnable() {
+		public void run() {
+			Log.d(LogTag+".playTone", "Started!");
+			
+			while (!audioman.play()) {
+				Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+				try {
+					Thread.sleep(80);
+				} catch (InterruptedException e) {
+					Log.d(LogTag+".playTone", "Play thread interruped.");
+					return;
+				}
+			}
+			
+			Log.d(LogTag+".playTone", "Tone playback started.");
+			Log.d(LogTag+".playTone", "Shutting down.");
+		}
+	};
+	
+	Runnable toneGenerator = new Runnable() {
+		public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			
+			int sampleRate = audioman.getSampleRate();
+			int samples = (int) Math.ceil(sampleRate * dur);
+            byte [] sampleData = new byte[samples];
+            
+            Log.d(LogTag+".toneGenerator", "Started!");
+            
+            // Get the low-pass filter
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            
+            while(!tone_stop) {             
+            	// generate audio
+            	sampleData = soundman.generateTone(dur, base, vol, sampleRate);
+        		
+        		// apply the filter
+        		sampleData = f.applyFilter (sampleData);
+        		
+        		// send to audio buffer
+        		audioman.buffer(sampleData);
+        		
+        		if (Thread.interrupted()) {
+					Log.d(LogTag+".toneGenerator", "Tone buffering thread interrupted.");
+                	return;
+                }
+            }
+            
+            Log.d(LogTag+".toneGenerator", "Shutting down...");
+		}
+	};
 }
 
