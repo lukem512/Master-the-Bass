@@ -1,127 +1,111 @@
 
    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:screenOrientation="portrait" >
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/button1"
-            android:layout_below="@+id/button1"
-            android:layout_marginTop="26dp"
-            android:onClick="viewlist"
-            android:text="gesture2" 
-            android:tag = "2"/>
+       <Button
+           android:id="@+id/button1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentTop="true"
+           android:layout_marginLeft="50dp"
+           android:layout_marginTop="62dp"
+           android:onClick="viewlist2"
+           android:tag="1"
+           android:text="Button1" />
 
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/button3"
-            android:layout_below="@+id/button3"
-            android:layout_marginTop="25dp"
-            android:onClick="viewlist"
-            android:text="gesture4"
-            android:tag = "4" />
+       <Button
+           android:id="@+id/button2"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/button1"
+           android:layout_below="@+id/button1"
+           android:layout_marginTop="25dp"
+           android:onClick="viewlist2"
+           android:tag="2"
+           android:text="Button2" />
 
-        <Button
-            android:id="@+id/button6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/button2"
-            android:layout_alignBottom="@+id/button2"
-            android:layout_alignLeft="@+id/button5"
-            android:onClick="viewlist2"
-            android:text="action2"
-            android:tag = "2" />
+       <Button
+           android:id="@+id/button3"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/button2"
+           android:layout_below="@+id/button2"
+           android:layout_marginTop="27dp"
+           android:onClick="viewlist2"
+           android:tag="3"
+           android:text="Button3" />
 
-        <Button
-            android:id="@+id/button7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/button3"
-            android:layout_alignBottom="@+id/button3"
-            android:layout_alignLeft="@+id/button6"
-            android:onClick="viewlist2"
-            android:text="action3"
-            android:tag = "3" />
+       <Button
+           android:id="@+id/button4"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/button3"
+           android:layout_below="@+id/button3"
+           android:layout_marginTop="28dp"
+           android:onClick="viewlist2"
+           android:tag="4"
+           android:text="Button4" />
 
-        <Button
-            android:id="@+id/button8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/button4"
-            android:layout_alignBottom="@+id/button4"
-            android:layout_alignLeft="@+id/button7"
-            android:onClick="viewlist2"
-            android:text="action4" 
-            android:tag = "4"/>
+       <ToggleButton
+           android:id="@+id/toggleButton2"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/button2"
+           android:layout_alignBottom="@+id/button2"
+           android:layout_alignLeft="@+id/toggleButton1"
+           android:onClick="onBtn1Clicked"
+           android:text="ToggleButton" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/button2"
-            android:layout_marginTop="24dp"
-            android:layout_toLeftOf="@+id/button5"
-            android:onClick="viewlist"
-            android:text="gesture3"
-            android:tag = "3" />
+       <ToggleButton
+           android:id="@+id/toggleButton3"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/button3"
+           android:layout_alignBottom="@+id/button3"
+           android:layout_alignLeft="@+id/toggleButton2"
+           android:onClick="onBtn2Clicked"
+           android:text="ToggleButton" />
 
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button2"
-            android:layout_toRightOf="@+id/button1"
-            android:onClick="viewlist2"
-            android:text="action1"
-            android:tag = "1" />
+       <ToggleButton
+           android:id="@+id/toggleButton4"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/button4"
+           android:layout_alignBottom="@+id/button4"
+           android:layout_alignLeft="@+id/toggleButton3"
+           android:onClick="onBtn3Clicked"
+           android:text="ToggleButton" />
 
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="19dp"
-            android:layout_marginTop="60dp"
-            android:onClick="viewlist"
-            android:text="gesture1"
-            android:tag = "1" />
+       <ToggleButton
+           android:id="@+id/toggleButton1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignTop="@+id/button1"
+           android:layout_marginLeft="54dp"
+           android:layout_toRightOf="@+id/button1"
+           android:onClick="onBtn0Clicked"
+           android:text="ToggleButton" />
 
-        <ToggleButton
-            android:id="@+id/toggleButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/button5"
-            android:layout_marginLeft="26dp"
-            android:layout_toRightOf="@+id/button5"
-            android:text="ToggleButton" />
+       <ToggleButton
+           android:id="@+id/toggleButton5"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/toggleButton4"
+           android:layout_below="@+id/toggleButton4"
+           android:layout_marginTop="32dp"
+           android:onClick="onVibrationClicked"
+           android:text="ToggleButton" />
 
-        <ToggleButton
-            android:id="@+id/toggleButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/toggleButton1"
-            android:layout_alignTop="@+id/button6"
-            android:text="ToggleButton" />
+       <TextView
+           android:id="@+id/textView1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/toggleButton5"
+           android:layout_alignBottom="@+id/toggleButton5"
+           android:layout_alignLeft="@+id/button4"
+           android:text="@string/settingVibration" />
 
-        <ToggleButton
-            android:id="@+id/toggleButton3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/toggleButton2"
-            android:layout_alignTop="@+id/button7"
-            android:text="ToggleButton" />
-
-        <ToggleButton
-            android:id="@+id/toggleButton4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/button8"
-            android:layout_alignLeft="@+id/toggleButton3"
-            android:text="ToggleButton" />
-
-    </RelativeLayout>
+   </RelativeLayout>
