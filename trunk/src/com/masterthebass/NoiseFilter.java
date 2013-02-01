@@ -9,8 +9,15 @@ public class NoiseFilter extends Filter  {
 	public NoiseFilter(int ID, String name) {
 		super(ID, name);
 		
-		//set default range
-		range = 20;
+		// set default range
+		setRange (20);
+	}
+	
+	public NoiseFilter(int ID, String name, int range) {
+		super(ID, name);
+		
+		// set the range to specified value
+		setRange (range);
 	}
 	
 	// sets the amount of noise, this is +/- range/2 either side of the wave
