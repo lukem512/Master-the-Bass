@@ -64,6 +64,12 @@ public class MainActivity extends Activity implements OnGestureListener{
     		// Run on first resume, called directly after onCreate() after loading
     		instantiate();
     		resumeHasRun = true;
+    		
+    		Log.d("main.onResume", "The filter IDs list is...");
+    		int[] IDs = filterman.getFiltersList();
+    		
+    		for (int i = 0; i < IDs.length; i++)
+    			Log.d("main.onResume", i + ": " + filterman.getFilterName(IDs[i]) + " has ID #" + IDs[i]);
     	}
     }
     
