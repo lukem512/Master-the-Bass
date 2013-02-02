@@ -35,9 +35,11 @@ public class AmplitudeFilter extends Filter {
 
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
+		int length = rawPCM.length;
+		
 		// multiply each sample by the amplitude
-		for (short sample : rawPCM) {
-			sample = (short) (sample * amplitude);
+		for (int i = 0; i < length; i++) {
+			rawPCM[i] = (short) (rawPCM[i] * amplitude);
 		}
 		
 		return rawPCM;

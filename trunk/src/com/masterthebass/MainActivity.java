@@ -100,7 +100,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		writing = false;
 		
 		i = 0;
-		resetThreshold = 4;
+		resetThreshold = 10;
 		resetCounter = 0;
 		
 		calx = 0;
@@ -482,6 +482,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		{
 	    	long dTime;
 	    	int newCutoff = 0;
+	    	float newAmp = 0;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -512,20 +513,22 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	            
 				// Set new cutoff frequency
 	            //newCutoff = (int)(Math.abs(grad)*3000);
-				newCutoff = (int) (Math.abs(grad));
+				newAmp = Math.abs(grad);
 			} else {
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					newCutoff = 0;
+					//newCutoff = 0;
+					newAmp = 0;
 					resetCounter = 0;
 				}
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
             //f.setCutoffFrequency(newCutoff);
-	    	f.setAmplitude(newCutoff);
-            Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	f.setAmplitude(newAmp);
+	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -559,7 +562,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			int sampleRate = audioman.getSampleRate();
 			int samples = (int) Math.ceil(sampleRate * dur);
-            byte [] sampleData = new byte[samples];
+            short [] sampleData = new short[samples];
             
             Log.d(LogTag+".toneGenerator", "Started!");
             
@@ -569,7 +572,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             while(!tone_stop) {             
             	// generate audio
-            	sampleData = soundman.generateToneByte(dur, base, vol, sampleRate);
+            	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
         		
         		// apply the filter
         		sampleData = f.applyFilter (sampleData);
