@@ -26,6 +26,10 @@ public class Filter {
 		return rawPCM;
 	}
 	
+	public short[] applyFilter (short[] rawPCM){
+		return rawPCM;
+	}
+	
 	public void enable (){
 		enabled = true;
 	}

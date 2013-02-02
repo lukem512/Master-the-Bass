@@ -45,4 +45,28 @@ public class NoiseFilter extends Filter  {
 
 		return rawPCM;
 	}
+	
+	@Override
+	public short[] applyFilter (short[] rawPCM){
+	    Random generator = new Random();
+		int count = rawPCM.length;
+		int newValue;
+		
+		for (int i=0; i<count; i++)
+		{
+			int randomIndex = (generator.nextInt(range) - (range/2));
+			newValue = rawPCM[i] + randomIndex;
+			if (newValue < Short.MAX_VALUE) {
+				if (newValue > Short.MIN_VALUE) {
+					rawPCM[i] = (short) (rawPCM[i] + randomIndex);
+				} else {
+					rawPCM[i] = Short.MIN_VALUE;
+				}
+			} else {
+				rawPCM[i] = Short.MAX_VALUE;
+			}
+		}
+
+		return rawPCM;
+	}
 }

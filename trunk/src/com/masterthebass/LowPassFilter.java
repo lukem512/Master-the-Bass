@@ -64,13 +64,10 @@ public class LowPassFilter extends Filter {
 		
 		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
 		
-		xv[0] = 0;
-		xv[1] = 0;
-		xv[2] = 0;
-		yv[0] = 0;
-		yv[1] = 0;
-		yv[2] = 0;
-		
+		for (int i = 0; i < 3; i++) {
+			xv[i] = 0;
+			yv[i] = 0;
+		}
 		
 		for (int i=0;i<count;i++) {
 			xv[2] = xv[1]; xv[1] = xv[0];
@@ -78,7 +75,34 @@ public class LowPassFilter extends Filter {
 		    yv[2] = yv[1]; 
 		    yv[1] = yv[0];
 		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] =(byte) yv[0];
+		    rawPCM[i] = (byte) yv[0];
+		}
+
+		return rawPCM;
+	}
+	
+	@Override
+	public short[] applyFilter (short[] rawPCM) {
+		short[] xv = new short[3];
+		short[] yv = new short[3];
+		int count = rawPCM.length;
+		double[] ax = new double [3];
+		double[] by = new double[3];
+		
+		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
+		
+		for (int i = 0; i < 3; i++) {
+			xv[i] = 0;
+			yv[i] = 0;
+		}
+		
+		for (int i=0;i<count;i++) {
+			xv[2] = xv[1]; xv[1] = xv[0];
+		    xv[0] = rawPCM[i];
+		    yv[2] = yv[1]; 
+		    yv[1] = yv[0];
+		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
+		    rawPCM[i] = yv[0];
 		}
 
 		return rawPCM;
