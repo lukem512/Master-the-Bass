@@ -498,7 +498,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			i++;
 			
 			// Get the low-pass filter
-            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+			AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			
 	    	if (prevTotalAccel != totalAccel) {	
 				float grad = 0;
@@ -510,7 +511,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				grad /= movingAverageCount;
 	            
 				// Set new cutoff frequency
-	            newCutoff = (int)(Math.abs(grad)*3000);
+	            //newCutoff = (int)(Math.abs(grad)*3000);
+				newCutoff = (int) (Math.abs(grad));
 			} else {
 				resetCounter++;
 				
@@ -521,7 +523,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
-            f.setCutoffFrequency(newCutoff);
+            //f.setCutoffFrequency(newCutoff);
+	    	f.setAmplitude(newCutoff);
             Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 		}
 	    
@@ -561,7 +564,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             Log.d(LogTag+".toneGenerator", "Started!");
             
             // Get the low-pass filter
-            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
             
             while(!tone_stop) {             
             	// generate audio
