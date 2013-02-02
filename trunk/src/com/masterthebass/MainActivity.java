@@ -547,7 +547,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			int sampleRate = audioman.getSampleRate();
 			int samples = (int) Math.ceil(sampleRate * dur);
-            byte [] sampleData = new byte[samples];
+            short [] sampleData = new short[samples];
             
             Log.d(LogTag+".toneGenerator", "Started!");
             
@@ -556,10 +556,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             while(!tone_stop) {             
             	// generate audio
-            	sampleData = soundman.generateToneByte(dur, base, vol, sampleRate);
+            	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
         		
         		// apply the filter
-        		//sampleData = f.applyFilter (sampleData);
+        		sampleData = f.applyFilter (sampleData);
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);
