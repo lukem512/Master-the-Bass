@@ -41,11 +41,9 @@ public class LowPassFilter extends Filter {
 	    double PI      = 3.1415926535897932385;
 
 	    double QcRaw  = (2 * PI * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
-		Log.d("QcRaw - ", QcRaw+"\n");
-	    double QcWarp = Math.tan(QcRaw); // Warp cutoff frequence
-		Log.d("QxWarp - ", QcWarp+"\n");
+	    double QcWarp = Math.tan(QcRaw); 				// Warp cutoff frequency
 	    double gain = 1 / (1+sqrt2/QcWarp + 2/(QcWarp*QcWarp));
-		Log.d("gain - ", gain+"\n");
+
 	    by[2] = (double) ((1 - sqrt2/QcWarp + 2/(QcWarp*QcWarp)) * gain);
 	    by[1] = (double) ((2 - 2 * 2/(QcWarp*QcWarp)) * gain);
 	    by[0] = 1;
