@@ -24,7 +24,7 @@ public class SoundManager{
 
 	/* Private methods */
 
-	// Generates a 44.1KHz, stereo, signed 16-bit PCM tone at a given frequency for a given duration
+	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
 	private byte[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
 		double sample = 0.0;
 		byte generatedSnd[] = new byte[2 * numSamples];
@@ -99,7 +99,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SAW_TOOTH);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.HARMONIC_SQUARE);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);

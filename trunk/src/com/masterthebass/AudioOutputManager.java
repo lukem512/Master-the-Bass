@@ -33,7 +33,8 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, 1.0, mode);
+		// Use the minimum buffer size available
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, mode);
 		audio.stop();
 
 		// Set flags
