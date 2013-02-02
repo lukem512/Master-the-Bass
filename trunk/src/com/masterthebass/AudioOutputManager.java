@@ -167,6 +167,20 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 		//Log.d(logTag+".buffer", "Exiting...");
 	}
+	
+	public void buffer(short[] pcm) {
+		short[] shortpcm = new short[pcm.length * 2];
+		int idx = 0;
+		
+		// convert to byte[]
+		for (int i = 0; i < pcm.length; i = i+2) {
+			shortpcm[idx++] = (byte) (pcm[i] & 0x00ff);
+			shortpcm[idx++] = (byte) ((pcm[i] & 0xff00) >>> 8);
+		}
+		
+		// call buffer with short array
+		buffer (shortpcm);
+	}
 
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */
 
