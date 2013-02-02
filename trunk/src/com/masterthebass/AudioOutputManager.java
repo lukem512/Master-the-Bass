@@ -33,7 +33,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, 1.0, mode);
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT/*, 1.0*/, mode);
 		audio.stop();
 
 		// Set flags
@@ -55,6 +55,10 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private AudioTrack createAudioTrack(int channel, int format, int mode) {
 		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
+		
+		bufferSize = minBufferSize;
+		Log.d(logTag+".createAudioTrack", "Setting buffer size to " + minBufferSize + " bytes.");
+		
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
 	}
 
