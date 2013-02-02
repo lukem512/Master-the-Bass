@@ -33,8 +33,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		// Use the minimum buffer size available
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, mode);
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, 1.0, mode);
 		audio.stop();
 
 		// Set flags
@@ -157,7 +156,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			pos += written;
 			numBytesBuffered += written;
 
-			Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
+			//Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
 			if (Thread.interrupted()) {
 				Log.d(logTag+".buffer", "Thread was interrupted.");
@@ -169,17 +168,17 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	}
 	
 	public void buffer(short[] pcm) {
-		short[] shortpcm = new short[pcm.length * 2];
+		byte[] bytepcm = new byte[pcm.length * 2];
 		int idx = 0;
 		
 		// convert to byte[]
 		for (int i = 0; i < pcm.length; i = i+2) {
-			shortpcm[idx++] = (byte) (pcm[i] & 0x00ff);
-			shortpcm[idx++] = (byte) ((pcm[i] & 0xff00) >>> 8);
+			bytepcm[idx++] = (byte) (pcm[i] & 0x00ff);
+			bytepcm[idx++] = (byte) ((pcm[i] & 0xff00) >>> 8);
 		}
 		
-		// call buffer with short array
-		buffer (shortpcm);
+		// call buffer with byte array
+		buffer (bytepcm);
 	}
 
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */
