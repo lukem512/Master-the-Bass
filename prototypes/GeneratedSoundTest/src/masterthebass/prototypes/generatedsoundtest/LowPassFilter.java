@@ -3,8 +3,8 @@ package masterthebass.prototypes.generatedsoundtest;
 import android.util.Log;
 
 public class LowPassFilter extends Filter {
-	int sampleRate;
-	int cutoffFrequency;
+	private int sampleRate;
+	private int cutoffFrequency;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
@@ -36,11 +36,10 @@ public class LowPassFilter extends Filter {
 		return cutoffFrequency;
 	}
 
-	void getLPCoefficientsButterworth2Pole(int samplerate, int cutoff, double ax[], double by[])
+	public void getLPCoefficientsButterworth2Pole(int samplerate, int cutoff, double ax[], double by[])
 	{
 	    double sqrt2 = 1.4142135623730950488;
 	    double PI      = 3.1415926535897932385;
-
 	    double QcRaw  = (2 * PI * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
 		Log.d("QcRaw - ", QcRaw+"\n");
 	    double QcWarp = Math.tan(QcRaw); // Warp cutoff frequence
@@ -57,32 +56,27 @@ public class LowPassFilter extends Filter {
 	
 	
 	@Override
-	byte[] applyFilter (byte[] rawPCM){
+	public byte[] applyFilter (byte[] rawPCM){
 		short[] xv = new short[3];
 		short[] yv = new short[3];
 		int count = rawPCM.length;
 		double[] ax = new double [3];
 		double[] by = new double[3];
 		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
-		
 		xv[0] = 0;
 		xv[1] = 0;
 		xv[2] = 0;
 		yv[0] = 0;
 		yv[1] = 0;
-		yv[2] = 0;
-		
-		
-		 for (int i=0;i<count;i++)
-		  {
-			 xv[2] = xv[1]; xv[1] = xv[0];
-		     xv[0] = rawPCM[i];
-		     yv[2] = yv[1]; 
-		     yv[1] = yv[0];
-		     yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		      rawPCM[i] =(byte) yv[0];
-		   }
-
+		yv[2] = 0;	
+		for (int i=0;i<count;i++){
+			xv[2] = xv[1]; xv[1] = xv[0];
+			xv[0] = rawPCM[i];
+		    yv[2] = yv[1]; 
+		    yv[1] = yv[0];
+		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
+		    rawPCM[i] =(byte) yv[0];
+		 }
 		 return rawPCM;
 	}
 
