@@ -57,7 +57,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private SensorManager oSensorManager;
 	private Sensor oSensor;
 	
-	private int i;
+	private int i, resetThreshold, resetCounter;
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
@@ -100,6 +100,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		writing = false;
 		
 		i = 0;
+		resetThreshold = 4;
+		resetCounter = 0;
 		
 		calx = 0;
 		caly = 0;
@@ -510,9 +512,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				// Set new cutoff frequency
 	            newCutoff = (int)(Math.abs(grad)*3000);
 			} else {
-				// TODO - wait for a certain time before resetting to silent
-				// this could be calibrated for the 'slowest' possible shaking action
-				newCutoff = 0;
+				resetCounter++;
+				
+				if (resetCounter == resetThreshold) {
+					newCutoff = 0;
+					resetCounter = 0;
+				}
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
