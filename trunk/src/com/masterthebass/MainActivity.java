@@ -67,7 +67,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private boolean tone_stop = true;
 	private double base = 50;
 	private double vol = 1.0;
-	private double dur = 0.1;
+	private double dur = 0.01;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -476,9 +476,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			timeB = System.currentTimeMillis() ;
 		}
 	    
-	    if(writing && prevTotalAccel != totalAccel)
+	    if(writing)
 		{
-			long dTime;
+	    	long dTime;
+	    	int newCutoff = 0;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -491,29 +492,32 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			
 			// Add to moving average
-			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);;
-			
+			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);
 			i++;
-				
-			float grad = 0;
-			
-			for (int k = 0; k < movingAverageCount; k++) {
-				grad += gradMovingAverage[k];
-			}
-			
-			grad /= movingAverageCount;
 			
 			// Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-            
-            // Change the cutoff (shelf) frequency
-            f.setCutoffFrequency((int) (Math.abs(grad)*5000));
-            
-            Log.i(LogTag, "Setting cutoff frequency to : " + (int) (Math.abs(grad)*5000));
 			
-			//Log.i(LogTag, "Acceleration Max: " + totalAccel);
-			//Log.i(LogTag, "Gradient: " + grad);
-			//Log.i(LogTag, "timeDiff: " + dTime);				
+	    	if (prevTotalAccel != totalAccel) {	
+				float grad = 0;
+				
+				for (int k = 0; k < movingAverageCount; k++) {
+					grad += gradMovingAverage[k];
+				}
+				
+				grad /= movingAverageCount;
+	            
+				// Set new cutoff frequency
+	            newCutoff = (int)(Math.abs(grad)*3000);
+			} else {
+				// TODO - wait for a certain time before resetting to silent
+				// this could be calibrated for the 'slowest' possible shaking action
+				newCutoff = 0;
+			}
+	    	
+	    	// Change the cutoff (shelf) frequency
+            f.setCutoffFrequency(newCutoff);
+            Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -537,7 +541,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			
 			Log.d(LogTag+".playTone", "Tone playback started.");
-			Log.d(LogTag+".playTone", "Shutting down.");
+			Log.d(LogTag+".playTone", "Shutting down...");
 		}
 	};
 	
@@ -547,7 +551,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			int sampleRate = audioman.getSampleRate();
 			int samples = (int) Math.ceil(sampleRate * dur);
-            short [] sampleData = new short[samples];
+            byte [] sampleData = new byte[samples];
             
             Log.d(LogTag+".toneGenerator", "Started!");
             
@@ -556,7 +560,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             while(!tone_stop) {             
             	// generate audio
-            	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
+            	sampleData = soundman.generateToneByte(dur, base, vol, sampleRate);
         		
         		// apply the filter
         		sampleData = f.applyFilter (sampleData);
