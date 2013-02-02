@@ -26,8 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btnFilters"
+        android:layout_alignParentLeft="true"
         android:layout_alignRight="@+id/btnFilters"
         android:onClick="btnToggleClick"
-        android:text="Play" />
+        android:text="@string/btnPlay_play_text" />
 
 </RelativeLayout>
