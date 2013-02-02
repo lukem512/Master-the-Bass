@@ -23,11 +23,24 @@ public class SoundManager{
 	}
 
 	/* Private methods */
+	
+	private byte[] shortToByteArray (short[] shortArray) {
+		byte[] byteArray = new byte[shortArray.length * 2];
+		int idx = 0;
+		
+		// convert to byte[]
+		for (int i = 0; i < shortArray.length; i = i+2) {
+			byteArray[idx++] = (byte) (shortArray[i] & 0x00ff);
+			byteArray[idx++] = (byte) ((shortArray[i] & 0xff00) >>> 8);
+		}
+		
+		return byteArray;
+	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
-	private byte[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
+	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
 		double sample = 0.0;
-		byte generatedSnd[] = new byte[2 * numSamples];
+		short generatedSnd[] = new short[numSamples];
 		int i, idx;
 		int sampleNumber = 0;
 		int samplesPerPeriod = (int) (sampleRate* (1.0/frequency));
@@ -76,8 +89,9 @@ public class SoundManager{
             
             // Generate 16-bit samples
             final short val = (short) sample;
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+            generatedSnd[idx++] = val;
+            //generatedSnd[idx++] = (byte) (val & 0x00ff);
+            //generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
         // Return the sound
@@ -88,9 +102,15 @@ public class SoundManager{
 
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a byte array of the sound in 16-bit WAV PCM format
-	public byte[] generateTone(double duration, double frequency, double volume, int sampleRate) {		
+	public byte[] generateToneByte(double duration, double frequency, double volume, int sampleRate) {		
+		return shortToByteArray(generateToneShort (duration, frequency, volume, sampleRate));
+    }
+	
+	// Generate a tone at a given frequency, for a given duration
+	// Returns a short array of the sound in 16-bit WAV PCM format
+	public short[] generateToneShort(double duration, double frequency, double volume, int sampleRate) {		
 		int numSamples = (int) Math.ceil(sampleRate * duration);
-		byte generatedSnd[];
+		short generatedSnd[];
 
 		// Sanity check volume
 		if (volume < 0.0) {

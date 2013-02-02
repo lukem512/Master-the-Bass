@@ -83,8 +83,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initSensors () {
    		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
-   		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
-		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
+   		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
+		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
 		
 		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
@@ -215,7 +215,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			toneGeneratorThread.start();
 			
 			// set text
-			b.setText("Stop");
+			b.setText(getString(R.string.btnPlay_stop_text));
 			
 			// set sensor update to true
 			writing = true;
@@ -229,7 +229,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			tone_stop = true;
 			
 			// set text
-			b.setText("Play");
+			b.setText(getString(R.string.btnPlay_play_text));
 			
 			// set sensor update to false
 			writing = false;
@@ -556,10 +556,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             while(!tone_stop) {             
             	// generate audio
-            	sampleData = soundman.generateTone(dur, base, vol, sampleRate);
+            	sampleData = soundman.generateToneByte(dur, base, vol, sampleRate);
         		
         		// apply the filter
-        		sampleData = f.applyFilter (sampleData);
+        		//sampleData = f.applyFilter (sampleData);
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);
