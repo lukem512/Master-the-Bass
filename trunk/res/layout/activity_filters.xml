@@ -27,7 +27,9 @@
            android:layout_alignLeft="@+id/toggleButton4"
            android:layout_below="@+id/toggleButton4"
            android:onClick="onVibrationClicked"
-           android:background="@drawable/selector_toggle" />
+           android:background="@drawable/selector_toggle"
+           android:textOff=""
+           android:textOn= "" />
 
        <ToggleButton
            android:id="@+id/toggleButton4"
@@ -36,7 +38,9 @@
            android:layout_alignLeft="@+id/toggleButton3"
            android:layout_below="@+id/toggleButton3"           
            android:background="@drawable/selector_toggle"
-           android:onClick="onBtn3Clicked" />
+           android:onClick="onBtn3Clicked" 
+           android:textOff=""
+           android:textOn= ""/>
 
        <ToggleButton
            android:id="@+id/toggleButton3"
@@ -45,7 +49,9 @@
            android:layout_alignLeft="@+id/toggleButton2"
            android:layout_below="@+id/toggleButton2"           
            android:background="@drawable/selector_toggle"
-           android:onClick="onBtn2Clicked"/>
+           android:onClick="onBtn2Clicked"
+           android:textOff=""
+           android:textOn= ""/>
 
        <ToggleButton
            android:id="@+id/toggleButton2"
@@ -54,7 +60,9 @@
            android:layout_alignLeft="@+id/toggleButton1"
            android:layout_below="@+id/toggleButton1"
            android:background="@drawable/selector_toggle"
-           android:onClick="onBtn1Clicked" />
+           android:onClick="onBtn1Clicked"
+           android:textOff=""
+           android:textOn= "" />
 
        <TextView
            android:id="@+id/textView1"
@@ -112,6 +120,8 @@
            android:layout_marginTop="166dp"
            android:layout_toLeftOf="@+id/textView1"
            android:background="@drawable/selector_toggle"
-           android:onClick="onBtn0Clicked"/>
+           android:onClick="onBtn0Clicked"
+           android:textOff=""
+           android:textOn= ""/>
 
    </RelativeLayout>
