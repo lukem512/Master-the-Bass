@@ -4,17 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+
+import com.masterthebass.SliderView;
+import com.masterthebass.SliderView.KnobValuesChangedListener;
 
 public class Filtersmenu extends Activity {
 
@@ -23,6 +31,9 @@ public class Filtersmenu extends Activity {
 	public final static String FILTERMAN_CLASS = "com.masterthebass.FILTERMAN_CLASS";
 	
 	public final static String LogTag = "FiltersMenu";
+	
+	private SliderView slider;
+	private TextView text_interval;
 	
 	private Spinner spinner1, spinner2, spinner3, spinner4;
 	//getting the filter list ID's and adding the filter ID's to array
@@ -37,6 +48,31 @@ public class Filtersmenu extends Activity {
 	
 	private FilterManager filterman;
 	
+	private void SetUpSlider() {
+		text_interval = (TextView)findViewById(R.id.text_interval);		
+		slider = (SliderView)findViewById(R.id.slider);
+
+		//size of screen and knob
+        Bitmap backImage = BitmapFactory.decodeResource(getResources(), R.drawable.bar);
+		
+        //we use the sizes for the slider
+        LayoutParams params = slider.getLayoutParams();
+        params.width = backImage.getWidth();
+        params.height = backImage.getHeight();
+		slider.setLayoutParams(params);
+		slider.setPosition(10,0);
+		
+		slider.setOnKnobValuesChangedListener(new KnobValuesChangedListener() {
+			
+			@Override
+			public void onValuesChanged(boolean knobStartChanged,
+					boolean knobEndChanged, int knobStart, int knobEnd) {
+				if(knobStartChanged || knobEndChanged)
+					text_interval.setText(knobStart + " - " + knobEnd);
+			}
+		});
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,6 +86,8 @@ public class Filtersmenu extends Activity {
 		ToggleButton btn2 = (ToggleButton) findViewById(R.id.toggleButton3);
 		ToggleButton btn3 = (ToggleButton) findViewById(R.id.toggleButton4);
 		ToggleButton btn4 = (ToggleButton) findViewById(R.id.toggleButton5);
+		
+        SetUpSlider();
 		
 		// Get data from intent
 		Intent intent = getIntent();

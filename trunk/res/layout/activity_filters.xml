@@ -5,6 +5,21 @@
        android:screenOrientation="portrait"        
     android:background="@drawable/settings_background">
 
+       <com.masterthebass.SliderView android:id="@+id/slider"
+		 android:layout_width ="wrap_content"
+		 android:layout_height="wrap_content"
+		 android:layout_gravity="center_horizontal"
+		 android:layout_marginTop="75dp" 
+		 android:layout_marginLeft="15dp"
+		 android:adjustViewBounds="true"/>	  
+	   <TextView android:id="@+id/text_interval" 
+		 android:layout_marginTop="4dp" 
+		 android:layout_marginLeft="150dp"
+		 android:textColor="#FFFFFF"
+	     android:text="inverval selected" 
+		 android:layout_width="wrap_content" android:layout_height="wrap_content"
+		 android:layout_gravity="center_horizontal"/>
+       
        <ToggleButton
            android:id="@+id/toggleButton5"
            android:layout_width="wrap_content"
