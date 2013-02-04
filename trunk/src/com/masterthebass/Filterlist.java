@@ -15,27 +15,32 @@ import android.widget.Toast;
 import java.util.*; 
 
 public class Filterlist extends ListActivity{
-
-	
 	public static final String TAG = "com.masterthebass";
+	
 	//getting the filter list ID's and adding the filter ID's to array
-	private int []filterListID = com.masterthebass.FilterManager.getFiltersList();
-	private ArrayList filters  = new ArrayList();
+	private int[] filterListID;
+	private ArrayList<String> filters  = new ArrayList<String>();
+	
+	private FilterManager filterman;
 	
 	public void addtofilters(){
 		//Adding the filter names to the filter list for the list on screen
 		for(int i=0;i<filterListID.length;i++){
-			filters.add( com.masterthebass.FilterManager.getFilterName(filterListID[i]));
-			Log.e(TAG,"the string added to the array " + com.masterthebass.FilterManager.getFilterName(filterListID[i]));
+			filters.add(filterman.getFilterName(filterListID[i]));
+			Log.e(TAG,"the string added to the array " +  filterman.getFilterName(filterListID[i]));
 		}
+		
 		filters.add("this is a test");
 		filters.add("second test");
 	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
 		super.onCreate(savedInstanceState);
+		
+		// TODO populate filterman instance
+		
+		filterListID = filterman.getFiltersList();
 		addtofilters();
 		setListAdapter( new ArrayAdapter<String>(this, R.layout.list_1st_item,filters));
 		ListView list = getListView();

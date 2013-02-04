@@ -1,12 +1,17 @@
-									package com.masterthebass;
+package com.masterthebass;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-public class FilterManager {
+public class FilterManager implements Serializable {
+	private static final long serialVersionUID = 754321647758395857L;
+	
+	private Hashtable<Integer, Filter> FilterList;
+	
 	public FilterManager () {
 		// instantiate filter list
 		FilterList = new Hashtable<Integer, Filter>();
