@@ -33,7 +33,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT, 5.0, mode);
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT/*, 1.0*/, mode);
 		audio.stop();
 
 		// Set flags
@@ -55,12 +55,16 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private AudioTrack createAudioTrack(int channel, int format, int mode) {
 		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
+		
+		bufferSize = minBufferSize;
+		Log.d(logTag+".createAudioTrack", "Setting buffer size to " + minBufferSize + " bytes.");
+		
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, int bufSize, int mode) {
 		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
-		Log.d(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
+		Log.w(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
 
 		if (bufSize < minBufferSize) {
 			bufSize = minBufferSize;
@@ -165,6 +169,20 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		}
 
 		//Log.d(logTag+".buffer", "Exiting...");
+	}
+	
+	public void buffer(short[] pcm) {
+		byte[] bytepcm = new byte[pcm.length * 2];
+		int idx = 0;
+		
+		// convert to byte[]
+		for (int i = 0; i < pcm.length; i = i+2) {
+			bytepcm[idx++] = (byte) (pcm[i] & 0x00ff);
+			bytepcm[idx++] = (byte) ((pcm[i] & 0xff00) >>> 8);
+		}
+		
+		// call buffer with byte array
+		buffer (bytepcm);
 	}
 
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */

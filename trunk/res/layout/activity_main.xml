@@ -36,4 +36,14 @@
         android:layout_marginRight="19dp"
         android:background="@drawable/selector_record" />
 
+    <Button
+        android:id="@+id/btnToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnFilters"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:onClick="btnToggleClick"
+        android:text="@string/btnPlay_play_text" />
+
 </RelativeLayout>

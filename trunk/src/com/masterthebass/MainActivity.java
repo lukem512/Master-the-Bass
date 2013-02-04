@@ -4,21 +4,32 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Intent;
+import android.view.Display;
 import android.view.Menu;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 
-public class MainActivity extends Activity implements OnGestureListener{
+public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
+	// Manager instances
 	private AudioOutputManager audioman;
 	private SoundManager soundman;
 	private FileManager fileman;
+	private FilterManager filterman;
+	
+	// Flag to indicate startup has completed
 	private boolean resumeHasRun = false;
 	//filters on\off
 	private boolean gesture1 = false;
@@ -39,12 +50,90 @@ public class MainActivity extends Activity implements OnGestureListener{
 
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	
+	// Sensor variables
+	private float totalAccel, prevTotalAccel;
+	private long timeA, timeB;
+	private boolean useTimeA = true;
+	
+	private SensorEvent calibrate;
+	
+	private float mSensorX, mSensorY, mSensorZ, oSensorX; 
+	private float mLastX, mLastY, mLastZ, oLastX;
+	
+	private float calx;
+	private float caly;
+	private float calz;
+	
+	private boolean isNegative, lIsNegative;
+	private boolean oSensorErrorLogged, mSensorErrorLogged;
+	private boolean writing = false;
+	
+	private WindowManager mWindowManager;
+	private Display mDisplay;
+	
+	private SensorManager mSensorManager;
+	private Sensor mSensor;
+	private SensorManager oSensorManager;
+	private Sensor oSensor;
+	
+	private int i, resetThreshold, resetCounter;
+	
+	private int movingAverageCount;
+	private float[] gradMovingAverage;
+	
+	// Audio generation variables
+	private Thread toneGeneratorThread, playThread;
+	private boolean tone_stop = true;
+	private double base = 50;
+	private double vol = 1.0;
+	private double dur = 0.01;
+	
+	// Log output tag
+	private final static String LogTag = "Main";
+	
 	/** Private helper methods */
 	   
    	private void instantiate() {
-   		audioman = new AudioOutputManager();
-   		soundman = new SoundManager();
-   		fileman = new FileManager();
+   		audioman 	= new AudioOutputManager();
+   		soundman	= new SoundManager();
+   		fileman 	= new FileManager();
+   		filterman 	= new FilterManager();
+   	}
+   	
+   	private void initSensors () {
+   		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
+   		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
+		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
+		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
+		
+		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
+		oSensor = oSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);									// TODO - this is DEPRECATED, use instead (https://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[]))
+		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
+		
+		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+		mDisplay = mWindowManager.getDefaultDisplay();
+		
+		oSensorErrorLogged = false;
+		mSensorErrorLogged = false;
+		
+		writing = false;
+		
+		i = 0;
+		resetThreshold = 10;
+		resetCounter = 0;
+		
+		calx = 0;
+		caly = 0;
+		calz = 0;
+		
+		prevTotalAccel = 0;
+		
+		movingAverageCount = 10;
+		gradMovingAverage = new float[movingAverageCount];
+		
+		for (int k = 0; k < movingAverageCount; k++) {
+			gradMovingAverage[k] = 0;
+		}
    	}
    	
    	/** Activity lifecycle/UI methods */
@@ -74,6 +163,17 @@ public class MainActivity extends Activity implements OnGestureListener{
     	if (!resumeHasRun) {
     		// Run on first resume, called directly after onCreate() after loading
     		instantiate();
+    		initSensors();
+    		
+    		// Print some debugging
+    		Log.d(LogTag+".onResume", "The filter IDs list is...");
+    		int[] IDs = filterman.getFiltersList();
+    		
+    		for (int i = 0; i < IDs.length; i++) {
+    			Log.d(LogTag+".onResume", i + ": " + filterman.getFilterName(IDs[i]) + " has ID #" + IDs[i]);
+    		}
+    		
+    		// Set flag
     		resumeHasRun = true;
     	}
     }
@@ -140,10 +240,45 @@ public class MainActivity extends Activity implements OnGestureListener{
     	
     }
     
+    public void btnToggleClick (View view) {
+    	Button b = (Button) findViewById(R.id.btnToggle);
+		
+		if (tone_stop) {	
+			tone_stop = false;
+			
+			// Play the audio, when the buffer is ready
+			playThread = new Thread(playTone);
+			playThread.start();			
+			
+			// generate a tone
+			toneGeneratorThread = new Thread(toneGenerator);
+			toneGeneratorThread.start();
+			
+			// set text
+			b.setText(getString(R.string.btnPlay_stop_text));
+			
+			// set sensor update to true
+			writing = true;
+		} else {			
+			// stop worker threads
+			toneGeneratorThread.interrupt();
+			playThread.interrupt();
+			
+			// stop audio
+			audioman.stop();
+			tone_stop = true;
+			
+			// set text
+			b.setText(getString(R.string.btnPlay_play_text));
+			
+			// set sensor update to false
+			writing = false;
+		}
+    }
+    
     //*********************gesture code****************************
     
     public static final int gestureDelay = 500;
-	public static final String TAG = "com.masterthebass";
 	private GestureDetector gestureScanner;
 	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
@@ -154,18 +289,18 @@ public class MainActivity extends Activity implements OnGestureListener{
 	
 	public static void addTogestureArray(CharSequence gesture,int gesturenum){
 		gesturearray[gesturenum] = (String) gesture;
-		Log.e(TAG,"the gesture is " + gesturearray[0]);
-		Log.e(TAG,"the gesture is " + gesturearray[1]);
-		Log.e(TAG,"the gesture is " + gesturearray[2]);
-		Log.e(TAG,"the gesture is " + gesturearray[3]);
+		Log.i(LogTag,"the gesture is " + gesturearray[0]);
+		Log.i(LogTag,"the gesture is " + gesturearray[1]);
+		Log.i(LogTag,"the gesture is " + gesturearray[2]);
+		Log.i(LogTag,"the gesture is " + gesturearray[3]);
 	}
 	
-	public static void addTofilterArray(int filter, int filternum){
-		filterarray[filternum] = filter;
-		Log.e(TAG,"the action is " + filterarray[0]);
-		Log.e(TAG,"the action is " + filterarray[1]);
-		Log.e(TAG,"the action is " + filterarray[2]);
-		Log.e(TAG,"the action is " + filterarray[3]);
+	public static void addToactionArray(CharSequence action, int actionnum){
+		actionarray[actionnum] = (String) action;
+		Log.i(LogTag,"the action is " + actionarray[0]);
+		Log.i(LogTag,"the action is " + actionarray[1]);
+		Log.i(LogTag,"the action is " + actionarray[2]);
+		Log.i(LogTag,"the action is " + actionarray[3]);
 		
 	}   
 	
@@ -191,7 +326,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		Log.e(TAG, "Fling");
+		Log.i(LogTag, "Fling");
 		return false;
 	}
 
@@ -269,7 +404,8 @@ public class MainActivity extends Activity implements OnGestureListener{
 							gesture1 = true;
 						}	
 					}
-				Log.e(TAG,"Swipe Up");
+				}
+				Log.i(LogTag,"Swipe Up");
 			}
 		}
 		return false;
@@ -278,7 +414,7 @@ public class MainActivity extends Activity implements OnGestureListener{
 	@Override
 	public void onShowPress(MotionEvent e) {
 		//checking whether it is a real tap or accident
-		Log.e(TAG, "Show press");	
+		Log.i(LogTag, "Show press");	
 	}
 
 	@Override
@@ -303,6 +439,229 @@ public class MainActivity extends Activity implements OnGestureListener{
 		return false;
 	}
 
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// Auto-generated method stub
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// Ensure we have sensors!
+		if( oSensor == null ) {
+			if (!oSensorErrorLogged) {
+				Log.w(LogTag, "No orientation sensor.");
+				mSensorErrorLogged = true;
+			}
+			return;
+    	}
 		
+		if( mSensor == null ) {
+			if (!mSensorErrorLogged) {
+				Log.w(LogTag, "No accelerometer found.");
+				mSensorErrorLogged = true;
+			}
+			return;
+		} 
+		
+		// Process!
+	    if (event.sensor.equals(mSensor))
+	    {
+			Sensor source = event.sensor;
+			calibrate = event;
+			final float NOISE = (float) 1.0;
+			
+			switch (mDisplay.getRotation())
+			{
+		        case Surface.ROTATION_0:
+		            mSensorX = -event.values[0];
+		            mSensorY = -event.values[1];
+		            mSensorZ = -event.values[2];
+		            break;
+		        case Surface.ROTATION_90:
+		            mSensorX = event.values[1];
+		            mSensorY = -event.values[0];
+		            mSensorZ = event.values[2];
+		            break;
+		        case Surface.ROTATION_180:
+		            mSensorX = event.values[0];
+		            mSensorY = event.values[1];
+		            mSensorZ = event.values[2];
+		            break;
+		        case Surface.ROTATION_270:
+		            mSensorX = -event.values[1];
+		            mSensorY = event.values[0];
+		            mSensorZ = -event.values[2];
+		            break;
+			}
+			
+			float deltaX = Math.abs(mLastX - mSensorX);
+			float deltaY = Math.abs(mLastY - mSensorY);
+			float deltaZ = Math.abs(mLastZ - mSensorZ);
+			
+			if (deltaX < NOISE)
+				deltaX = mLastX;
+			else
+				deltaX = mSensorX;
+			if (deltaY < NOISE)
+				deltaY = mLastY;
+			else
+				deltaY = mSensorY;
+			if (deltaZ < NOISE)
+				deltaZ = mLastZ;
+			else
+				deltaY = mSensorZ;
+			
+			totalAccel = (float) Math.sqrt((deltaX - calx) * (deltaX - calx) +
+					  (deltaY - caly) * (deltaY - caly) +
+					  (deltaZ - calz) * (deltaZ - calz));			
+	    } else if (event.sensor.equals(oSensor)) {
+	    	oLastX = oSensorX;
+	    	
+	    	switch (mDisplay.getRotation())
+			{
+			    case Surface.ROTATION_0:
+		            oSensorX = -event.values[0];
+		            break;
+		        case Surface.ROTATION_90:
+		            oSensorX = event.values[1];
+		            break;
+		        case Surface.ROTATION_180:
+		            oSensorX = event.values[0];
+		            break;
+		        case Surface.ROTATION_270:
+		            oSensorX = -event.values[1];
+		            break;
+			}
+	    }
+		
+	    if(oSensorX < 0) {
+	    	isNegative = true;
+		} else {
+	    	isNegative = false;
+	    }
+	    
+	    if(oLastX < 0) {
+	    	lIsNegative = true;
+	    } else {
+	    	lIsNegative = false;
+	    }
+	    
+	    if (useTimeA) {
+			timeA = System.currentTimeMillis() ;
+		} else {
+			timeB = System.currentTimeMillis() ;
+		}
+	    
+	    if(writing)
+		{
+	    	long dTime;
+	    	int newCutoff = 0;
+	    	float newAmp = 0;
+			
+			if (useTimeA) {
+				dTime = (timeA - timeB);
+			} else {
+				dTime = (timeB - timeA);
+			}
+			
+			if (dTime < 1) {
+				dTime = 1;
+			}
+			
+			// Add to moving average
+			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);
+			i++;
+			
+			// Get the low-pass filter
+            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+			AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+			
+	    	if (prevTotalAccel != totalAccel) {	
+				float grad = 0;
+				
+				for (int k = 0; k < movingAverageCount; k++) {
+					grad += gradMovingAverage[k];
+				}
+				
+				grad /= movingAverageCount;
+	            
+				// Set new cutoff frequency
+	            //newCutoff = (int)(Math.abs(grad)*3000);
+				newAmp = Math.abs(grad);
+			} else {
+				resetCounter++;
+				
+				if (resetCounter == resetThreshold) {
+					//newCutoff = 0;
+					newAmp = 0;
+					resetCounter = 0;
+				}
+			}
+	    	
+	    	// Change the cutoff (shelf) frequency
+            //f.setCutoffFrequency(newCutoff);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	f.setAmplitude(newAmp);
+	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
+		}
+	    
+	    prevTotalAccel = totalAccel;
+	    useTimeA = !useTimeA;
+	}
+	
+	/** Audio threads **/
+	
+	Runnable playTone = new Runnable() {
+		public void run() {
+			Log.d(LogTag+".playTone", "Started!");
+			
+			while (!audioman.play()) {
+				Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+				try {
+					Thread.sleep(80);
+				} catch (InterruptedException e) {
+					Log.d(LogTag+".playTone", "Play thread interruped.");
+					return;
+				}
+			}
+			
+			Log.d(LogTag+".playTone", "Tone playback started.");
+			Log.d(LogTag+".playTone", "Shutting down...");
+		}
+	};
+	
+	Runnable toneGenerator = new Runnable() {
+		public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			
+			int sampleRate = audioman.getSampleRate();
+			int samples = (int) Math.ceil(sampleRate * dur);
+            short [] sampleData = new short[samples];
+            
+            Log.d(LogTag+".toneGenerator", "Started!");
+            
+            // Get the low-pass filter
+            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+            
+            while(!tone_stop) {             
+            	// generate audio
+            	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
+        		
+        		// apply the filter
+        		sampleData = f.applyFilter (sampleData);
+        		
+        		// send to audio buffer
+        		audioman.buffer(sampleData);
+        		
+        		if (Thread.interrupted()) {
+					Log.d(LogTag+".toneGenerator", "Tone buffering thread interrupted.");
+                	return;
+                }
+            }
+            
+            Log.d(LogTag+".toneGenerator", "Shutting down...");
+		}
+	};
 }
 
