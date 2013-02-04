@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+	<TextView android:text="Move knobs to modify interval\n" android:layout_gravity="center_horizontal"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+	<com.customwidget.dualknobslider.helpers.SliderView android:id="@+id/slider"
+		android:layout_width ="wrap_content"
+		 android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" android:adjustViewBounds="true"/>	  
+	<TextView android:id="@+id/text_interval" android:text="inverval selected" 
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"/>		 
+</LinearLayout>

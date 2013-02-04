@@ -1,6 +1,7 @@
 package com.masterthebass;
 
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
@@ -30,6 +31,26 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	// Flag to indicate startup has completed
 	private boolean resumeHasRun = false;
+	//filters on\off
+	private boolean gesture1 = false;
+	private boolean gesture2 = false;
+	private boolean gesture3 = false;
+	private boolean gesture4 = false;
+	//settings on\off
+	private boolean[] settings;
+	/*  settings:
+	 *  0 - 3 are filter on/off buttons 
+	 *  4 vibration button
+	 */
+	//"Swipe Up","Swipe Left","Tap","Hold"
+	// filter1     filter2    filter3 filter4
+
+	
+	Vibrator v;
+
+	public final static String TAG = "com.masterthebass.FILTERS";
+	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
+	public final static String FILTERMAN_CLASS = "com.masterthebass.FILTERMAN_CLASS";
 	
 	// Sensor variables
 	private float totalAccel, prevTotalAccel;
@@ -124,17 +145,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gestureScanner = new GestureDetector(this,this);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        settings = new boolean[5];
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-    	getMenuInflater().inflate(R.menu.activity_main, menu);
-		Intent intent = new Intent(this, SettingsActivity.class);
-    	startActivity(intent);
-        return true;
-    }
-	
     @Override
     public void onStart() {
     	super.onStart();
@@ -169,43 +183,66 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     @Override
     public void onPause() {
     	super.onPause();
-    	
-    	// Another Activity comes into foreground
     }
     
     @Override
     public void onStop() {
     	super.onStop();
-    	
-    	// App closed due to lack of memory
     }
     
     @Override
     public void onRestart() {
     	super.onRestart();
-    	
-    	// User has navigated back to Activity
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
+    }
+    
+    //start the settings activity
+    public void startSettings(View view) {
+    	Intent intent = new Intent(this, Filtersmenu.class);
+    	intent.putExtra(EXTRA_MESSAGE, settings);
+    	intent.putExtra(TAG, filterarray);
+    	Log.d(LogTag, "Sending FilterArray of size " + filterarray.length);
+    	intent.putExtra(FILTERMAN_CLASS, filterman);
+    	startActivityForResult(intent,1);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (requestCode == 1) {
+
+    		if(resultCode == RESULT_OK){
+    			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
+    		}
+
+    		if (resultCode == RESULT_CANCELED) {
+    			//Write code on no result return 
+    		}
+    	}
+    }
+    
+    //0 is play background, 1 is pause 
+    private int buttonOn = 0;
+    
+    //for toggling play button to stop
+    public void toggleplayonoff(View view){
     	
-    	// App has been forcibly closed by OS
-    }
-   
-   	/** Button onClick handlers */
-    
-    /** Called when the user clicks the Settings button */
-    public void btnSettingsClick (View view) {
-    	Intent intent = new Intent(this, SettingsActivity.class);
-    	startActivity(intent);
-    }
-    
-    public void btnToggleClick (View view) {
-    	Button b = (Button) findViewById(R.id.btnToggle);
+    	//add a a call to a funtion so that it plays and stops****
+    	Button buttonplay = (Button) findViewById(R.id.buttonplay); 
+    	
+    	if(buttonOn == 0 ){
+
+    		buttonplay.setBackgroundResource(R.drawable.selector_pause);	
+    		buttonOn = 1;
 		
-		if (tone_stop) {	
+    	}else{
+    		buttonplay.setBackgroundResource(R.drawable.selector);
+    		buttonOn = 0;
+    	}  
+    	
+    	if (tone_stop) {	
 			tone_stop = false;
 			
 			// Play the audio, when the buffer is ready
@@ -215,9 +252,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			// generate a tone
 			toneGeneratorThread = new Thread(toneGenerator);
 			toneGeneratorThread.start();
-			
-			// set text
-			b.setText(getString(R.string.btnPlay_stop_text));
 			
 			// set sensor update to true
 			writing = true;
@@ -230,9 +264,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			audioman.stop();
 			tone_stop = true;
 			
-			// set text
-			b.setText(getString(R.string.btnPlay_play_text));
-			
 			// set sensor update to false
 			writing = false;
 		}
@@ -242,8 +273,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     public static final int gestureDelay = 500;
 	private GestureDetector gestureScanner;
-	private static final String[] gesturearray = new String[]{"NULL","NULL","NULL","NULL"};	
-	private static final String[] actionarray = new String[]{"NULL","NULL","NULL","NULL"};
+	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
+	// amount of 0's for the amount of filter names, NEED TO CHANGE
+	// TODO - change these to a value not being used by FilterMan
+	private static final int[] filterarray = new int[]{0,0,0,0};
+	private static int longpresson = 0;
 	
 	long lastGesture = System.currentTimeMillis();
 	
@@ -255,23 +289,31 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		Log.i(LogTag,"the gesture is " + gesturearray[3]);
 	}
 	
-	public static void addToactionArray(CharSequence action, int actionnum){
-		actionarray[actionnum] = (String) action;
-		Log.i(LogTag,"the action is " + actionarray[0]);
-		Log.i(LogTag,"the action is " + actionarray[1]);
-		Log.i(LogTag,"the action is " + actionarray[2]);
-		Log.i(LogTag,"the action is " + actionarray[3]);
+	public static void addTofilterArray(int filter, int filternum){
+		filterarray[filternum] = filter;
+		Log.i(LogTag,"the action is " + filterarray[0]);
+		Log.i(LogTag,"the action is " + filterarray[1]);
+		Log.i(LogTag,"the action is " + filterarray[2]);
+		Log.i(LogTag,"the action is " + filterarray[3]);
 		
 	}   
 	
+	
     @Override
 	public boolean onTouchEvent(MotionEvent me)	{
+    	if (me.getAction() == MotionEvent.ACTION_UP && longpresson == 1 && settings[3]){
+    		filterman.disableFilter(filterarray[3]);		
+			gesture4 = false;
+			longpresson = 0;
+    		
+    	}
 		//return false;
 		return gestureScanner.onTouchEvent(me);
 	}
 
 	@Override
 	public boolean onDown(MotionEvent e) {
+		if (settings[4]) v.vibrate(300);
 		Log.i(LogTag, "Down");		
 		return false;
 	}
@@ -284,12 +326,19 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	@Override
 	public void onLongPress(MotionEvent e) {
-		for(int i = 0; i<4;i++){
-			if(gesturearray[i] == "Hold"){
+	
+			//change this depending on whether the toggles are on for this gesture
 				Toast toast = Toast.makeText(getApplicationContext(), "Hold", Toast.LENGTH_SHORT);
 				toast.show();
-			}
-		}
+				if(settings[3]){
+							
+					if(gesture4 == false){
+						filterman.enableFilter(filterarray[3]);	
+						longpresson = 1;
+						gesture4 = true;
+					}
+				}
+		
 		Log.i(LogTag, "Long Press");
 	}
 
@@ -299,46 +348,65 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		if ((lastGesture + gestureDelay) < System.currentTimeMillis())
 		{
 			lastGesture = System.currentTimeMillis();
-
+			
 			if (distanceX < -10)
 			{
-				for(int i = 0; i<4;i++){
-					if(gesturearray[i] == "Swipe Right"){
+						if (settings[4]) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Right", Toast.LENGTH_SHORT);
 						toast.show();
-					}
-				}
+						if(settings[1]){
+							filterman.disableFilter(filterarray[1]);	
+							gesture2 = false;
+						}
+						
 				Log.i(LogTag,"Swipe Right");
 			} else if (distanceX > 10)
-			{
-				for(int i = 0; i<4;i++){
-					if(gesturearray[i] == "Swipe Left"){
+			{					
+						if (settings[4]) v.vibrate(300);
 						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Left", Toast.LENGTH_SHORT);
 						toast.show();
-					}
-				}
+						if(settings[1]){
+							if(gesture2 == false){
+								filterman.enableFilter(filterarray[1]);							
+								gesture2 = true;
+							}				
+						}
+				
 				Log.i(LogTag,"Swipe Left");
 			}
 			if (distanceY < -10)
 			{
-				for(int i = 0; i<4;i++){
-					if(gesturearray[i] == "Swipe Down"){
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT);
-						toast.show();
-					}
+				if (settings[4]) {
+					v.vibrate(300);
 				}
+				
+				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT);
+				toast.show();
+				
+				if(settings[0]){
+					filterman.disableFilter(filterarray[0]);							
+					gesture1 = false;
+				}
+					
 				Log.i(LogTag,"Swipe Down");
 			} else if (distanceY > 10)
 			{
-				for(int i = 0; i<4;i++){
-					if(gesturearray[i] == "Swipe Up"){
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Up", Toast.LENGTH_SHORT);
-						toast.show();
-					}
+				
+				if (settings[4]) v.vibrate(300);
+				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Up", Toast.LENGTH_SHORT);
+				toast.show();
+						
+				if(settings[0]){
+					if(gesture1 == false){
+						filterman.enableFilter(filterarray[0]);							
+						gesture1 = true;
+					}	
 				}
-				Log.i(LogTag,"Swipe Up");
 			}
+			
+			Log.i(LogTag,"Swipe Up");
 		}
+		
 		return false;
 	}
 
@@ -350,20 +418,25 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		for(int i = 0; i<4;i++){
-			if(gesturearray[i] == "Tap"){
+		
+				//if (settings[4]) v.vibrate(300);
 				Toast toast = Toast.makeText(getApplicationContext(), "Tap", Toast.LENGTH_SHORT);
 				toast.show();
+			if(settings[2]){
+			
+				if(gesture3 == false){
+					filterman.enableFilter(filterarray[2]);
+					
+					gesture3 = true;
+				}else{
+					filterman.disableFilter(filterarray[2]);		
+					gesture3 = false;
+				}
 			}
-		}
+				
 		Log.i(LogTag, "Single tap up");
 		return false;
 	}
-	 //start the filter activity
-	 public void filters(View view) {
-	     Intent intent = new Intent(this, Filtersmenu.class);
-	     startActivity(intent);
-	    }
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
