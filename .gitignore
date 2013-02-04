@@ -62,3 +62,13 @@ local.properties
 Icon?
 ehthumbs.db
 Thumbs.db
+
+trunk/bin/resources.ap_
+
+trunk/bin/classes.dex
+
+trunk/bin/classes.dex
+
+trunk/bin/resources.ap_
+
+*.ap_
