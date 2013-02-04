@@ -2,15 +2,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:screenOrientation="portrait"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent" 
+    android:background="@drawable/main_background">
+
+    <Button
+        android:id="@+id/buttonplay"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/selector"        
+        android:onClick="toggleplayonoff" />
 
     <Button
         android:id="@+id/btnSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignBottom="@+id/buttonplay"
         android:layout_alignParentLeft="true"
+        android:layout_marginBottom="28dp"
+        android:layout_marginLeft="23dp"
         android:onClick="startSettings"
-        android:text="@string/title_activity_settings" />
+        android:background="@drawable/selector_settings" />
+
+    <Button
+        android:id="@+id/buttonrecord"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignBaseline="@+id/btnSettings"
+        android:layout_alignBottom="@+id/btnSettings"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="19dp"
+        android:background="@drawable/selector_record" />
 
 </RelativeLayout>
