@@ -44,6 +44,9 @@ public class Filtersmenu extends Activity {
 	 *  4 vibration button
 	 */
 	boolean[] settings;
+	/* filterdropdown:
+	 * 0-3 correspond to each spinner
+	 */
 	int[] filterdropdown;
 	
 	private FilterManager filterman;
@@ -215,7 +218,10 @@ public class Filtersmenu extends Activity {
 			        // your code here
 					}
 					});
-		
+		spinner1.setSelection(filterdropdown[0]);
+		spinner2.setSelection(filterdropdown[1]);
+		spinner3.setSelection(filterdropdown[2]);
+		spinner4.setSelection(filterdropdown[3]);
 	}
 	
 	//******************************************************************************************	

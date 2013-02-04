@@ -147,6 +147,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
+        //filterSelected = new int[filterman.getFiltersList().length];
     }
     
     @Override
@@ -276,7 +277,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static final int[] filterarray = new int[]{0,0,0,0};
+	private static int[] filterarray = new int[]{0,0,0,0};
 	private static int longpresson = 0;
 	
 	long lastGesture = System.currentTimeMillis();
