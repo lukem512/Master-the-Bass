@@ -648,19 +648,19 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             	// generate audio
             	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
         		
-        		// apply the filter for the 'wub' noise
-        		sampleData = f.applyFilter (sampleData);
-        		
-        		// apply the user-defined filters
+            	// apply the user-defined filters
         		for (int i = 0; i < 4; i++) {
         			int id = filterarray[i];
         			Filter filter = filterman.getFilter(id);
         			
         			if (filter.getState()) {
         				sampleData = filter.applyFilter(sampleData);
-        				Log.d (LogTag, "Applying filter " + filter.getName());
+        				Log.d (LogTag, "Applying filter #" + id + " : " + filter.getName());
         			}
-        		}	
+        		}
+            	
+        		// apply the filter for the 'wub' noise
+        		sampleData = f.applyFilter (sampleData);	
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);

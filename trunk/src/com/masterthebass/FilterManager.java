@@ -27,6 +27,7 @@ public class FilterManager implements Serializable {
 	    return ret;
 	}
 	
+	// constructor
 	public FilterManager () {
 		// instantiate filter list
 		FilterList = new Hashtable<Integer, Filter>();
@@ -34,8 +35,8 @@ public class FilterManager implements Serializable {
 		// create an instance of every filter and add to a list
 		FilterList.put(0, new LowPassFilter(0, "Low Pass Filter"));
 		FilterList.put(1, new AmplitudeFilter(1, "Amplitude Filter"));
-		FilterList.put(2, new NoiseFilter(2, "Noise Filter"));
-		FilterList.put(3, new NoiseFilter(3, "Extra Noise Filter", 50));
+		FilterList.put(2, new NoiseFilter(2, "Noise Filter", 1028));
+		FilterList.put(3, new NoiseFilter(3, "Extra Noise Filter", 4086));
 	}
     
 	// return array of filter IDs
