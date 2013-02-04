@@ -14,7 +14,7 @@
 			android:layout_marginLeft="15dp"
 			android:adjustViewBounds="true"/>	
 			<TextView android:id="@+id/text_interval"
-			android:layout_marginTop="4dp"
+			android:layout_marginTop="46dp"
 			android:layout_marginLeft="150dp"
 			android:textColor="#FFFFFF"
 			android:text="inverval selected"
@@ -65,27 +65,20 @@
            android:textOff=""
            android:textOn= "" />
 
-       <TextView
-           android:id="@+id/textView1"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignBottom="@+id/toggleButton5"
-           android:layout_alignParentRight="true"
-           android:layout_marginRight="23dp"
-           android:text="@string/settingVibration" />
+    
 
        <Spinner
            android:id="@+id/spinner2"
-           android:layout_width="220dp"
+           android:layout_width="230dp"
            android:layout_height="wrap_content"
            android:layout_alignBottom="@+id/toggleButton2"
-           android:layout_marginLeft="20dp"
+           android:layout_marginLeft="6dp"
            android:layout_toRightOf="@+id/toggleButton3"           
            android:background="@drawable/dropdown_off" />
 
        <Spinner
            android:id="@+id/spinner1"
-           android:layout_width="220dp"
+           android:layout_width="230dp"
            android:layout_height="wrap_content"
            android:layout_alignBottom="@+id/toggleButton1"
            android:layout_alignLeft="@+id/spinner2"
@@ -94,7 +87,7 @@
 
        <Spinner
            android:id="@+id/spinner3"
-           android:layout_width="220dp"
+           android:layout_width="230dp"
            android:layout_height="wrap_content"
            android:layout_alignLeft="@+id/spinner2"         
            android:layout_alignBottom="@+id/toggleButton3"
@@ -102,7 +95,7 @@
 
        <Spinner
            android:id="@+id/spinner4"
-           android:layout_width="220dp"
+           android:layout_width="230dp"
            android:layout_height="wrap_content"
            android:layout_alignLeft="@+id/spinner2"
            android:layout_alignBottom="@+id/toggleButton4"
@@ -112,10 +105,8 @@
            android:id="@+id/toggleButton1"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_alignParentTop="true"
-           android:layout_marginRight="18dp"
-           android:layout_marginTop="166dp"
-           android:layout_toLeftOf="@+id/textView1"
+           android:layout_marginLeft="110dp"
+           android:layout_marginTop="172dp"
            android:background="@drawable/selector_toggle"
            android:onClick="onBtn0Clicked"
            android:textOff=""
