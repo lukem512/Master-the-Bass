@@ -1,6 +1,7 @@
 package com.masterthebass;
 
 public class AmplitudeFilter extends Filter {
+	private static final long serialVersionUID = -4543222800830811103L;
 	private float amplitude;
 	private final static float defaultAmplitude = 1.0f;
 

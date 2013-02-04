@@ -1,6 +1,10 @@
 package com.masterthebass;
 
-public class Filter {
+import java.io.Serializable;
+
+public class Filter implements Serializable {
+	private static final long serialVersionUID = -176105425284552882L;
+	
 	private int ID;
 	private String name;
 	private boolean enabled;

@@ -3,6 +3,7 @@ package com.masterthebass;
 import java.util.Random;
 
 public class NoiseFilter extends Filter  {
+	private static final long serialVersionUID = 3476866265760242267L;
 	private int range;
 	
 	// constructor
