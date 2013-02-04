@@ -1,0 +1,42 @@
+Master the Bass Timesheet				
+				
+Name:	Petro Tiurin			2/4/2013
+				
+				
+Week beginning:	10/12/12			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Research into layouts	Studied and tried how different android layouts work	N/A	3	N/A
+				
+Week beginning:	17/12/12			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Procrastination	Procrastination	N/A	6	N/A
+GUI improvements	Trying different versions of GUI		2	N/A
+Week beginning:	24/12/12			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Gesture prototype	Researched gesture detection in android and tested it on my phone		5	e03f7a588dc735fb121c2761b05026c2fd7cb6ed
+				
+Week beginning:	31/12/12			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Further research into gestures	Testing and reading about gestures	N/A	2	N/A
+				
+Week beginning:	07/01/13			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+N/A (was sick)	N/A	N/A	N/A	N/A
+				
+Week beginning:	14/01/13			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+N/A (was sick)	N/A	N/A	N/A	N/A
+				
+Week beginning:	21/01/13			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Research into vibration			2	N/A
+Research into communication between activities	Passing and Receiving values		2	N/A
+Week beginning:	 			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Added vibration prototype			3	5513cffb241c6dbf3eb6cc2e149be8397d052515
+Made toggle buttons keep their values.			2	
+Week beginning:	04/01/13			
+Task name	Description of work	Requirement number	Time taken (hrs)	Git commit #
+Merged my and Guy's code	Made settings menu		5	cc6db5264b3959c1c829f803e95271fd23d6517c
+Slider prototype			4	
+Integrated slider into existing code			0.5	649b6314dc2b5e9d486136e4ee5470af19486234
