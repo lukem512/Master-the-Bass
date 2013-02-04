@@ -79,6 +79,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor oSensor;
 	
 	private int i, resetThreshold, resetCounter;
+	private float accelThreshold;
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
@@ -123,6 +124,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		i = 0;
 		resetThreshold = 10;
 		resetCounter = 0;
+		accelThreshold = 0.001f;
 		
 		calx = 0;
 		caly = 0;
@@ -576,18 +578,18 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
 			AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			
-	    	if (prevTotalAccel != totalAccel) {	
-				float grad = 0;
-				
+	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
+	//		if (prevTotalAccel != totalAccel){	
+				float grad = 0;	
 				for (int k = 0; k < movingAverageCount; k++) {
 					grad += gradMovingAverage[k];
 				}
-				
 				grad /= movingAverageCount;
 	            
 				// Set new cutoff frequency
 	            //newCutoff = (int)(Math.abs(grad)*3000);
 				newAmp = Math.abs(grad);
+				
 			} else {
 				resetCounter++;
 				
@@ -595,7 +597,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 					//newCutoff = 0;
 					newAmp = 0;
 					resetCounter = 0;
+				} else {
+					newAmp = f.getAmplitude();
 				}
+		
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
