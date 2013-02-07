@@ -557,7 +557,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    if(writing)
 		{
 	    	long dTime;
-	    	int newCutoff = 0;
+	    	int newCutoff = 7000;
 	    	float newAmp = 0;
 			
 			if (useTimeA) {
@@ -575,8 +575,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			i++;
 			
 			// Get the low-pass filter
-            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-			AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+			//AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			
 	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
 	//		if (prevTotalAccel != totalAccel){	
@@ -587,27 +587,28 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				grad /= movingAverageCount;
 	            
 				// Set new cutoff frequency
-	            //newCutoff = (int)(Math.abs(grad)*3000);
-				newAmp = Math.abs(grad);
+	            newCutoff = (int)(Math.abs(grad)*3000);
+				//newAmp = Math.abs(grad);
 				
 			} else {
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					//newCutoff = 0;
-					newAmp = 0;
+					newCutoff = 0;
+					//newAmp = 0;
 					resetCounter = 0;
 				} else {
-					newAmp = f.getAmplitude();
+					//newAmp = f.getAmplitude();
+					newCutoff = f.getCutoffFrequency();
 				}
 		
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
-            //f.setCutoffFrequency(newCutoff);
-	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
-	    	f.setAmplitude(newAmp);
-	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
+            f.setCutoffFrequency(newCutoff);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	//f.setAmplitude(newAmp);
+	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -646,8 +647,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             Log.d(LogTag+".toneGenerator", "Started!");
             
             // Get the low-pass filter
-            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-            AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            //AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
             
             while(!tone_stop) {             
             	// generate audio

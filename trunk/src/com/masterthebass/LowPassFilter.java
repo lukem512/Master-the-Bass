@@ -30,7 +30,7 @@ public class LowPassFilter extends Filter {
 	}
 	
 	public void setCutoffFrequency (int cutoffFrequency) {
-		if (cutoffFrequency > 0) {
+		if (cutoffFrequency >= 0) {
 			this.cutoffFrequency = cutoffFrequency;
 		}
 	}
