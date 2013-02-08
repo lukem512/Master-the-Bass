@@ -119,7 +119,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.HARMONIC_SQUARE);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SINE);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);

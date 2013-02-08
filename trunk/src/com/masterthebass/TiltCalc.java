@@ -10,7 +10,7 @@ import android.util.Log;
 public class TiltCalc {
     
     private boolean needsRecalc = false;
-    private float[] tilt_data = {0, 0, 0}, gravity = {0, 0, 0}, magnet = {0, 0, 0};
+    private float[] tilt_data = {0, 0, 0}, gravity = {0, 0, 0}, magnet = {0, 0, 0}, R={0,0,0,0,0,0,0,0,0};
     
     // Change this to make the sensors respond quicker, or slower:
     private static final int delay = SensorManager.SENSOR_DELAY_GAME;
@@ -20,13 +20,7 @@ public class TiltCalc {
     private final SensorEventListener listen = new SensorEventListener() {
         public void onSensorChanged(SensorEvent e) {
             final float[] vals = e.values, target;
-            
-            // Just capture the Gyroscope data, if it exists:
-            if(e.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                System.arraycopy(vals, 0, tilt_data, 0, 3);
-                return;
-            }
-            
+
             // Else, we'll capture the data, and mark the class for a re-calc:
             target = (e.sensor.getType() == Sensor.TYPE_ACCELEROMETER) ? gravity : magnet;
             needsRecalc = true;
@@ -40,13 +34,12 @@ public class TiltCalc {
     public TiltCalc(Context c) {
         SensorManager man = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE); 
         
-     
+        Sensor mag_sensor = man.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        Sensor acc_sensor = man.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Sensor gyr_sensor = man.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         
-        // Turns out Android's gyroscope doesn't work this way, so it's been disabled for now...
-        if(man.registerListener(listen, gyr_sensor, delay)) {
-            Log.d("TiltCalc", "Gyroscope detected, and successfully connected.");
-        
+        if( man.registerListener(listen, mag_sensor, delay) &&
+                man.registerListener(listen, acc_sensor, delay) ) {
         // Use an accelerometer+compass approach:
         } else {
             Log.d("TiltCalc", "No acceptable hardware found.");
@@ -62,11 +55,10 @@ public class TiltCalc {
         
         // If some of the data has been changed, then we need to recalculate some things...
         if(needsRecalc) {
-           float[] R={0,0,0,0,0,0,0,0,0};
-            
             // Calculate the rotation matrix, and use that to get the orientation:
             if(SensorManager.getRotationMatrix(R, null, gravity, magnet))
                 SensorManager.getOrientation(R, tilt_data);
+            
             
             needsRecalc = false;
         }

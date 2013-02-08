@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private double base = 50;
 	private double vol = 1.0;
 	private double dur = 0.01;
-	private int maxFreq = 3000;
+	private int maxFreq = 8000;
 	private int minFreq = 0;
 	private float[] tiltDegree;
 	private float[] tiltval;
@@ -597,13 +597,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 				grad /= movingAverageCount;
 	            
-			//	if (Math.abs(tiltCutoff) > 9) tiltCutoff = 9;
-			//	newCutoff = ((int)((Math.abs(tiltCutoff/3)*-(maxFreq/3)))+maxFreq+minFreq);
-				// Set new cutoff frequency
+				newCutoff = ((int)((Math.abs(tiltCutoff)*-(maxFreq/3)))+maxFreq+minFreq);
+				if (newCutoff < 0) newCutoff = 0;
+			/*	// Set new cutoff frequency
 				if (Math.abs(grad) > 3) grad = 3;
 	            //newCutoff = (int)(Math.abs(grad)*1667);
-	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq+1000);
-				//newAmp = Math.abs(grad); 
+	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
+				//newAmp = Math.abs(grad); */
 				
 			} else {
 				resetCounter++;
