@@ -77,6 +77,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor mSensor;
 	private SensorManager oSensorManager;
 	private Sensor oSensor;
+	private TiltCalc tilt;
 	
 	private int i, resetThreshold, resetCounter;
 	private float accelThreshold;
@@ -92,6 +93,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private double dur = 0.01;
 	private int maxFreq = 3000;
 	private int minFreq = 0;
+	private float[] tiltDegree;
+	private float[] tiltval;
+	private float tiltCutoff;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -103,6 +107,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
+   		tilt        = new TiltCalc(this);
+   		tiltval     = new float[3];
    	}
    	
    	private void initSensors () {
@@ -118,6 +124,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 		mDisplay = mWindowManager.getDefaultDisplay();
 		
+
 		oSensorErrorLogged = false;
 		mSensorErrorLogged = false;
 		
@@ -579,7 +586,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			// Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
 			//AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
-			
+			tilt.getTilt(tiltval);
+	    	Log.i(LogTag, "tilt =  : " + tiltval[0]);	
+	    	tiltCutoff = tiltval[0];
 	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
 	//		if (prevTotalAccel != totalAccel){	
 				float grad = 0;	
@@ -588,11 +597,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 				grad /= movingAverageCount;
 	            
+			//	if (Math.abs(tiltCutoff) > 9) tiltCutoff = 9;
+			//	newCutoff = ((int)((Math.abs(tiltCutoff/3)*-(maxFreq/3)))+maxFreq+minFreq);
 				// Set new cutoff frequency
 				if (Math.abs(grad) > 3) grad = 3;
 	            //newCutoff = (int)(Math.abs(grad)*1667);
-	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
-				//newAmp = Math.abs(grad);
+	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq+1000);
+				//newAmp = Math.abs(grad); 
 				
 			} else {
 				resetCounter++;

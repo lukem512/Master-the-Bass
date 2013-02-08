@@ -32,7 +32,7 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.HARMONIC_SQUARE);
+		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SQUARE);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);

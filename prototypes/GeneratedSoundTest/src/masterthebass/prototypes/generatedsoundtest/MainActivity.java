@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
 	private boolean tone_stop = true;
 	private double base = 30;
 	private double vol = 0.7;
-	private double dur = 0.01;
+	private double dur = 0.1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,11 +107,11 @@ public class MainActivity extends Activity {
             // DEBUGGING
          //   Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
             
-            int i = 15;
+            int i = 80;
             boolean up = false;
             while(!tone_stop)
             {             
-            	if (i == 0 || i == 500 ) {
+            	if (i == 0 || i == 800 ) {
                 	up = !up;
                 }
             	
@@ -137,7 +137,7 @@ public class MainActivity extends Activity {
             	//Log.d("toneBuf", "Wrote frequency " + (base) + " to sample list.");
             	Log.d("toneBuf", "Cutoff frequency = " + (i*100));
                 
-                if (up) i+=1; else i-=1;
+                if (up) i+=80; else i-=80;
             }
 		}
 	};
