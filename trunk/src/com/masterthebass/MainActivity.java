@@ -587,8 +587,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
 			//AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			tilt.getTilt(tiltval);
-	    	Log.i(LogTag, "tilt =  : " + tiltval[0]);	
-	    	tiltCutoff = tiltval[0];
+	    	Log.i(LogTag, "tilt =  : " + tiltval[1]);	
+	    	tiltCutoff = 2*tiltval[1];
 	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
 	//		if (prevTotalAccel != totalAccel){	
 				float grad = 0;	
@@ -609,7 +609,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					newCutoff = maxFreq;
+					//newCutoff = maxFreq;
 					//newAmp = 0;
 					resetCounter = 0;
 				} else {
@@ -621,7 +621,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    	
 	    	// Change the cutoff (shelf) frequency
             f.setCutoffFrequency(newCutoff);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	   // 	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	//f.setAmplitude(newAmp);
 	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
