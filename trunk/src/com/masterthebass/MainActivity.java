@@ -88,10 +88,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Thread toneGeneratorThread, playThread;
 	private boolean tone_stop = true;
 	private double base = 50;
-	private double vol = 1.0;
+	private double vol = 0.7;
 	private double dur = 0.01;
 	private int maxFreq = 3000;
-	private int minFreq = 0;
+	private int minFreq = 500;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -560,7 +560,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		{
 	    	long dTime;
 	    	int newCutoff = maxFreq;
-	    	float newAmp = 0;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -578,41 +577,84 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			// Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-			//AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			
-	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
-	//		if (prevTotalAccel != totalAccel){	
+	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 				float grad = 0;	
 				for (int k = 0; k < movingAverageCount; k++) {
 					grad += gradMovingAverage[k];
 				}
 				grad /= movingAverageCount;
-	            
-				// Set new cutoff frequency
-				if (Math.abs(grad) > 3) grad = 3;
-	            //newCutoff = (int)(Math.abs(grad)*1667);
-	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
-				//newAmp = Math.abs(grad);
 				
+				if (Math.abs(grad) > 3) {
+					grad = 3;
+				}
+				
+				// Weighting function to map the gradient to the cutoff
+				// this should increase the cutoff more depending upon the steepness of the gradient
+				// and should decrease at a slower rate that the gradient decreases
+				// The increase should be greater when the cutoff is lower, and should tail off exponentially
+				// such as the positive part of a ln(x) graph
+				
+				// this could potentially be done using (1/f.getCutoffFrequency())*multiplier
+				
+				// Calculate new cutoff frequency
+				newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
+				
+				if (newCutoff > f.getCutoffFrequency()) {
+					// Increasing , introduce some lag
+					//int increase = (int) Math.ceil(f.getCutoffFrequency()/10);
+					
+					// Multiplier means that for small cutoffs (i.e. near minFreq) the increase will be  near 20%
+					// TODO - this should probably also take into account the new gradient value for a scalar
+					int dCutoff = newCutoff - f.getCutoffFrequency();
+					int maxPercentageChange = 30;
+					int multiplier = minFreq*maxPercentageChange;
+					int increase = (int) (multiplier/Math.ceil(f.getCutoffFrequency()));
+					Log.d(LogTag, "Increase is " + increase + "%!");
+					float percentageMultiplier = (float) (increase/100.0);
+					increase = (int) (f.getCutoffFrequency()*percentageMultiplier);
+					
+					Log.d(LogTag, "setting newCutoff to " + newCutoff);
+					newCutoff = f.getCutoffFrequency() + increase;
+					
+					
+				}
 			} else {
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					newCutoff = maxFreq;
-					//newAmp = 0;
+					//newCutoff = maxFreq;
+					
+					// increase cutoff frequency back to maxFreq, slowly
+					// Multiplier means that for small cutoffs (i.e. near minFreq) the increase will be  near 20%
+					int maxPercentageChange = 30;
+					int multiplier = minFreq*maxPercentageChange;
+					int increase = (int) (multiplier/Math.ceil(f.getCutoffFrequency()));
+					Log.d(LogTag, "Increase is " + increase + "%!");
+					float percentageMultiplier = (float) (increase/100.0);
+					increase = (int) (f.getCutoffFrequency()*percentageMultiplier);
+					Log.d(LogTag, "setting newCutoff to " + newCutoff);
+					newCutoff = f.getCutoffFrequency() + increase;
+					
 					resetCounter = 0;
 				} else {
-					//newAmp = f.getAmplitude();
 					newCutoff = f.getCutoffFrequency();
 				}
 		
 			}
 	    	
+	    	// Bounds checking
+	    	if (newCutoff > maxFreq) {
+				newCutoff = maxFreq;
+				Log.d(LogTag, "Reset newCutoff to " + maxFreq);
+			} else if (newCutoff < minFreq) {
+				newCutoff = minFreq;
+				Log.d(LogTag, "Reset newCutoff to " + minFreq);
+			}
+	    	
 	    	// Change the cutoff (shelf) frequency
             f.setCutoffFrequency(newCutoff);
 	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
-	    	//f.setAmplitude(newAmp);
-	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -652,7 +694,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             // Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-            //AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
             
             while(!tone_stop) {             
             	// generate audio
