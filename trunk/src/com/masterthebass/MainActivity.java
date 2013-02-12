@@ -148,8 +148,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		base = 50;
 		vol = 1.0;
 		dur = 0.01;
-		maxCutoffFreq = 5000;
-		minCutoffFreq = 500;
+		maxCutoffFreq = 3000;
+		minCutoffFreq = 150;
    	}
    	
    	/** Activity lifecycle/UI methods */
