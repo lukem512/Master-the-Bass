@@ -81,6 +81,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private float accelThreshold;
 	private float maxGrad;
 	
+	private float maxAmplitude;
+	private float minAmplitude;
+	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
 	
@@ -148,6 +151,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		base = 50;
 		vol = 1.0;
 		dur = 0.01;
+		maxAmplitude = 1.0f;
+		minAmplitude = 0.2f;
 		maxCutoffFreq = 3000;
 		minCutoffFreq = 150;
    	}
@@ -245,7 +250,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     //for toggling play button to stop
     public void toggleplayonoff(View view){
     	
-    	//add a a call to a funtion so that it plays and stops****
+    	//add a a call to a function so that it plays and stops****
     	Button buttonplay = (Button) findViewById(R.id.buttonplay); 
     	
     	if(buttonOn == 0 ){
@@ -571,6 +576,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		{
 	    	long dTime;
 	    	int newCutoff = maxCutoffFreq;
+	    	float newAmp = minAmplitude;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -587,7 +593,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			i++;
 			
 			// Get the low-pass filter
-            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
+            AmplitudeFilter af = (AmplitudeFilter) filterman.getFilter (1); 
 			
             // TODO - there should be a notion of gravity associated with the cutoff
             // i.e. it should be dependent upon the previous cutoff and the gradient
@@ -605,7 +612,20 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 	            
 				// Calculate new cutoff frequency
-				newCutoff = ((int)((Math.abs(grad)*-(maxCutoffFreq/3)))+maxCutoffFreq+minCutoffFreq);
+				newCutoff = ((int)((Math.abs(grad)*-(maxCutoffFreq/maxGrad)))+maxCutoffFreq+minCutoffFreq);
+				
+				// Calculate the new amplitude
+				float gradAmp = (grad/maxGrad);
+				
+				if (gradAmp > minAmplitude) {
+					if (gradAmp < maxAmplitude) {
+						newAmp = Math.abs(gradAmp);
+					} else {
+						newAmp = maxAmplitude;
+					}
+				} else {
+					newAmp = minAmplitude;
+				}
 				
 				if (newCutoff < minCutoffFreq) {
 					newCutoff = minCutoffFreq;
@@ -615,15 +635,21 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				
 				if (resetCounter == resetThreshold) {
 					newCutoff = maxCutoffFreq;
+					newAmp = minAmplitude;
 					resetCounter = 0;
 				} else {
-					newCutoff = f.getCutoffFrequency();
+					newCutoff = lpf.getCutoffFrequency();
+					newAmp = af.getAmplitude();
 				}
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
-            f.setCutoffFrequency(newCutoff);
+            lpf.setCutoffFrequency(newCutoff);
 	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	
+	    	// Change the volume
+	    	af.setAmplitude (newAmp);
+	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -662,7 +688,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             Log.d(LogTag+".toneGenerator", "Started!");
             
             // Get the low-pass filter
-            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
+            
+            // ...and the Amplitude filter
+            AmplitudeFilter af = (AmplitudeFilter) filterman.getFilter (1);
             
             while(!tone_stop) {             
             	// generate audio
@@ -680,7 +709,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         		}
             	
         		// apply the filter for the 'wub' noise
-        		sampleData = f.applyFilter (sampleData);	
+        		sampleData = lpf.applyFilter (sampleData);
+        		
+        		// apply the filter to change the volume
+        		sampleData = af.applyFilter (sampleData);
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);
