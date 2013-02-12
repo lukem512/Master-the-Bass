@@ -89,8 +89,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private double base = 50;
 	private double vol = 1.0;
 	private double dur = 0.01;
-	private int maxFreq = 5000;
-	private int minFreq = 500;
+	private int maxCutoffFreq = 5000;
+	private int minCutoffFreq = 500;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -558,7 +558,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    if(writing)
 		{
 	    	long dTime;
-	    	int newCutoff = 0;
+	    	int newCutoff = maxCutoffFreq;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -593,7 +593,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 	            
 				// Calculate new cutoff frequency
-				newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
+				newCutoff = ((int)((Math.abs(grad)*-(maxCutoffFreq/3)))+maxCutoffFreq+minCutoffFreq);
 				
 				if (newCutoff < 0) {
 					newCutoff = 0;
@@ -602,7 +602,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					newCutoff = maxFreq;
+					newCutoff = maxCutoffFreq;
 					resetCounter = 0;
 				} else {
 					newCutoff = f.getCutoffFrequency();
