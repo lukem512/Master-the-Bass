@@ -1,0 +1,17 @@
+Meeting Minutes
+12/02/2013
+---------------
+
+UI - Guy + Petro to make progress on UI. None has occurred yet this week. The new UI should be the final version and should be scalable to multiple screen sizes and should be useable across the entire Android platform, including tablets. To get in contact with Ricky for very high resolution images (suitable for scaling). Tap to play for new UI to be implemented soon!
+
+Audio - Sound still awful. Luke + Jon tried to progress last week to no avail. To be progressed this week. A latency needs to be introduced somehow in order to induce a more audible "wub".
+
+Filters - Steve to investigate filters and to try and implement Envelope Generator - to be made seperately (attack, delay etc) and then a final filter to be made that ties them together as the Envelope.
+
+Documentation - Apparently a User Manual is a compulsory document. Potentially Jon could take this on?
+	
+	- Presentation required for Gamma as practise for final hand-in. Presentation needs making and designing. Jon?
+
+Jon + Ricky absent.
+
+Next meeting 11am 13/02/2013
