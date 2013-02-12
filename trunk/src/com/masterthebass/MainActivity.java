@@ -79,6 +79,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private int i, resetThreshold, resetCounter;
 	private float accelThreshold = 0.001f;
+	private float maxGrad = 3f;
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
@@ -588,15 +589,15 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				
 				grad /= movingAverageCount;
 				
-				if (grad > 3) {
-					grad = 3;
+				if (grad > maxGrad) {
+					grad = maxGrad;
 				}
 	            
 				// Calculate new cutoff frequency
 				newCutoff = ((int)((Math.abs(grad)*-(maxCutoffFreq/3)))+maxCutoffFreq+minCutoffFreq);
 				
-				if (newCutoff < 0) {
-					newCutoff = 0;
+				if (newCutoff < minCutoffFreq) {
+					newCutoff = minCutoffFreq;
 				}
 			} else {
 				resetCounter++;
