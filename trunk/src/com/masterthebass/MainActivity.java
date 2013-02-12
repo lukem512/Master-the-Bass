@@ -78,8 +78,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor oSensor;
 	
 	private int i, resetThreshold, resetCounter;
-	private float accelThreshold = 0.001f;
-	private float maxGrad = 3f;
+	private float accelThreshold;
+	private float maxGrad;
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
@@ -87,11 +87,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// Audio generation variables
 	private Thread toneGeneratorThread, playThread;
 	private boolean tone_stop = true;
-	private double base = 50;
-	private double vol = 1.0;
-	private double dur = 0.01;
-	private int maxCutoffFreq = 5000;
-	private int minCutoffFreq = 500;
+	private double base;
+	private double vol;
+	private double dur;
+	
+	private int maxCutoffFreq;
+	private int minCutoffFreq;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -127,6 +128,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		resetThreshold = 10;
 		resetCounter = 0;
 		accelThreshold = 0.001f;
+		maxGrad = 3f;
 		
 		calx = 0;
 		caly = 0;
@@ -140,6 +142,14 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		for (int k = 0; k < movingAverageCount; k++) {
 			gradMovingAverage[k] = 0;
 		}
+   	}
+   	
+   	private void initAudio () {
+		base = 50;
+		vol = 1.0;
+		dur = 0.01;
+		maxCutoffFreq = 5000;
+		minCutoffFreq = 500;
    	}
    	
    	/** Activity lifecycle/UI methods */
@@ -171,6 +181,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		// Run on first resume, called directly after onCreate() after loading
     		instantiate();
     		initSensors();
+    		initAudio();
     		
     		// Print some debugging
     		Log.d(LogTag+".onResume", "The filter IDs list is...");
