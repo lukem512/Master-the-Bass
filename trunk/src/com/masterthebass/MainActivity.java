@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	 */
 	//"Swipe Up","Swipe Left","Tap","Hold"
 	// filter1     filter2    filter3 filter4
-
 	
 	Vibrator v;
 
@@ -79,7 +78,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor oSensor;
 	
 	private int i, resetThreshold, resetCounter;
-	private float accelThreshold;
+	private float accelThreshold = 0.001f;
 	
 	private int movingAverageCount;
 	private float[] gradMovingAverage;
@@ -90,6 +89,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private double base = 50;
 	private double vol = 1.0;
 	private double dur = 0.01;
+	private int maxFreq = 5000;
+	private int minFreq = 500;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -558,7 +559,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		{
 	    	long dTime;
 	    	int newCutoff = 0;
-	    	float newAmp = 0;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -575,39 +575,42 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			i++;
 			
 			// Get the low-pass filter
-            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-			AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
 			
-	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
-	//		if (prevTotalAccel != totalAccel){	
+	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 				float grad = 0;	
+				
 				for (int k = 0; k < movingAverageCount; k++) {
 					grad += gradMovingAverage[k];
 				}
+				
 				grad /= movingAverageCount;
+				
+				if (grad > 3) {
+					grad = 3;
+				}
 	            
 				// Set new cutoff frequency
-	            //newCutoff = (int)(Math.abs(grad)*3000);
-				newAmp = Math.abs(grad);
+				newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
 				
+				if (newCutoff < 0) {
+					newCutoff = 0;
+				}
 			} else {
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					//newCutoff = 0;
-					newAmp = 0;
+					newCutoff = 0;
 					resetCounter = 0;
 				} else {
-					newAmp = f.getAmplitude();
+					newCutoff = f.getCutoffFrequency();
 				}
 		
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
-            //f.setCutoffFrequency(newCutoff);
-	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
-	    	f.setAmplitude(newAmp);
-	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
+            f.setCutoffFrequency(newCutoff);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 		}
 	    
 	    prevTotalAccel = totalAccel;
@@ -646,8 +649,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             Log.d(LogTag+".toneGenerator", "Started!");
             
             // Get the low-pass filter
-            //LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
-            AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
+            LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
             
             while(!tone_stop) {             
             	// generate audio
