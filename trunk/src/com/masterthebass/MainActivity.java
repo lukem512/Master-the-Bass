@@ -577,6 +577,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			// Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
 			
+            // TODO - there should be a notion of gravity associated with the cutoff
+            // i.e. it should be dependent upon the previous cutoff and the gradient
 	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 				float grad = 0;	
 				
@@ -590,7 +592,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 					grad = 3;
 				}
 	            
-				// Set new cutoff frequency
+				// Calculate new cutoff frequency
 				newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
 				
 				if (newCutoff < 0) {
@@ -600,12 +602,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
-					newCutoff = 0;
+					newCutoff = maxFreq;
 					resetCounter = 0;
 				} else {
 					newCutoff = f.getCutoffFrequency();
 				}
-		
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
