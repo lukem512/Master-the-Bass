@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Synth</string>
+    <string name="menu_settings">Settings</string>
+    <string name="btnAText">A</string>
+    <string name="btnBText">B</string>
+    <string name="btnCText">C</string>
+    <string name="btnDText">D</string>
+    <string name="btnEText">E</string>
+    <string name="btnFText">F</string>
+    <string name="btnGText">G</string>
+
+</resources>
