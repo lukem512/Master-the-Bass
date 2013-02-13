@@ -1,0 +1,11 @@
+Meeting Minutes
+13/02/2013
+---------------
+
+UI - Guy and Petro discussed UI last night. No code progress but ideas happening. Progress to be made ASAP. Ideas discussed for filter 'areas' include using buttons with images overlaying them and 9-patch for scaling.
+
+An Android synthesizer called Caustic exists and has a very full featured UI. The dials/knobs are fiddly to use and a good reason for us not implementing them. There exists a button with a depiction of several types of wave that is tapped to swap between them, this seems useful for our app.
+
+Caustic is capable of producing a waveform in a particular frequency and applying an LFO with a particular oscillator to it.
+
+Jon + Ricky + Steve + Petro absent.
