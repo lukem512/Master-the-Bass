@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private double base = 50;
 	private double vol = 1.0;
 	private double dur = 0.01;
-	private int maxFreq = 8000;
+	private int maxFreq = 7000;
 	private int minFreq = 0;
 	private float[] tiltDegree;
 	private float[] tiltval;
@@ -567,6 +567,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		{
 	    	long dTime;
 	    	int newCutoff = maxFreq;
+	    	int newWah;
 	    	float newAmp = 0;
 			
 			if (useTimeA) {
@@ -585,11 +586,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			// Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            WahWah w = (WahWah) filterman.getFilter (4);
 			//AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
 			tilt.getTilt(tiltval);
 	    	Log.i(LogTag, "tilt =  : " + tiltval[1]);	
 	    	tiltCutoff = 2*tiltval[1];
-	    	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
+	   // 	if (Math.abs(prevTotalAccel - totalAccel) > 0.001){	
 	//		if (prevTotalAccel != totalAccel){	
 				float grad = 0;	
 				for (int k = 0; k < movingAverageCount; k++) {
@@ -597,15 +599,16 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 				grad /= movingAverageCount;
 	            
-				newCutoff = ((int)((Math.abs(tiltCutoff)*-(maxFreq/3)))+maxFreq+minFreq);
-				if (newCutoff < 0) newCutoff = 0;
+				newCutoff = ((int)((Math.abs(tiltCutoff)*-(maxFreq/3)))+maxFreq+minFreq+300);
+				newWah = ((int)((Math.abs(tiltCutoff)*62.5)));
+			//	if (newCutoff < 0) newCutoff = 0;
 			/*	// Set new cutoff frequency
 				if (Math.abs(grad) > 3) grad = 3;
 	            //newCutoff = (int)(Math.abs(grad)*1667);
 	          newCutoff = ((int)((Math.abs(grad)*-(maxFreq/3)))+maxFreq+minFreq);
 				//newAmp = Math.abs(grad); */
 				
-			} else {
+		/*	} else {
 				resetCounter++;
 				
 				if (resetCounter == resetThreshold) {
@@ -615,13 +618,14 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				} else {
 					//newAmp = f.getAmplitude();
 					newCutoff = f.getCutoffFrequency();
-				}
+				} 
 		
-			}
+			}*/
 	    	
 	    	// Change the cutoff (shelf) frequency
             f.setCutoffFrequency(newCutoff);
-	   // 	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+            w.setWahLevel(newWah);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	//f.setAmplitude(newAmp);
 	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
@@ -663,6 +667,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             // Get the low-pass filter
             LowPassFilter f = (LowPassFilter) filterman.getFilter (0);
+            WahWah w = (WahWah)filterman.getFilter(4);
             //AmplitudeFilter f = (AmplitudeFilter) filterman.getFilter (1);
             
             while(!tone_stop) {             
@@ -681,7 +686,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         		}
             	
         		// apply the filter for the 'wub' noise
-        		sampleData = f.applyFilter (sampleData);	
+        		//sampleData = f.applyFilter (sampleData);	
+        		sampleData = w.applyFilter(sampleData);
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);

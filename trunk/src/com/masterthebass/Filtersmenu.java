@@ -235,6 +235,8 @@ public class Filtersmenu extends Activity {
         finish();
     }
 	
+
+	
     public void onBtn0Clicked(View view) {
         boolean on = ((ToggleButton) view).isChecked();
         settings[0] = on;

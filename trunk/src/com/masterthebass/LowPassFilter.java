@@ -9,6 +9,7 @@ public class LowPassFilter extends Filter {
 	private int sampleRate;
 	private int cutoffFrequency;
 	
+	private final static String LogTag = "Main";
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
 		
@@ -48,12 +49,20 @@ public class LowPassFilter extends Filter {
 	    double gain = 1 / (1+sqrt2/QcWarp + 2/(QcWarp*QcWarp));
 
 	    by[2] = (double) ((1 - sqrt2/QcWarp + 2/(QcWarp*QcWarp)) * gain);
+		Log.d (LogTag, "b2 = " + by[2]);
 	    by[1] = (double) ((2 - 2 * 2/(QcWarp*QcWarp)) * gain);
-	    by[0] = 1;
-	    ax[0] = (double) (1 * gain);
-	    ax[1] = (double) (2 * gain);
-	    ax[2] = (double) (1 * gain);
-	}
+		Log.d (LogTag, "b1 = " + by[1]);
+		by[0] = 1;
+		Log.d (LogTag, "b0 = " + by[0]);
+		ax[0] = (double) (1 * gain);
+		Log.d (LogTag, "a0 = " + ax[0]);
+		ax[1] = (double) (2 * gain);
+		Log.d (LogTag, "a1 = " + ax[1]);
+		ax[2] = (double) (1 * gain);
+		Log.d (LogTag, "a2 = " + ax[2]);
+		
+		
+		}
 	
 	@Override
 	public byte[] applyFilter (byte[] rawPCM) {
