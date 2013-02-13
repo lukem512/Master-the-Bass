@@ -69,4 +69,32 @@
         android:onClick="btnAClick"
         android:text="@string/btnAText" />
 
+    <RadioGroup
+        android:id="@+id/radioGroupWaveType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnC"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp" >
+
+        <RadioButton
+            android:id="@+id/radiobtnSine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnSineText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnSquare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/radioBtnSquareText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnSaw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnSawText" />
+    </RadioGroup>
+
 </RelativeLayout>

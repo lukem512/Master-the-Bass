@@ -6,6 +6,7 @@ public class SoundManager{
 	/* Members */
 
 	private String logTag = "SoundManager";
+	private WAVE_TYPE waveType = WAVE_TYPE.SQUARE;
 	private double Final;
 	
 	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
@@ -90,8 +91,6 @@ public class SoundManager{
             // Generate 16-bit samples
             final short val = (short) sample;
             generatedSnd[idx++] = val;
-            //generatedSnd[idx++] = (byte) (val & 0x00ff);
-            //generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         
         // Return the sound
@@ -121,13 +120,21 @@ public class SoundManager{
 		
 		Log.d("Synth", "Calling vmGenerateTone");
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SINE);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, waveType);
         
         // Save starting offset for next tone
         Final = (numSamples + Final) % (sampleRate/frequency);
         
         return generatedSnd;
     }
+	
+	public void setWaveType (WAVE_TYPE waveType) {
+		this.waveType = waveType;
+	}
+	
+	public WAVE_TYPE getWaveType () {
+		return waveType;
+	}
 
 	// Resets the offset of the waveform
 	private void resetOffset() {

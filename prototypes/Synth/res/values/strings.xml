@@ -10,5 +10,8 @@
     <string name="btnEText">E</string>
     <string name="btnFText">F</string>
     <string name="btnGText">G</string>
+    <string name="radioBtnSineText">Sine</string>
+    <string name="radioBtnSawText">Saw-Tooth</string>
+    <string name="radioBtnSquareText">Square</string>
 
 </resources>

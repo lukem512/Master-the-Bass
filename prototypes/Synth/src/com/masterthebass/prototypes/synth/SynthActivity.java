@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 public class SynthActivity extends Activity {
 	
@@ -21,9 +23,11 @@ public class SynthActivity extends Activity {
 		
 		// Instantiate managers
 		am = new AudioOutputManager();
-		sm = new SoundManager();
+		sm = new SoundManager();	
 		
 		setContentView(R.layout.synth_activity);
+		
+		initialiseRadioButtons();
 	}
 
 	@Override
@@ -46,6 +50,53 @@ public class SynthActivity extends Activity {
         
         Log.i(TAG, "Buffering sound");
         am.buffer(sampleData);
+	}
+	
+	// Radio button handlers
+
+	private void initialiseRadioButtons () {
+		// This will get the radiogroup
+		RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroupWaveType);
+		
+		// This will get the radiobutton in the radiogroup that is checked
+		RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+		
+		// This overrides the radiogroup onCheckListener
+		rGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+		{
+		    public void onCheckedChanged(RadioGroup rGroup, int checkedId)
+		    {
+		        // This will get the radiobutton that has changed in its check state
+		        RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(checkedId);
+		        
+		        // This puts the value (true/false) into the variable
+		        boolean isChecked = checkedRadioButton.isChecked();
+		        
+		        // If the radiobutton that has changed in check state is now checked...
+		        if (isChecked)
+		        {
+		        	SoundManager.WAVE_TYPE wave;
+		        	
+		        	switch (checkedRadioButton.getId()) {
+		        		case R.id.radiobtnSaw:
+			        		wave = SoundManager.WAVE_TYPE.SAW_TOOTH;
+			        		break;
+			        		
+		        		case R.id.radiobtnSquare:
+			        		wave = SoundManager.WAVE_TYPE.SQUARE;
+			        		break;
+		        		
+		        		case R.id.radiobtnSine:
+		        		default:
+		        			wave = SoundManager.WAVE_TYPE.SINE;
+		        			break;
+		        	}
+		        	
+		        	Log.i(TAG, "Setting wave type to " + wave);
+		            sm.setWaveType(wave);
+		        }
+		    }
+		});
 	}
 	
 	// Button handlers
