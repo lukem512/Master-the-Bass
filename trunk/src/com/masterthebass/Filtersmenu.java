@@ -46,6 +46,7 @@ public class Filtersmenu extends Activity {
 	boolean[] settings;
 	/* filterdropdown:
 	 * 0-3 correspond to each spinner
+	 * 4,5 - knob values on slider
 	 */
 	int[] filterdropdown;
 	
@@ -64,7 +65,8 @@ public class Filtersmenu extends Activity {
         params.height = backImage.getHeight();
 		slider.setLayoutParams(params);
 		slider.setPosition(10,0);
-		
+		slider.setStartKnobValue(filterdropdown[4]);
+		slider.setEndKnobValue(filterdropdown[5]);
 		slider.setOnKnobValuesChangedListener(new KnobValuesChangedListener() {
 			
 			@Override
@@ -72,6 +74,8 @@ public class Filtersmenu extends Activity {
 					boolean knobEndChanged, int knobStart, int knobEnd) {
 				if(knobStartChanged || knobEndChanged)
 					text_interval.setText(knobStart + " - " + knobEnd);
+					filterdropdown[4] = knobStart;
+					filterdropdown[5] = knobEnd;
 			}
 		});
 	}
@@ -90,7 +94,6 @@ public class Filtersmenu extends Activity {
 		ToggleButton btn3 = (ToggleButton) findViewById(R.id.toggleButton4);
 		ToggleButton btn4 = (ToggleButton) findViewById(R.id.toggleButton5);
 		
-        SetUpSlider();
 		
 		// Get data from intent
 		Intent intent = getIntent();
@@ -132,6 +135,8 @@ public class Filtersmenu extends Activity {
         btn3.setChecked(settings[3]);
         btn4.setChecked(settings[4]);
         Log.d(LogTag,"the item in filterdropdown[0] = " + filterdropdown[0]);
+        
+        SetUpSlider();
         
         addtofilters();
         Log.d(LogTag,"Added filters to list.");
@@ -231,6 +236,7 @@ public class Filtersmenu extends Activity {
         Intent a = new Intent(getApplicationContext(),MainActivity.class);
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
+        a.putExtra(TAG, filterdropdown);
         setResult(RESULT_OK,a);
         finish();
     }

@@ -236,6 +236,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
+    			filterarray = data.getIntArrayExtra(TAG);
+    			Log.i(TAG,"Left: " + filterarray[4] + " Right: "+ filterarray[5]);
     		}
 
     		if (resultCode == RESULT_CANCELED) {
@@ -297,7 +299,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static int[] filterarray = new int[]{0,0,0,0};
+	private static int[] filterarray = new int[]{0,0,0,0,0,0};
 	private static int longpresson = 0;
 	
 	long lastGesture = System.currentTimeMillis();
