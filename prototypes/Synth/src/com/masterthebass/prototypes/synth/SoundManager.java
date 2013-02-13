@@ -6,10 +6,8 @@ public class SoundManager{
 	/* Members */
 
 	private String logTag = "SoundManager";
-	private WAVE_TYPE waveType = WAVE_TYPE.SQUARE;
+	private WaveType waveType = WaveType.SQUARE;
 	private double Final;
-	
-	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
 
 	/* Constructor */
 
@@ -39,7 +37,7 @@ public class SoundManager{
 	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
-	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
+	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
 		double sample = 0.0;
 		short generatedSnd[] = new short[numSamples];
 		int i, idx;
@@ -128,11 +126,11 @@ public class SoundManager{
         return generatedSnd;
     }
 	
-	public void setWaveType (WAVE_TYPE waveType) {
+	public void setWaveType (WaveType waveType) {
 		this.waveType = waveType;
 	}
 	
-	public WAVE_TYPE getWaveType () {
+	public WaveType getWaveType () {
 		return waveType;
 	}
 

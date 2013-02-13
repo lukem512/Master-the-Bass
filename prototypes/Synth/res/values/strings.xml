@@ -13,5 +13,6 @@
     <string name="radioBtnSineText">Sine</string>
     <string name="radioBtnSawText">Saw-Tooth</string>
     <string name="radioBtnSquareText">Square</string>
+    <string name="radioBtnHarmonicSquareText">Harmonic Square</string>
 
 </resources>

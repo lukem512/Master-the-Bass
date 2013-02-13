@@ -81,14 +81,21 @@
             android:id="@+id/radiobtnSine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="@string/radioBtnSineText" />
 
         <RadioButton
             android:id="@+id/radiobtnSquare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="@string/radioBtnSquareText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnHarmonicSquare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnHarmonicSquareText" />
 
         <RadioButton
             android:id="@+id/radiobtnSaw"

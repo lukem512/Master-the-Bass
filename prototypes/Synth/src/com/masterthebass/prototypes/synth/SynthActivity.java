@@ -75,20 +75,24 @@ public class SynthActivity extends Activity {
 		        // If the radiobutton that has changed in check state is now checked...
 		        if (isChecked)
 		        {
-		        	SoundManager.WAVE_TYPE wave;
+		        	WaveType wave;
 		        	
 		        	switch (checkedRadioButton.getId()) {
 		        		case R.id.radiobtnSaw:
-			        		wave = SoundManager.WAVE_TYPE.SAW_TOOTH;
+			        		wave = WaveType.SAW_TOOTH;
 			        		break;
 			        		
 		        		case R.id.radiobtnSquare:
-			        		wave = SoundManager.WAVE_TYPE.SQUARE;
+			        		wave = WaveType.SQUARE;
+			        		break;
+			        		
+		        		case R.id.radiobtnHarmonicSquare:
+			        		wave = WaveType.HARMONIC_SQUARE;
 			        		break;
 		        		
 		        		case R.id.radiobtnSine:
 		        		default:
-		        			wave = SoundManager.WAVE_TYPE.SINE;
+		        			wave = WaveType.SINE;
 		        			break;
 		        	}
 		        	
