@@ -141,19 +141,18 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	}
 
 	public int getSampleRate() {
-		//return nativeSampleRate;
-		return 44100;
+		return nativeSampleRate;
 	}
 
 	public void buffer(byte[] pcm) {
 		byte[] buffer;
 		int length, pos, written;
 
-		Log.d(logTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
+		//Log.d(logTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
 
 		pos = 0;
 		while (pos < pcm.length) {			
-			Log.d(logTag+".buffer", "At position " + pos + ".");
+			//Log.d(logTag+".buffer", "At position " + pos + ".");
 
 			// Ensure there are enough bytes left to copy
 			if (pcm.length < (pos + bufferSize)) {
@@ -162,7 +161,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 				length = bufferSize;
 			}
 			
-			Log.d(logTag+".buffer", "Attempting to write buffer of " + length + " bytes.");
+			//Log.d(logTag+".buffer", "Attempting to write buffer of " + length + " bytes.");
 
 			buffer = new byte[length];
 			System.arraycopy(pcm, pos, buffer, 0, length);
@@ -179,7 +178,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			pos += written;
 			numBytesBuffered += written;
 
-			Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
+			//Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
 			if (Thread.interrupted()) {
 				Log.d(logTag+".buffer", "Thread was interrupted.");
@@ -187,7 +186,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			}
 		}
 
-		Log.d(logTag+".buffer", "Exiting...");
+		//Log.d(logTag+".buffer", "Exiting...");
 	}
 	
 	public void buffer(short[] pcm) {

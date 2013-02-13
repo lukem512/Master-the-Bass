@@ -18,7 +18,7 @@ public class Oscillator {
 	/* Constructors */
 	
 	public Oscillator (AudioOutputManager am) {
-		construct (WaveType.SQUARE, 0.2f, 10f, am);
+		construct (WaveType.SINE, 0.2f, 10f, am);
 	}
 	
 	public Oscillator (AudioOutputManager am, WaveType waveType) {
@@ -82,11 +82,15 @@ public class Oscillator {
 		started = true;
 		
 		// TODO - spawn a thread that will create a waveform
-		sm.generateToneShort(0.01, rate, depth, am.getSampleRate());
+		sm.generateTone(0.01, rate, depth, am.getSampleRate());
 	}
 	
 	public void stop () {
 		started = false;
+	}
+	
+	public short[] generateSample (float duration) {
+		return sm.generateTone(duration, rate, depth, am.getSampleRate());
 	}
 	
 }

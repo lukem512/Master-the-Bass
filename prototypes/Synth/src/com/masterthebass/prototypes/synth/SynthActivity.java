@@ -43,7 +43,7 @@ public class SynthActivity extends Activity {
         short [] sampleData = new short[samples];
         
         Log.i (TAG, "Generating sound");
-        sampleData = sm.generateToneShort(duration, frequency, 1.0, sampleRate);
+        sampleData = sm.generateTone(duration, frequency, 1.0, sampleRate);
         
         Log.i(TAG, "Playing sound");
         am.playImmediately();

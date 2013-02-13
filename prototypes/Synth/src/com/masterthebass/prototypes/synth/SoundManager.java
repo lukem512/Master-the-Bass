@@ -6,7 +6,7 @@ public class SoundManager{
 	/* Members */
 
 	private String logTag = "SoundManager";
-	private WaveType waveType = WaveType.SQUARE;
+	private WaveType waveType = WaveType.SINE;
 	private double Final;
 
 	/* Constructor */
@@ -22,19 +22,6 @@ public class SoundManager{
 	}
 
 	/* Private methods */
-	
-	private byte[] shortToByteArray (short[] shortArray) {
-		byte[] byteArray = new byte[shortArray.length * 2];
-		int idx = 0;
-		
-		// convert to byte[]
-		for (int i = 0; i < shortArray.length; i = i+2) {
-			byteArray[idx++] = (byte) (shortArray[i] & 0x00ff);
-			byteArray[idx++] = (byte) ((shortArray[i] & 0xff00) >>> 8);
-		}
-		
-		return byteArray;
-	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
 	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
@@ -96,16 +83,10 @@ public class SoundManager{
 	}
 	
 	/* Public static methods */
-
-	// Generate a tone at a given frequency, for a given duration
-	// Returns a byte array of the sound in 16-bit WAV PCM format
-	public byte[] generateToneByte(double duration, double frequency, double volume, int sampleRate) {		
-		return shortToByteArray(generateToneShort (duration, frequency, volume, sampleRate));
-    }
 	
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a short array of the sound in 16-bit WAV PCM format
-	public short[] generateToneShort(double duration, double frequency, double volume, int sampleRate) {		
+	public short[] generateTone(double duration, double frequency, double volume, int sampleRate) {		
 		int numSamples = (int) Math.ceil(sampleRate * duration);
 		short generatedSnd[];
 
@@ -125,6 +106,33 @@ public class SoundManager{
         
         return generatedSnd;
     }
+	
+	// Mixes two signals
+	// This is as easy as summing each sample and clipping
+	public static short[] mixTones(short[] a, short[] b) {
+		if (a.length != b.length) {
+			throw new IllegalArgumentException ("Tones are not of same length.");
+		}
+		
+		short[] mixed = new short[a.length];
+		int i = 0;
+		
+		for (short s : a) {
+			int news = (s+b[i]);
+			
+			if (news < 0) {
+				mixed[i] = 0;
+			} else if (news > Short.MAX_VALUE) {
+				mixed[i] = Short.MAX_VALUE;
+			} else {
+				mixed[i] = (short) news;
+			}
+			
+			i++;
+		}
+		
+		return mixed;
+	}
 	
 	public void setWaveType (WaveType waveType) {
 		this.waveType = waveType;
