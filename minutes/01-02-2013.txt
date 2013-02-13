@@ -1,0 +1,23 @@
+Meeting Minutes
+01/02/2013
+---------------
+
+Guy and Petro have made good progress with the UI. There is still the Settings menu to do.
+
+	- The 'Hold' gesture should not toggle, it should only enable as long as the gesture is being performed.
+
+	- Play button on main screen needs to be implemented
+
+	- To touch-bases with Ricky about the 'pretty UI'
+
+	- Petro's phone to be main UI target for Beta release - assuming the audio works (to be tested ASAP)
+
+Documentation needs updating, release Schedule and a report on work done + design decisions
+
+Luke and Steve to plug in accelerometer directly to audio creation.
+
+	- a 'quick fix' for the latency issues in Stop button could be to mute the phone
+
+Jon to look into Echo and Reverb filters
+
+	- to read Dr Dobbs website and implement an Envelope Generator (for volume)
