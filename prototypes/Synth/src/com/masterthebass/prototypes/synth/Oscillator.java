@@ -11,8 +11,8 @@ public class Oscillator {
 	// Frequency (Hz)
 	private float rate;
 	
-	private SoundManager sm;
-	private AudioOutputManager am;
+	protected SoundManager sm;
+	protected AudioOutputManager am;
 	private boolean started;
 	
 	/* Constructors */
@@ -80,17 +80,18 @@ public class Oscillator {
 	
 	public void start () {
 		started = true;
-		
-		// TODO - spawn a thread that will create a waveform
-		sm.generateTone(0.01, rate, depth, am.getSampleRate());
 	}
 	
 	public void stop () {
 		started = false;
 	}
 	
-	public short[] generateSample (float duration) {
-		return sm.generateTone(duration, rate, depth, am.getSampleRate());
+	public short[] getSample (float duration) {
+		if (started) {
+			return sm.generateTone(duration, rate, depth, am.getSampleRate());
+		} else {
+			return sm.generateSilence(duration, am.getSampleRate());
+		}
 	}
 	
 }

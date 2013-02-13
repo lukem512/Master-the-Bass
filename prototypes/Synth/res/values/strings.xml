@@ -14,5 +14,8 @@
     <string name="radioBtnSawText">Saw-Tooth</string>
     <string name="radioBtnSquareText">Square</string>
     <string name="radioBtnHarmonicSquareText">Harmonic Square</string>
+    <string name="toggleBtnLowPassFilterText">Low-Pass Filter</string>
+    <string name="toggleBtnDepthLFOText">Depth LFO</string>
+    <string name="toggleBtnRateLFOText">Rate LFO</string>
 
 </resources>

@@ -7,11 +7,14 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ToggleButton;
 
 public class SynthActivity extends Activity {
 	
 	private AudioOutputManager am;
 	private SoundManager sm;
+	private DepthLFO depthLFO;
+	private Oscillator rateLFO;
 	
 	private float noteDuration = 0.5f;
 	
@@ -25,8 +28,13 @@ public class SynthActivity extends Activity {
 		am = new AudioOutputManager();
 		sm = new SoundManager();	
 		
+		// Instantiate Oscillators
+		depthLFO = new DepthLFO (am);
+		rateLFO = new Oscillator (am);
+		
 		setContentView(R.layout.synth_activity);
 		
+		// Set up radio group
 		initialiseRadioButtons();
 	}
 
@@ -40,10 +48,28 @@ public class SynthActivity extends Activity {
 	private void playSound (float frequency, float duration) {
 		int sampleRate = am.getSampleRate();
 		int samples = (int) Math.ceil(sampleRate * duration);
-        short [] sampleData = new short[samples];
+        short[] sampleData = new short[samples];
+        short[] depthLFOData = new short[samples];
+        
+        // TODO - apply the rate (frequency) LFO to the frequency
+        // this might require some further modification however!!
         
         Log.i (TAG, "Generating sound");
         sampleData = sm.generateTone(duration, frequency, 1.0, sampleRate);
+        
+        // Mix the depth (volume) LFO
+        Log.i (TAG, "Oscillating sound using Depth LFO");
+        depthLFOData = depthLFO.getSample(duration);
+        
+        // TODO - there is a big bug somewhere in here!
+        // I get noise in everything but the square wave
+        // and even that isn't perfect.
+        for (int i = 0; i < sampleData.length; i++) {
+        	sampleData[i] = (short) (sampleData[i] * depthLFOData[i]);
+        }
+        
+        // Apply the filter(s) (if needed)
+        // TODO!
         
         Log.i(TAG, "Playing sound");
         am.playImmediately();
@@ -152,6 +178,42 @@ public class SynthActivity extends Activity {
 		Log.i(TAG, "Playing G4");
 		playSound (MidiNote.G4, noteDuration);
 		Log.i(TAG, "Done!");
+	}
+	
+	public void toggleBtnLPFClick (View v) {
+		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnLPF);
+		
+		// TODO
+		
+		if (btn.isChecked()) {
+			// Enable LPF!
+		} else {
+			// Disable LPF!
+		}
+	}
+	
+	public void toggleBtnDepthLFOClick (View v) {
+		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnDepthLFO);
+		
+		if (btn.isChecked()) {
+			// Enable Depth LFO!
+			depthLFO.start();
+		} else {
+			// Disable Depth LFO!
+			depthLFO.stop();
+		}
+	}
+	
+	public void toggleBtnRateLFOClick (View v) {
+		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnRateLFO);
+		
+		if (btn.isChecked()) {
+			// Enable Rate LFO!
+			rateLFO.start();
+		} else {
+			// Disable Rate LFO!
+			rateLFO.stop();
+		}
 	}
 
 }

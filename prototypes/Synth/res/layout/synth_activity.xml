@@ -104,4 +104,41 @@
             android:text="@string/radioBtnSawText" />
     </RadioGroup>
 
+    <ToggleButton
+        android:id="@+id/toggleBtnLPF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/radioGroupWaveType"
+        android:layout_toRightOf="@+id/btnG"
+        android:clickable="false"
+        android:onClick="toggleBtnLPFClick"
+        android:text="@string/toggleBtnLowPassFilterText"
+        android:textOff="@string/toggleBtnLowPassFilterText"
+        android:textOn="@string/toggleBtnLowPassFilterText" />
+
+    <ToggleButton
+        android:id="@+id/toggleBtnDepthLFO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/toggleBtnLPF"
+        android:layout_below="@+id/toggleBtnLPF"
+        android:layout_toRightOf="@+id/btnG"
+        android:onClick="toggleBtnDepthLFOClick"
+        android:text="@string/toggleBtnDepthLFOText"
+        android:textOff="@string/toggleBtnDepthLFOText"
+        android:textOn="@string/toggleBtnDepthLFOText" />
+
+    <ToggleButton
+        android:id="@+id/toggleBtnRateLFO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/toggleBtnDepthLFO"
+        android:layout_alignRight="@+id/toggleBtnDepthLFO"
+        android:layout_below="@+id/toggleBtnDepthLFO"
+        android:clickable="false"
+        android:onClick="toggleBtnRateLFOClick"
+        android:text="@string/toggleBtnRateLFOText"
+        android:textOff="@string/toggleBtnRateLFOText"
+        android:textOn="@string/toggleBtnRateLFOText" />
+
 </RelativeLayout>
