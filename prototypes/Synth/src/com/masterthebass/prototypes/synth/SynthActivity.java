@@ -59,22 +59,13 @@ public class SynthActivity extends Activity {
         
         // Mix the depth (volume) LFO
         Log.i (TAG, "Oscillating sound using Depth LFO");
-        depthLFOData = depthLFO.getDepthSample(duration); // TODO - these values are not just -1 to +1
+        depthLFOData = depthLFO.getDepthSample(duration);
         
-        // TODO - there is a big bug somewhere in here!
-        // I get noise in everything but the square wave
-        // and even that isn't perfect.
         if (depthLFO.isStarted()) {
 	        for (int i = 0; i < sampleData.length; i++) {
-	        	//Log.d (TAG, "depthLFO sample is: " + depthLFOData[i] + " (" + Math.abs(depthLFOData[i]/2) + ")");
-	        	sampleData[i] = (short) (sampleData[i] * Math.abs(depthLFOData[i]/2));
-	        	//Log.d (TAG, "generated sample is: " + sampleData[i]);
+	        	sampleData[i] = (short) (sampleData[i] * ((depthLFOData[i]+1)/2));
 	        }
-        }/* else {
-        	for (int i = 0; i < sampleData.length; i++) {
-        		Log.d (TAG, "generated sample is: " + sampleData[i]);
-        	}
-        }*/
+        }
         
         // Apply the filter(s) (if needed)
         // TODO!
