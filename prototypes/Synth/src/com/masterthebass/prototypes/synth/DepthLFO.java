@@ -10,7 +10,7 @@ public class DepthLFO extends Oscillator {
 		if (isStarted()) {
 			return sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
 		} else {
-			return sm.generateUnscaledMaxium(duration, am.getSampleRate());
+			return null;
 		}
 	}
 

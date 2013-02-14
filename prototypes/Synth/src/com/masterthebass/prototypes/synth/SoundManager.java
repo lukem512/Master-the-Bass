@@ -104,8 +104,6 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-		
-		Log.d("Synth", "Calling vmGenerateTone");
 
 		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, waveType);
         
@@ -127,8 +125,6 @@ public class SoundManager{
 		} else if (volume > 1.0) {
 			volume = 1.0;
 		}
-		
-		Log.d("Synth", "Calling vmGenerateUnscaledTone");
 
 		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, Final, waveType);
         
@@ -157,19 +153,6 @@ public class SoundManager{
 		
 		for (int i = 0; i < numSamples; i++) {
 			generatedSnd[i] = 0;
-		}
-		
-		return generatedSnd;
-	}
-
-	// 'Generates' the maximum value representable in double format for
-	// given duration at given SR
-	public double[] generateUnscaledMaxium(double duration, int sampleRate) {
-		int numSamples = (int) Math.ceil(sampleRate * duration);
-		double generatedSnd[] = new double[numSamples];
-		
-		for (int i = 0; i < numSamples; i++) {
-			generatedSnd[i] = 1;
 		}
 		
 		return generatedSnd;

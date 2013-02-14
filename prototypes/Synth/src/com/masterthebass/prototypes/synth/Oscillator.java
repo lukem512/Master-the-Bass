@@ -55,6 +55,12 @@ public class Oscillator {
 	}
 	
 	public void setDepth (float depth) {
+		if (depth > 1.0) {
+			depth = 1.0f;
+		} else if (depth < 0.0) {
+			depth = 0.0f;
+		}
+		
 		this.depth = depth;
 	}
 	
@@ -63,12 +69,6 @@ public class Oscillator {
 	}
 	
 	public void setRate (float rate) {
-		if (rate > 1.0) {
-			rate = 1.0f;
-		} else if (rate < 0.0) {
-			rate = 0.0f;
-		}
-		
 		this.rate = rate;
 	}
 	

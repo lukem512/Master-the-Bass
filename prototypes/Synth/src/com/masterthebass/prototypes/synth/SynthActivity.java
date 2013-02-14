@@ -49,7 +49,7 @@ public class SynthActivity extends Activity {
 		int sampleRate = am.getSampleRate();
 		int samples = (int) Math.ceil(sampleRate * duration);
         short[] sampleData = new short[samples];
-        short[] depthLFOData = new short[samples];
+        double[] depthLFOData = new double[samples];
         
         // TODO - apply the rate (frequency) LFO to the frequency
         // this might require some further modification however!!
@@ -59,14 +59,22 @@ public class SynthActivity extends Activity {
         
         // Mix the depth (volume) LFO
         Log.i (TAG, "Oscillating sound using Depth LFO");
-        depthLFOData = depthLFO.getSample(duration);
+        depthLFOData = depthLFO.getDepthSample(duration); // TODO - these values are not just -1 to +1
         
         // TODO - there is a big bug somewhere in here!
         // I get noise in everything but the square wave
         // and even that isn't perfect.
-        for (int i = 0; i < sampleData.length; i++) {
-        	sampleData[i] = (short) (sampleData[i] * depthLFOData[i]);
-        }
+        if (depthLFO.isStarted()) {
+	        for (int i = 0; i < sampleData.length; i++) {
+	        	//Log.d (TAG, "depthLFO sample is: " + depthLFOData[i] + " (" + Math.abs(depthLFOData[i]/2) + ")");
+	        	sampleData[i] = (short) (sampleData[i] * Math.abs(depthLFOData[i]/2));
+	        	//Log.d (TAG, "generated sample is: " + sampleData[i]);
+	        }
+        }/* else {
+        	for (int i = 0; i < sampleData.length; i++) {
+        		Log.d (TAG, "generated sample is: " + sampleData[i]);
+        	}
+        }*/
         
         // Apply the filter(s) (if needed)
         // TODO!
