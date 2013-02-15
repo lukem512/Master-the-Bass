@@ -1,9 +1,5 @@
 package com.masterthebass;
 
-import java.io.Serializable;
-
-import android.util.Log;
-
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private int sampleRate;
