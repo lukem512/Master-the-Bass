@@ -17,6 +17,10 @@ public class Oscillator {
 	protected AudioOutputManager am;
 	private boolean started;
 	
+	// Bounds for modulation
+	protected int maxCutoff;
+	protected int minCutoff;
+	
 	/* Constructors */
 	
 	public Oscillator (AudioOutputManager am) {
@@ -89,8 +93,8 @@ public class Oscillator {
 		started = false;
 	}
 	
-	public short[] getSample (float duration) {
-		return sm.generateTone(duration, rate, depth, am.getSampleRate());
+	public double[] getSample (float duration) {
+		return sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
 	}
 	
 	/* Threads */
@@ -100,10 +104,12 @@ public class Oscillator {
 			//Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 			
 			while (started) {
-				final short[] sampleData = getSample (0.1f);
+				final double[] sampleData = getSample (0.1f);
 				
 				// TODO - modulate whatever needs modulating!
 				// I don't yet know how to do this nicely!
+				
+				// TODO - function that maps
 				
 				if (Thread.interrupted()) {
 					return;

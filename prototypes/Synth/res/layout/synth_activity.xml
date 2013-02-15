@@ -110,7 +110,6 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/radioGroupWaveType"
         android:layout_toRightOf="@+id/btnG"
-        android:clickable="false"
         android:onClick="toggleBtnLPFClick"
         android:text="@string/toggleBtnLowPassFilterText"
         android:textOff="@string/toggleBtnLowPassFilterText"
