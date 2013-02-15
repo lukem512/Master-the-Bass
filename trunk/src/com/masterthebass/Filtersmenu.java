@@ -46,39 +46,11 @@ public class Filtersmenu extends Activity {
 	boolean[] settings;
 	/* filterdropdown:
 	 * 0-3 correspond to each spinner
-	 * 4,5 - knob values on slider
 	 */
 	int[] filterdropdown;
+	int[] sliderValues;
 	
 	private FilterManager filterman;
-	
-	private void SetUpSlider() {
-		text_interval = (TextView)findViewById(R.id.text_interval);		
-		slider = (SliderView)findViewById(R.id.slider);
-
-		//size of screen and knob
-        Bitmap backImage = BitmapFactory.decodeResource(getResources(), R.drawable.bar);
-		
-        //we use the sizes for the slider
-        LayoutParams params = slider.getLayoutParams();
-        params.width = backImage.getWidth();
-        params.height = backImage.getHeight();
-		slider.setLayoutParams(params);
-		slider.setPosition(10,0);
-		slider.setStartKnobValue(filterdropdown[4]);
-		slider.setEndKnobValue(filterdropdown[5]);
-		slider.setOnKnobValuesChangedListener(new KnobValuesChangedListener() {
-			
-			@Override
-			public void onValuesChanged(boolean knobStartChanged,
-					boolean knobEndChanged, int knobStart, int knobEnd) {
-				if(knobStartChanged || knobEndChanged)
-					text_interval.setText(knobStart + " - " + knobEnd);
-					filterdropdown[4] = knobStart;
-					filterdropdown[5] = knobEnd;
-			}
-		});
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +88,12 @@ public class Filtersmenu extends Activity {
 			Log.d (LogTag, "Received setting: "+settings[i]);
 		}
         
-        filterdropdown = intent.getIntArrayExtra(TAG);
+        
+        int [] set = intent.getIntArrayExtra(TAG);
+        sliderValues = new int[2];
+        filterdropdown = new int[set.length - 2];
+        System.arraycopy(set, 0, sliderValues, 0, 2);
+        System.arraycopy(set, 2, filterdropdown, 0, set.length - 2);
         Log.d(LogTag, "Got filter drop down from from FilterManager instance");
         
         for (int i = 0; i < filterdropdown.length; i++) {
@@ -141,6 +118,35 @@ public class Filtersmenu extends Activity {
         addtofilters();
         Log.d(LogTag,"Added filters to list.");
 	}
+	
+	private void SetUpSlider() {
+		text_interval = (TextView)findViewById(R.id.text_interval);		
+		slider = (SliderView)findViewById(R.id.slider);
+
+		//size of screen and knob
+        Bitmap backImage = BitmapFactory.decodeResource(getResources(), R.drawable.bar);
+		
+        //we use the sizes for the slider
+        LayoutParams params = slider.getLayoutParams();
+        params.width = backImage.getWidth();
+        params.height = backImage.getHeight();
+		slider.setLayoutParams(params);
+		slider.setPosition(10,0);
+		slider.setStartKnobValue(sliderValues[0]);
+		slider.setEndKnobValue(sliderValues[1]);
+		slider.setOnKnobValuesChangedListener(new KnobValuesChangedListener() {
+			
+			@Override
+			public void onValuesChanged(boolean knobStartChanged,
+					boolean knobEndChanged, int knobStart, int knobEnd) {
+				if(knobStartChanged || knobEndChanged)
+					text_interval.setText(knobStart + " - " + knobEnd);
+					sliderValues[0] = knobStart;
+					sliderValues[1] = knobEnd;
+			}
+		});
+	}
+	
 	//***********************getting filters in to the spinners*********************************************
 	
 	
@@ -188,11 +194,11 @@ public class Filtersmenu extends Activity {
 			});
 		
 		//adding the array to the spinner3
-				Spinner spinner3 = (Spinner) findViewById(R.id.spinner3);
-				ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
-				adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				spinner3.setAdapter(adapter3);			
-				spinner3.setOnItemSelectedListener(new OnItemSelectedListener() {
+		Spinner spinner3 = (Spinner) findViewById(R.id.spinner3);
+		ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner3.setAdapter(adapter3);			
+		spinner3.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 			    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 					Log.i(TAG,"has been clicked");
@@ -206,12 +212,12 @@ public class Filtersmenu extends Activity {
 					});
 				
 				
-				//adding the array to the spinner4
-				Spinner spinner4 = (Spinner) findViewById(R.id.spinner4);
-				ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
-				adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				spinner4.setAdapter(adapter4);			
-				spinner4.setOnItemSelectedListener(new OnItemSelectedListener() {
+		//adding the array to the spinner4
+		Spinner spinner4 = (Spinner) findViewById(R.id.spinner4);
+		ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner4.setAdapter(adapter4);			
+		spinner4.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 			    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 					Log.i(TAG,"has been clicked");
@@ -233,10 +239,11 @@ public class Filtersmenu extends Activity {
 	
 	@Override
     public void onBackPressed(){
+		com.masterthebass.MainActivity.addSliderValues(sliderValues);
         Intent a = new Intent(getApplicationContext(),MainActivity.class);
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
-        a.putExtra(TAG, filterdropdown);
+        //a.putExtra(TAG, filterdropdown);
         setResult(RESULT_OK,a);
         finish();
     }

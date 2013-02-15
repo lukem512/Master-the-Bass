@@ -52,17 +52,17 @@ public class SliderView extends View {
 		if(!initialisedSlider) {
 			initialisedSlider = true;
 	        Bitmap knobImage = BitmapFactory.decodeResource(getResources(), R.drawable.knob);
-			pointKnobStart.x = pos.x;
+			pointKnobStart.x = pos.x + ((int)sliderWidth/100)*startKnobValue;
 			pointKnobStart.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
-			pointKnobEnd.x = pos.x + (int)sliderWidth - knobImage.getWidth();
+			pointKnobEnd.x = pos.x + ((int)sliderWidth/100)*endKnobValue - knobImage.getWidth();
 			pointKnobEnd.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
 		    
 			knobs[0] = new Knob(getContext(),R.drawable.knob, pointKnobStart);
 			knobs[1] = new Knob(getContext(),R.drawable.knob, pointKnobEnd);
 			knobs[0].setID(1);
 			knobs[1].setID(2);
-			setStartKnobValue(0);
-			setEndKnobValue(100);
+			//setStartKnobValue(0);
+			//setEndKnobValue(100);
 			knobValuesChanged(true, true, getStartKnobValue(), getEndKnobValue());
 
 			paintText = new Paint();//the paint for the slider data(the values) 

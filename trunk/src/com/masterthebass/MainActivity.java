@@ -225,7 +225,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     public void startSettings(View view) {
     	Intent intent = new Intent(this, Filtersmenu.class);
     	intent.putExtra(EXTRA_MESSAGE, settings);
-    	intent.putExtra(TAG, filterarray);
+    	//put slider values and settings
+    	int[] set = new int[filterarray.length + 2];
+    	System.arraycopy(sliderValues, 0, set, 0, sliderValues.length);
+    	System.arraycopy(filterarray, 0, set, 2, filterarray.length);
+    	Log.d(TAG, "sliderVal: " + sliderValues[0] + " set val: "+set[0]);
+    	intent.putExtra(TAG, set);
     	Log.d(LogTag, "Sending FilterArray of size " + filterarray.length);
     	intent.putExtra(FILTERMAN_CLASS, filterman);
     	startActivityForResult(intent,1);
@@ -236,8 +241,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
-    			filterarray = data.getIntArrayExtra(TAG);
-    			Log.i(TAG,"Left: " + filterarray[4] + " Right: "+ filterarray[5]);
+    		//	filterarray = data.getIntArrayExtra(TAG);
     		}
 
     		if (resultCode == RESULT_CANCELED) {
@@ -300,6 +304,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] filterarray = new int[]{0,0,0,0,0,0};
+	private static int[] sliderValues = new int[]{0,100};
 	private static int longpresson = 0;
 	
 	long lastGesture = System.currentTimeMillis();
@@ -321,6 +326,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		
 	}   
 	
+	
+	public static void addSliderValues(int[] a){
+		sliderValues = a;
+	}
 	
     @Override
 	public boolean onTouchEvent(MotionEvent me)	{
