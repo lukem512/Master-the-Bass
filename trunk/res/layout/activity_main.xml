@@ -5,6 +5,52 @@
     android:layout_height="match_parent" 
     android:background="@drawable/main_background">
 
+
+    
+    <ToggleButton
+           android:id="@+id/filter1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+   	       android:layout_marginTop="100dp"
+   	       android:layout_marginLeft="70dp"
+           android:onClick="filterTopLeft"
+           android:background="@drawable/selector_toggle"
+           android:textOff=""
+           android:textOn= "" />
+    
+    <ToggleButton
+           android:id="@+id/filter2"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+   	       android:layout_marginTop="100dp"
+   	       android:layout_marginLeft="170dp"
+           android:onClick="filterTopRight"
+           android:background="@drawable/selector_toggle"
+           android:textOff=""
+           android:textOn= "" />
+    
+    <ToggleButton
+           android:id="@+id/filter3"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+   	       android:layout_marginTop="200dp"
+   	       android:layout_marginLeft="70dp"
+           android:onClick="filterBottomLeft"
+           android:background="@drawable/selector_toggle"
+           android:textOff=""
+           android:textOn= "" />
+    
+    <ToggleButton
+           android:id="@+id/filter4"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+   	       android:layout_marginTop="200dp"
+   	       android:layout_marginLeft="170dp"
+           android:onClick="filterBottomRight"
+           android:background="@drawable/selector_toggle"
+           android:textOff=""
+           android:textOn= "" />
+    
     <Button
         android:id="@+id/buttonplay"
         android:layout_width="70dp"

@@ -20,6 +20,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
@@ -97,6 +98,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
 	
+	ToggleButton fb1;
+	
 	// Log output tag
 	private final static String LogTag = "Main";
 	
@@ -166,7 +169,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
-        //filterSelected = new int[filterman.getFiltersList().length];
+        fb1 = (ToggleButton)findViewById(R.id.filter1);
     }
     
     @Override
@@ -292,6 +295,24 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		}
     }
     
+    /*
+     * functions that called when one of the
+     * filter buttons is pressed
+     */
+    
+    public void filterTopLeft(View view){
+    	//filter1
+    	Log.i(TAG,"clicked");
+    }
+    public void filterTopRight(View view){
+    	//filter2
+    }
+    public void filterBottomLeft(View view){
+    	//filter3
+    }
+    public void filterBottomRight(View view){
+    	//filter4
+    }
     //*********************gesture code****************************
     
     public static final int gestureDelay = 500;
@@ -330,6 +351,14 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			longpresson = 0;
     		
     	}
+    	Log.i(TAG,"Coordinates -  X: " + me.getX() + " Y: " + me.getY());
+    	float x = me.getRawX();
+    	float y = me.getRawY();
+        if ((x > fb1.getX())&&(x < fb1.getX() + fb1.getWidth())&&
+        	(y > fb1.getY())&&(y < fb1.getY() + fb1.getHeight())){
+        	filterTopLeft(fb1.getRootView());
+        }
+    	
 		//return false;
 		return gestureScanner.onTouchEvent(me);
 	}
