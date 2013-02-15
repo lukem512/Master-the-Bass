@@ -16,7 +16,7 @@ public class SynthActivity extends Activity {
 	private DepthLFO depthLFO;
 	private Oscillator rateLFO;
 	
-	private float noteDuration = 0.5f;
+	private float noteDuration = 1f;
 	
 	private final String TAG = "Synth";
 
@@ -29,7 +29,7 @@ public class SynthActivity extends Activity {
 		sm = new SoundManager();	
 		
 		// Instantiate Oscillators
-		depthLFO = new DepthLFO (am);
+		depthLFO = new DepthLFO (am, WaveType.SINE, 0.5f, 3f);
 		rateLFO = new Oscillator (am);
 		
 		setContentView(R.layout.synth_activity);
@@ -59,11 +59,15 @@ public class SynthActivity extends Activity {
         
         // Mix the depth (volume) LFO
         Log.i (TAG, "Oscillating sound using Depth LFO");
-        depthLFOData = depthLFO.getDepthSample(duration);
         
         if (depthLFO.isStarted()) {
+        	depthLFOData = depthLFO.getDepthSample(duration);
+        	
+        	// Apply the modulation
+        	// As the samples are signed, these are first transformed to be positive
 	        for (int i = 0; i < sampleData.length; i++) {
-	        	sampleData[i] = (short) (sampleData[i] * ((depthLFOData[i]+1)/2));
+	        	//Log.d (TAG, "Volume value is (" + depthLFOData[i] + ")" + (depthLFOData[i]+depthLFO.getDepth())/2);
+	        	sampleData[i] = (short) (sampleData[i] * (depthLFOData[i]+depthLFO.getDepth())/2);
 	        }
         }
         

@@ -18,11 +18,11 @@ public class Oscillator {
 	/* Constructors */
 	
 	public Oscillator (AudioOutputManager am) {
-		construct (WaveType.SINE, 0.2f, 10f, am);
+		construct (WaveType.SINE, 0.5f, 10f, am);
 	}
 	
 	public Oscillator (AudioOutputManager am, WaveType waveType) {
-		construct (waveType, 0.2f, 10f, am);
+		construct (waveType, 0.5f, 10f, am);
 	}
 	
 	public Oscillator (AudioOutputManager am, WaveType waveType, float depth, float rate) {
