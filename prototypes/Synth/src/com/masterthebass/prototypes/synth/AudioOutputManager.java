@@ -24,7 +24,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private int mode = AudioTrack.MODE_STREAM;
 
-	private String logTag = "AudioOutputManager";
+	private final String logTag = "AudioOutputManager";
 
 	/* Constructor */
 

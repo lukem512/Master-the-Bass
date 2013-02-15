@@ -13,10 +13,12 @@ public class SynthActivity extends Activity {
 	
 	private AudioOutputManager am;
 	private SoundManager sm;
+	private FilterManager fm;
 	private DepthLFO depthLFO;
 	private Oscillator rateLFO;
 	
 	private float noteDuration = 1f;
+	private float volume = 1.0f;
 	
 	private final String TAG = "Synth";
 
@@ -27,9 +29,10 @@ public class SynthActivity extends Activity {
 		// Instantiate managers
 		am = new AudioOutputManager();
 		sm = new SoundManager();	
+		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		depthLFO = new DepthLFO (am, WaveType.SINE, 0.5f, 3f);
+		depthLFO = new DepthLFO (am, WaveType.SINE, volume, 3f);
 		rateLFO = new Oscillator (am);
 		
 		setContentView(R.layout.synth_activity);
@@ -51,8 +54,11 @@ public class SynthActivity extends Activity {
         short[] sampleData = new short[samples];
         double[] depthLFOData = new double[samples];
         
-        // TODO - apply the rate (frequency) LFO to the frequency
+        // Apply the rate (frequency) LFO to the frequency
         // this might require some further modification however!!
+        if (rateLFO.isStarted()) {
+        	// TODO
+        }
         
         Log.i (TAG, "Generating sound");
         sampleData = sm.generateTone(duration, frequency, 1.0, sampleRate);
@@ -66,13 +72,21 @@ public class SynthActivity extends Activity {
         	// Apply the modulation
         	// As the samples are signed, these are first transformed to be positive
 	        for (int i = 0; i < sampleData.length; i++) {
-	        	//Log.d (TAG, "Volume value is (" + depthLFOData[i] + ")" + (depthLFOData[i]+depthLFO.getDepth())/2);
 	        	sampleData[i] = (short) (sampleData[i] * (depthLFOData[i]+depthLFO.getDepth())/2);
 	        }
         }
         
         // Apply the filter(s) (if needed)
-        // TODO!
+        // TODO - this isn't going to modulate the cutoff using an LFO
+        // - the way to do this would be to have the oscillators on separate threads, changing the cutoff
+        Log.i (TAG, "Applying filters");
+        
+        int[] filterIDs = fm.getEnabledFiltersList();
+        
+        for (int id : filterIDs) {
+        	Filter f = fm.getFilter(id);
+        	sampleData = f.applyFilter(sampleData);
+        }
         
         Log.i(TAG, "Playing sound");
         am.playImmediately();
@@ -86,9 +100,6 @@ public class SynthActivity extends Activity {
 	private void initialiseRadioButtons () {
 		// This will get the radiogroup
 		RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroupWaveType);
-		
-		// This will get the radiobutton in the radiogroup that is checked
-		RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
 		
 		// This overrides the radiogroup onCheckListener
 		rGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -186,12 +197,12 @@ public class SynthActivity extends Activity {
 	public void toggleBtnLPFClick (View v) {
 		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnLPF);
 		
-		// TODO
-		
 		if (btn.isChecked()) {
 			// Enable LPF!
+			fm.enableFilter(0);
 		} else {
 			// Disable LPF!
+			fm.disableFilter(0);
 		}
 	}
 	

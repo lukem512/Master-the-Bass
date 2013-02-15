@@ -1,11 +1,9 @@
 package com.masterthebass.prototypes.synth;
 
-import android.util.Log;
-
 public class SoundManager{
 	/* Members */
 
-	private String logTag = "SoundManager";
+	private final String logTag = "SoundManager";
 	private WaveType waveType = WaveType.SINE;
 	private double Final;
 

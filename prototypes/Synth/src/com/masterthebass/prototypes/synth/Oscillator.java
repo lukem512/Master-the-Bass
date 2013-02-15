@@ -1,5 +1,7 @@
 package com.masterthebass.prototypes.synth;
 
+import android.util.Log;
+
 public class Oscillator {
 	
 	// Waveform
@@ -30,14 +32,14 @@ public class Oscillator {
 	}
 	
 	private void construct (WaveType waveType, float depth, float rate, AudioOutputManager am) {
-		setWaveType (waveType);
-		setDepth (depth);
-		setRate (rate);
+		this.am = am;
+		sm = new SoundManager();
 		
 		started = false;
 		
-		this.am = am;
-		sm = new SoundManager();
+		setWaveType (waveType);
+		setDepth (depth);
+		setRate (rate);
 	}
 	
 	/* Getters and setters */
@@ -48,6 +50,7 @@ public class Oscillator {
 	
 	public void setWaveType (WaveType waveType) {
 		this.waveType = waveType;
+		sm.setWaveType(waveType);
 	}
 	
 	public float getDepth () {
@@ -87,11 +90,26 @@ public class Oscillator {
 	}
 	
 	public short[] getSample (float duration) {
-		if (started) {
-			return sm.generateTone(duration, rate, depth, am.getSampleRate());
-		} else {
-			return sm.generateSilence(duration, am.getSampleRate());
-		}
+		return sm.generateTone(duration, rate, depth, am.getSampleRate());
 	}
+	
+	/* Threads */
+	
+	private Runnable oscillator = new Runnable() {
+		public void run() {
+			//Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+			
+			while (started) {
+				final short[] sampleData = getSample (0.1f);
+				
+				// TODO - modulate whatever needs modulating!
+				// I don't yet know how to do this nicely!
+				
+				if (Thread.interrupted()) {
+					return;
+				}
+			}
+		}
+	};
 	
 }
