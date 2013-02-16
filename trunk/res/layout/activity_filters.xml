@@ -5,111 +5,63 @@
        android:screenOrientation="portrait"        
     android:background="@drawable/settings_background">
 
-       
+        
        <com.masterthebass.SliderView android:id="@+id/slider"
-			android:layout_width ="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="75dp"
-			android:layout_marginLeft="15dp"
-			android:adjustViewBounds="true"/>	
-			<TextView android:id="@+id/text_interval"
-			android:layout_marginTop="46dp"
-			android:layout_marginLeft="150dp"
-			android:textColor="#FFFFFF"
-			android:text="inverval selected"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"/>
+		android:layout_width ="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:layout_marginTop="75dp"
+		android:layout_marginLeft="15dp"
+		android:adjustViewBounds="true"/>	
+		<TextView android:id="@+id/text_interval"
+		android:layout_marginTop="46dp"
+		android:layout_marginLeft="150dp"
+		android:textColor="#FFFFFF"
+		android:text="inverval selected"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"/>
+     
 
        <ToggleButton
            android:id="@+id/toggleButton5"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/toggleButton4"
-           android:layout_below="@+id/toggleButton4"
            android:onClick="onVibrationClicked"
            android:background="@drawable/selector_toggle"
            android:textOff=""
            android:textOn= "" />
 
-       <ToggleButton
-           android:id="@+id/toggleButton4"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/toggleButton3"
-           android:layout_below="@+id/toggleButton3"           
-           android:background="@drawable/selector_toggle"
-           android:onClick="onBtn3Clicked" 
-           android:textOff=""
-           android:textOn= ""/>
-
-       <ToggleButton
-           android:id="@+id/toggleButton3"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/toggleButton2"
-           android:layout_below="@+id/toggleButton2"           
-           android:background="@drawable/selector_toggle"
-           android:onClick="onBtn2Clicked"
-           android:textOff=""
-           android:textOn= ""/>
-
-       <ToggleButton
-           android:id="@+id/toggleButton2"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/toggleButton1"
-           android:layout_below="@+id/toggleButton1"
-           android:background="@drawable/selector_toggle"
-           android:onClick="onBtn1Clicked"
-           android:textOff=""
-           android:textOn= "" />
-
-    
-
        <Spinner
            android:id="@+id/spinner2"
            android:layout_width="230dp"
            android:layout_height="wrap_content"
-           android:layout_alignBottom="@+id/toggleButton2"
-           android:layout_marginLeft="6dp"
-           android:layout_toRightOf="@+id/toggleButton3"           
-           android:background="@drawable/dropdown_off" />
-
-       <Spinner
-           android:id="@+id/spinner1"
-           android:layout_width="230dp"
-           android:layout_height="wrap_content"
-           android:layout_alignBottom="@+id/toggleButton1"
-           android:layout_alignLeft="@+id/spinner2"
-           android:layout_toRightOf="@+id/toggleButton3" 
+           android:layout_below="@+id/spinner1"
+           android:layout_toRightOf="@+id/toggleButton5"
            android:background="@drawable/dropdown_off" />
 
        <Spinner
            android:id="@+id/spinner3"
            android:layout_width="230dp"
            android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/spinner2"         
-           android:layout_alignBottom="@+id/toggleButton3"
-           android:background="@drawable/dropdown_off"  />
+           android:layout_below="@+id/spinner2"
+           android:layout_toRightOf="@+id/toggleButton5"
+           android:background="@drawable/dropdown_off" />
 
        <Spinner
            android:id="@+id/spinner4"
            android:layout_width="230dp"
            android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/spinner2"
-           android:layout_alignBottom="@+id/toggleButton4"
+           android:layout_alignLeft="@+id/spinner3"
+           android:layout_below="@+id/spinner3"
            android:background="@drawable/dropdown_off" />
 
-       <ToggleButton
-           android:id="@+id/toggleButton1"
-           android:layout_width="wrap_content"
+       <Spinner
+           android:id="@+id/spinner1"
+           android:layout_width="230dp"
            android:layout_height="wrap_content"
-           android:layout_marginLeft="110dp"
-           android:layout_marginTop="172dp"
-           android:background="@drawable/selector_toggle"
-           android:onClick="onBtn0Clicked"
-           android:textOff=""
-           android:textOn= ""/>
+           android:layout_below="@+id/toggleButton5"
+           android:layout_marginTop="60dp"
+           android:layout_toRightOf="@+id/toggleButton5"
+           android:background="@drawable/dropdown_off" />
 
    </RelativeLayout>

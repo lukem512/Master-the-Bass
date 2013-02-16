@@ -332,21 +332,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     public static final int gestureDelay = 500;
 	private GestureDetector gestureScanner;
-	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] filterarray = new int[]{0,0,0,0,0,0};
 	private static int longpresson = 0;
 	
-	long lastGesture = System.currentTimeMillis();
-	
-	public static void addTogestureArray(CharSequence gesture,int gesturenum){
-		gesturearray[gesturenum] = (String) gesture;
-		Log.i(LogTag,"the gesture is " + gesturearray[0]);
-		Log.i(LogTag,"the gesture is " + gesturearray[1]);
-		Log.i(LogTag,"the gesture is " + gesturearray[2]);
-		Log.i(LogTag,"the gesture is " + gesturearray[3]);
-	}
+	long lastGesture = System.currentTimeMillis();	
+
 	
 	public static void addTofilterArray(int filter, int filternum){
 		filterarray[filternum] = filter;
@@ -447,128 +439,41 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	@Override
 	public boolean onDown(MotionEvent e) {
+		float x = e.getRawX();
+    	float y = e.getRawY();
+    	
 		if (settings[4]) v.vibrate(300);
+		//to start playing the bass line
+		//if(x > fb1.getX() + fb1.getWidth() && ){}
 		Log.i(LogTag, "Down");		
 		return false;
 	}
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		Log.i(LogTag, "Fling");
 		return false;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent e) {
 	
-			//change this depending on whether the toggles are on for this gesture
-				Toast toast = Toast.makeText(getApplicationContext(), "Hold", Toast.LENGTH_SHORT);
-				toast.show();
-				if(settings[3]){
-							
-					if(gesture4 == false){
-						filterman.enableFilter(filterarray[3]);	
-						longpresson = 1;
-						gesture4 = true;
-					}
-				}
-		
-		Log.i(LogTag, "Long Press");
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-	
-		if ((lastGesture + gestureDelay) < System.currentTimeMillis())
-		{
-			lastGesture = System.currentTimeMillis();
-			
-			if (distanceX < -10)
-			{
-						if (settings[4]) v.vibrate(300);
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Right", Toast.LENGTH_SHORT);
-						toast.show();
-						if(settings[1]){
-							filterman.disableFilter(filterarray[1]);	
-							gesture2 = false;
-						}
-						
-				Log.i(LogTag,"Swipe Right");
-			} else if (distanceX > 10)
-			{					
-						if (settings[4]) v.vibrate(300);
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Left", Toast.LENGTH_SHORT);
-						toast.show();
-						if(settings[1]){
-							if(gesture2 == false){
-								filterman.enableFilter(filterarray[1]);							
-								gesture2 = true;
-							}				
-						}
-				
-				Log.i(LogTag,"Swipe Left");
-			}
-			if (distanceY < -10)
-			{
-				if (settings[4]) {
-					v.vibrate(300);
-				}
-				
-				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT);
-				toast.show();
-				
-				if(settings[0]){
-					filterman.disableFilter(filterarray[0]);							
-					gesture1 = false;
-				}
-					
-				Log.i(LogTag,"Swipe Down");
-			} else if (distanceY > 10)
-			{
-				
-				if (settings[4]) v.vibrate(300);
-				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Up", Toast.LENGTH_SHORT);
-				toast.show();
-						
-				if(settings[0]){
-					if(gesture1 == false){
-						filterman.enableFilter(filterarray[0]);							
-						gesture1 = true;
-					}	
-				}
-			}
-			
-			Log.i(LogTag,"Swipe Up");
-		}
 		
 		return false;
 	}
 
 	@Override
 	public void onShowPress(MotionEvent e) {
-		//checking whether it is a real tap or accident
-		Log.i(LogTag, "Show press");	
+		//checking whether it is a real tap or accident	
 	}
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		
-				//if (settings[4]) v.vibrate(300);
-				Toast toast = Toast.makeText(getApplicationContext(), "Tap", Toast.LENGTH_SHORT);
-				toast.show();
-			if(settings[2]){
-			
-				if(gesture3 == false){
-					filterman.enableFilter(filterarray[2]);
-					
-					gesture3 = true;
-				}else{
-					filterman.disableFilter(filterarray[2]);		
-					gesture3 = false;
-				}
-			}
-				
-		Log.i(LogTag, "Single tap up");
+		
 		return false;
 	}
 
