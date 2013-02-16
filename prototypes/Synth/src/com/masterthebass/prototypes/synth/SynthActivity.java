@@ -9,13 +9,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ToggleButton;
 
+// TODO	- rate modulation
+//		- maintain button results when activity is recreated
+
 public class SynthActivity extends Activity {
 	
 	private AudioOutputManager am;
 	private SoundManager sm;
 	private FilterManager fm;
 	private Oscillator depthLFO;
-	private Oscillator rateLFO;
+	private Oscillator lowPassFilterLFO;
 	
 	private float noteDuration = 1f;
 	private float volume = 1.0f;
@@ -32,8 +35,12 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
+		lowPassFilterLFO = new Oscillator (am, WaveType.SAW_TOOTH, volume, 5f);
 		depthLFO = new Oscillator (am, WaveType.SINE, volume, 3f);
-		rateLFO = new Oscillator (am);
+		
+		// Attach to filters
+		fm.attachOscillator(0, lowPassFilterLFO);
+		fm.attachOscillator(1, depthLFO);
 		
 		setContentView(R.layout.synth_activity);
 		
@@ -52,40 +59,23 @@ public class SynthActivity extends Activity {
 		int sampleRate = am.getSampleRate();
 		int samples = (int) Math.ceil(sampleRate * duration);
         short[] sampleData = new short[samples];
-        double[] depthLFOData = new double[samples];
         
         // Apply the rate (frequency) LFO to the frequency
         // this might require some further modification however!!
-        if (rateLFO.isStarted()) {
+        //if (rateLFO.isStarted()) {
         	// TODO
-        }
+        //}
         
         Log.i (TAG, "Generating sound");
         sampleData = sm.generateTone(duration, frequency, 1.0, sampleRate);
         
-        // Mix the depth (volume) LFO
-        Log.i (TAG, "Oscillating sound using Depth LFO");
-        
-        if (depthLFO.isStarted()) {
-        	depthLFOData = depthLFO.getSample(duration);
-        	
-        	// Apply the modulation
-        	// As the samples are signed, these are first transformed to be positive
-	        for (int i = 0; i < sampleData.length; i++) {
-	        	sampleData[i] = (short) (sampleData[i] * (depthLFOData[i]+depthLFO.getDepth())/2);
-	        }
-        }
-        
         // Apply the filter(s) (if needed)
-        // TODO - this isn't going to modulate the cutoff using an LFO
-        // - the way to do this would be to have the oscillators on separate threads, changing the cutoff
-        Log.i (TAG, "Applying filters");
-        
+        Log.i (TAG, "Applying filters");        
         int[] filterIDs = fm.getEnabledFiltersList();
         
         for (int id : filterIDs) {
-        	Filter f = fm.getFilter(id);
-        	sampleData = f.applyFilter(sampleData);
+        	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
+        	sampleData = fm.applyFilter(id, sampleData);
         }
         
         Log.i(TAG, "Playing sound");
@@ -211,10 +201,10 @@ public class SynthActivity extends Activity {
 		
 		if (btn.isChecked()) {
 			// Enable Depth LFO!
-			depthLFO.start();
+			fm.enableFilter(1);
 		} else {
 			// Disable Depth LFO!
-			depthLFO.stop();
+			fm.disableFilter(1);
 		}
 	}
 	
@@ -223,10 +213,10 @@ public class SynthActivity extends Activity {
 		
 		if (btn.isChecked()) {
 			// Enable Rate LFO!
-			rateLFO.start();
+			//rateLFO.start();
 		} else {
 			// Disable Rate LFO!
-			rateLFO.stop();
+			//rateLFO.stop();
 		}
 	}
 

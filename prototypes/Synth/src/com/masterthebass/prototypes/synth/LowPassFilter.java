@@ -1,41 +1,64 @@
 package com.masterthebass.prototypes.synth;
 
+// TODO	- clean up duplicated code in apply* functions
+
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
-	private int sampleRate;
-	private int cutoffFrequency;
+	private float cutoffFrequency;
+	private float maxCutoffFrequency;
+	private float minCutoffFrequency;
+	private final static float defaultCutoff = 5000f;
+	private final static float defaultMaxCutoff = 5000f;
+	private final static float defaultMinCutoff = 0f;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
 		
-		// set default sample rate to 44.1KHz
-		sampleRate = 44100;
-		
 		// set default cutoff to 5000Hz
-		cutoffFrequency = 5000;
-	}
-
-	public void setSampleRate (int sampleRate) {
-		if (sampleRate > 0) {
-			this.sampleRate = sampleRate;
-		}
+		cutoffFrequency = defaultCutoff;
+		
+		// set default bounds
+		maxCutoffFrequency = defaultMaxCutoff;
+		minCutoffFrequency = defaultMinCutoff;
 	}
 	
-	public int getSampleRate () {
-		return sampleRate;
-	}
-	
-	public void setCutoffFrequency (int cutoffFrequency) {
+	public void setCutoffFrequency (float cutoffFrequency) {
 		if (cutoffFrequency > 0) {
 			this.cutoffFrequency = cutoffFrequency;
 		}
 	}
 	
-	public int getCutoffFrequency () {
+	public void setMaxCutoffFrequency (float maxCutoffFrequency) {
+		if (maxCutoffFrequency > 0) {
+			this.maxCutoffFrequency = maxCutoffFrequency;
+		}
+	}
+	
+	public void setMinCutoffFrequency (float minCutoffFrequency) {
+		if (minCutoffFrequency > 0) {
+			this.minCutoffFrequency = minCutoffFrequency;
+		}
+	}
+	
+	public float getCutoffFrequency () {
 		return cutoffFrequency;
 	}
+	
+	public float getMaxCutoffFrequency () {
+		return maxCutoffFrequency;
+	}
+	
+	public float getMinCutoffFrequency () {
+		return minCutoffFrequency;
+	}
+	
+	// maps the current oscillation value
+	// to a cutoff frequency between the bounds
+	private float map(double oscillation) {		
+		return (float) ((oscillation * (maxCutoffFrequency - minCutoffFrequency)) + minCutoffFrequency);
+	}
 
-	void getLPCoefficientsButterworth2Pole(int samplerate, int cutoff, double ax[], double by[]) {
+	private void getLPCoefficientsButterworth2Pole(int samplerate, float cutoff, double ax[], double by[]) {
 	    double sqrt2 = Math.sqrt(2);
 	    double PI = Math.PI;
 
@@ -52,33 +75,6 @@ public class LowPassFilter extends Filter {
 	}
 	
 	@Override
-	public byte[] applyFilter (byte[] rawPCM) {
-		short[] xv = new short[3];
-		short[] yv = new short[3];
-		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
-		
-		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
-		
-		for (int i = 0; i < 3; i++) {
-			xv[i] = 0;
-			yv[i] = 0;
-		}
-		
-		for (int i=0;i<count;i++) {
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = rawPCM[i];
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] = (byte) yv[0];
-		}
-
-		return rawPCM;
-	}
-	
-	@Override
 	public short[] applyFilter (short[] rawPCM) {
 		short[] xv = new short[3];
 		short[] yv = new short[3];
@@ -86,7 +82,7 @@ public class LowPassFilter extends Filter {
 		double[] ax = new double [3];
 		double[] by = new double[3];
 		
-		getLPCoefficientsButterworth2Pole(sampleRate, cutoffFrequency, ax, by);
+		getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
 		
 		for (int i = 0; i < 3; i++) {
 			xv[i] = 0;
@@ -99,6 +95,37 @@ public class LowPassFilter extends Filter {
 		    yv[2] = yv[1]; 
 		    yv[1] = yv[0];
 		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
+		    rawPCM[i] = yv[0];
+		}
+
+		return rawPCM;
+	}
+	
+	@Override
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		short[] xv = new short[3];
+		short[] yv = new short[3];
+		int count = rawPCM.length;
+		double[] ax = new double [3];
+		double[] by = new double[3];
+		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		
+		for (int i = 0; i < count; i++) {
+			setCutoffFrequency (map (LFOData[i]));
+			
+			getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
+			
+			for (int j = 0; j < 3; j++) {
+				xv[j] = 0;
+				yv[j] = 0;
+			}
+			
+			xv[2] = xv[1]; xv[1] = xv[0];
+		    xv[0] = rawPCM[i];
+		    yv[2] = yv[1]; 
+		    yv[1] = yv[0];
+		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
+		    
 		    rawPCM[i] = yv[0];
 		}
 

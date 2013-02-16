@@ -8,10 +8,20 @@ public class Filter implements Serializable {
 	private int ID;
 	private String name;
 	private boolean enabled;
+	private boolean hasOscillator;
+	private int sampleRate;
+	private static final int defaultSampleRate = 44100;
 	
 	public Filter(int ID, String name){
 		this.name = name;
 		this.ID = ID;
+		
+		sampleRate = defaultSampleRate;
+		enabled = false;
+	}
+	
+	protected float getDuration (short[] rawPCM) {
+		return (float) Math.ceil(rawPCM.length/sampleRate);
 	}
 	
 	public boolean getState (){
@@ -26,24 +36,35 @@ public class Filter implements Serializable {
 		return ID;
 	}
 	
-	public byte[] applyFilter (byte[] rawPCM){
-		return rawPCM;
-	}
-	
 	public short[] applyFilter (short[] rawPCM){
 		return rawPCM;
 	}
 	
-	public void enable (){
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		return rawPCM;
+	}
+	
+	public void enable () {
 		enabled = true;
 	}
 	
-	public void disable (){
+	public void disable () {
 		enabled = false;
 	}
 		
-	public void toggle (){
-		//toggle between enabled and disabled
+	public void toggle () {
 		enabled = !enabled;
+	}
+	
+	public void setSampleRate (int sampleRate) {
+		if (sampleRate > 0) {
+			this.sampleRate = sampleRate;
+		} else {
+			throw new IllegalArgumentException ("Sample rates can only be positive integer values.");
+		}
+	}
+	
+	public int getSampleRate () {
+		return sampleRate;
 	}
 }
