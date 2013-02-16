@@ -1,5 +1,9 @@
 package com.masterthebass;
 
+import android.util.Log;
+
+// TODO	- clean up duplicated code in apply* functions
+
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private float cutoffFrequency;

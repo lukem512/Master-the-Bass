@@ -8,8 +8,6 @@ public class SoundManager{
 	private String logTag = "SoundManager";
 	private double Final;
 	private WaveType waveType = WaveType.SINE;
-	
-	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
 
 	/* Constructor */
 

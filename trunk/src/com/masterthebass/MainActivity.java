@@ -148,9 +148,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	}
    	
    	private void initAudio () {
-		base = 50;
+		base = MidiNote.B1;
 		vol = 1.0;
-		dur = 0.01;
+		dur = 0.001;
 		maxAmplitude = 1.0f;
 		minAmplitude = 0.2f;
 		maxCutoffFreq = 3000;
@@ -723,7 +723,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         		sampleData = lpf.applyFilter (sampleData);
         		
         		// apply the filter to change the volume
-        		sampleData = af.applyFilter (sampleData);
+        		//sampleData = af.applyFilter (sampleData);
         		
         		// send to audio buffer
         		audioman.buffer(sampleData);

@@ -14,6 +14,13 @@ public class Filter implements Serializable {
 	public Filter(int ID, String name){
 		this.name = name;
 		this.ID = ID;
+		
+		sampleRate = defaultSampleRate;
+		enabled = false;
+	}
+	
+	protected float getDuration (short[] rawPCM) {
+		return (float) Math.ceil(rawPCM.length/sampleRate);
 	}
 	
 	public boolean getState (){
