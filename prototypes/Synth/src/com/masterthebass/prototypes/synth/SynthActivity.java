@@ -35,8 +35,8 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		lowPassFilterLFO = new Oscillator (am, WaveType.SINE, volume, 5f);
-		depthLFO = new Oscillator (am, WaveType.SINE, volume/2, 1f);
+		lowPassFilterLFO = new Oscillator (am, WaveType.SINE, volume, 2f);
+		depthLFO = new Oscillator (am, WaveType.SINE, volume/2, 2f);
 		
 		// Attach to filters
 		fm.attachOscillator(0, lowPassFilterLFO);
@@ -148,52 +148,31 @@ public class SynthActivity extends Activity {
 	// Button handlers
 	
 	public void btnAClick (View v) {
-		// Play A4
-		Log.i(TAG, "Playing A4");
-		playSound (MidiNote.A4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.A1, noteDuration);
 	}
 	
 	public void btnBClick (View v) {
-		// Play B4
-		Log.i(TAG, "Playing B4");
-		playSound (MidiNote.B4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.B1, noteDuration);
 	}
 	
 	public void btnCClick (View v) {
-		// Play C4
-		Log.i(TAG, "Playing C4");
-		playSound (MidiNote.C4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.C1, noteDuration);
 	}
 	
 	public void btnDClick (View v) {
-		// Play D4
-		Log.i(TAG, "Playing D4");
-		playSound (MidiNote.D4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.D1, noteDuration);
 	}
 	
 	public void btnEClick (View v) {
-		// Play E4
-		Log.i(TAG, "Playing E4");
-		playSound (MidiNote.E4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.E1, noteDuration);
 	}
 	
 	public void btnFClick (View v) {
-		// Play F4
-		Log.i(TAG, "Playing F4");
-		playSound (MidiNote.F4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.F1, noteDuration);
 	}
 	
 	public void btnGClick (View v) {
-		// Play G4
-		Log.i(TAG, "Playing G4");
-		playSound (MidiNote.G4, noteDuration);
-		Log.i(TAG, "Done!");
+		playSound (MidiNote.G1, noteDuration);
 	}
 	
 	public void toggleBtnLPFClick (View v) {
