@@ -35,8 +35,8 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		lowPassFilterLFO = new Oscillator (am, WaveType.SAW_TOOTH, volume, 5f);
-		depthLFO = new Oscillator (am, WaveType.SINE, volume, 3f);
+		lowPassFilterLFO = new Oscillator (am, WaveType.SINE, volume, 5f);
+		depthLFO = new Oscillator (am, WaveType.SINE, volume/2, 1f);
 		
 		// Attach to filters
 		fm.attachOscillator(0, lowPassFilterLFO);
@@ -118,6 +118,18 @@ public class SynthActivity extends Activity {
 			        		
 		        		case R.id.radiobtnHarmonicSquare:
 			        		wave = WaveType.HARMONIC_SQUARE;
+			        		break;
+			        		
+		        		case R.id.radiobtnTriangle:
+			        		wave = WaveType.TRIANGLE;
+			        		break;
+			        	
+		        		case R.id.radiobtnConcTriangle:
+			        		wave = WaveType.CONC_TRIANGLE;
+			        		break;
+			        	
+		        		case R.id.radiobtnConvTriangle:
+			        		wave = WaveType.CONV_TRIANGLE;
 			        		break;
 		        		
 		        		case R.id.radiobtnSine:

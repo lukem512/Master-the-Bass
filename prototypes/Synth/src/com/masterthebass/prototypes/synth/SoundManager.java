@@ -48,7 +48,6 @@ public class SoundManager{
 	            		}  else  {
 	            			sample = -1.0;
 	            		}
-	            		sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
 	            		break;
 	            		
             		// Square wave with harmonics
@@ -59,9 +58,28 @@ public class SoundManager{
 	               
 	            	// Saw-tooth wave
 	            	case SAW_TOOTH:
-		            	sample = 2.0 * (x - Math.floor(x + 0.5));
+		            	sample = 1.0 * (x - Math.floor(x + 0.5));
 		              	break;
+		              	
+		            // Straight Triangle wave
+	            	case TRIANGLE:
+	            		sample = Math.abs(1.0 - x % (2*1.0));
+	            		break;
+	            		
+	            	// Concave Triangle wave
+	            	case CONC_TRIANGLE:
+	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 2.0);
+	            		break;
+	            		
+	            	// Convex Triangle wave
+	            	case CONV_TRIANGLE:
+	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 0.5);
+	            		break;
             }
+            
+            // Increment sample number
+            // this is modulo the number of samples per period
+            sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
             
             // Apply volume scalar
             generatedSnd[i] = sample * volume;

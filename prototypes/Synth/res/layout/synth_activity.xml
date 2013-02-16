@@ -102,6 +102,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/radioBtnSawText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnTriangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnTriangleText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnConcTriangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnConcTriangleText" />
+
+        <RadioButton
+            android:id="@+id/radiobtnConvTriangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radioBtnConvTriangleText" />
+
     </RadioGroup>
 
     <ToggleButton

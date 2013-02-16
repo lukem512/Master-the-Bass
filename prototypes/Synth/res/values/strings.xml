@@ -17,5 +17,8 @@
     <string name="toggleBtnLowPassFilterText">Low-Pass Filter</string>
     <string name="toggleBtnDepthLFOText">Depth LFO</string>
     <string name="toggleBtnRateLFOText">Rate LFO</string>
+    <string name="radioBtnTriangleText">Triangle</string>
+    <string name="radioBtnConcTriangleText">Concave Triangle</string>
+    <string name="radioBtnConvTriangleText">Convex Triangle</string>
 
 </resources>
