@@ -8,6 +8,8 @@ public class Filter implements Serializable {
 	private int ID;
 	private String name;
 	private boolean enabled;
+	private int sampleRate;
+	private static final int defaultSampleRate = 44100;
 	
 	public Filter(int ID, String name){
 		this.name = name;
@@ -26,10 +28,6 @@ public class Filter implements Serializable {
 		return ID;
 	}
 	
-	public byte[] applyFilter (byte[] rawPCM){
-		return rawPCM;
-	}
-	
 	public short[] applyFilter (short[] rawPCM){
 		return rawPCM;
 	}
@@ -43,7 +41,18 @@ public class Filter implements Serializable {
 	}
 		
 	public void toggle (){
-		//toggle between enabled and disabled
 		enabled = !enabled;
+	}
+	
+	public void setSampleRate (int sampleRate) {
+		if (sampleRate > 0) {
+			this.sampleRate = sampleRate;
+		} else {
+			throw new IllegalArgumentException ("Sample rates can only be positive integer values.");
+		}
+	}
+	
+	public int getSampleRate () {
+		return sampleRate;
 	}
 }

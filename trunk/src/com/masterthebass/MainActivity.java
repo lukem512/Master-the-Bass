@@ -586,7 +586,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    if(writing)
 		{
 	    	long dTime;
-	    	int newCutoff = maxCutoffFreq;
+	    	float newCutoff = maxCutoffFreq;
 	    	float newAmp = minAmplitude;
 			
 			if (useTimeA) {
@@ -623,7 +623,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				}
 	            
 				// Calculate new cutoff frequency
-				newCutoff = ((int)((Math.abs(grad)*-(maxCutoffFreq/maxGrad)))+maxCutoffFreq+minCutoffFreq);
+				newCutoff = (((Math.abs(grad)*-(maxCutoffFreq/maxGrad)))+maxCutoffFreq+minCutoffFreq);
 				
 				// Calculate the new amplitude
 				float gradAmp = (grad/maxGrad);
@@ -706,7 +706,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             
             while(!tone_stop) {             
             	// generate audio
-            	sampleData = soundman.generateToneShort(dur, base, vol, sampleRate);
+            	sampleData = soundman.generateTone(dur, base, vol, sampleRate);
         		
             	// apply the user-defined filters
         		for (int i = 0; i < 4; i++) {

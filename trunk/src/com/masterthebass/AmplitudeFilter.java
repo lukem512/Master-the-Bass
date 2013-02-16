@@ -45,11 +45,4 @@ public class AmplitudeFilter extends Filter {
 		
 		return rawPCM;
 	}
-	
-	@Override
-	public byte[] applyFilter (byte[] rawPCM) {
-		// TODO!
-		
-		return rawPCM;
-	}
 }

@@ -32,20 +32,6 @@ public class NoiseFilter extends Filter  {
 	public int getRange(){
 		return range;
 	}
-		
-	@Override
-	public byte[] applyFilter (byte[] rawPCM){
-	    Random generator = new Random();
-		int count = rawPCM.length;
-		
-		for (int i=0; i<count; i++)
-		{
-			int randomIndex = (generator.nextInt(range) - (range/2));
-		    rawPCM[i] =(byte)(rawPCM[i] + randomIndex);
-		}
-
-		return rawPCM;
-	}
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM){
