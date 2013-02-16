@@ -1,5 +1,7 @@
 package com.masterthebass.prototypes.synth;
 
+import android.util.Log;
+
 // TODO	- clean up duplicated code in apply* functions
 
 public class LowPassFilter extends Filter {
@@ -7,6 +9,7 @@ public class LowPassFilter extends Filter {
 	private float cutoffFrequency;
 	private float maxCutoffFrequency;
 	private float minCutoffFrequency;
+	private final static float amplitudeScalar = 5f;
 	private final static float defaultCutoff = 5000f;
 	private final static float defaultMaxCutoff = 5000f;
 	private final static float defaultMinCutoff = 0f;
@@ -95,7 +98,7 @@ public class LowPassFilter extends Filter {
 		    yv[2] = yv[1]; 
 		    yv[1] = yv[0];
 		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] = yv[0];
+		    rawPCM[i] = (short) (yv[0] * amplitudeScalar);
 		}
 
 		return rawPCM;
@@ -126,7 +129,7 @@ public class LowPassFilter extends Filter {
 		    yv[1] = yv[0];
 		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
 		    
-		    rawPCM[i] = yv[0];
+		    rawPCM[i] = (short) (yv[0]*amplitudeScalar);
 		}
 
 		return rawPCM;
