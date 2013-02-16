@@ -1,7 +1,9 @@
 package com.masterthebass;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
 	// Manager instances
 	private AudioOutputManager audioman;
@@ -98,7 +101,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
 	
-	ToggleButton fb1;
+	private ToggleButton fb1;
+	private ToggleButton fb2;
+	private ToggleButton fb3;
+	private ToggleButton fb4;
+	private boolean toggleChecked[] = {false,false,false,false};
+	private int lastButton = 5;
+	private boolean leftButton = true;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -170,6 +179,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
         fb1 = (ToggleButton)findViewById(R.id.filter1);
+        fb2 = (ToggleButton)findViewById(R.id.filter2);
+        fb3 = (ToggleButton)findViewById(R.id.filter3);
+        fb4 = (ToggleButton)findViewById(R.id.filter4);
     }
     
     @Override
@@ -302,16 +314,19 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     public void filterTopLeft(View view){
     	//filter1
-    	Log.i(TAG,"clicked");
+    	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
     	//filter2
+    	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
     	//filter3
+    	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
     	//filter4
+    	Log.i(TAG,"clicked 4");
     }
     //*********************gesture code****************************
     
@@ -343,6 +358,64 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	}   
 	
 	
+	//detects what button clicked and returns false if none
+	private boolean checkFilterButton(int n, float x, float y){
+		int bullshitFactor = 100;
+		switch (n){
+		case 0:
+			if ((x > fb1.getX())&&(x < fb1.getX() + fb1.getWidth())&&
+		        	(y > fb1.getY() + bullshitFactor)&&(y < fb1.getY() + fb1.getHeight() + bullshitFactor)){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb1.setChecked(!toggleChecked[0]);
+			    	toggleChecked[0] = !toggleChecked[0];
+					filterTopLeft(fb1.getRootView());
+					lastButton = n;
+				}
+				return false;
+			}
+			break;
+		case 1:
+			if ((x > fb2.getX())&&(x < fb2.getX() + fb2.getWidth())&&
+		        	(y > fb2.getY() + bullshitFactor)&&(y < fb2.getY() + fb2.getHeight() + bullshitFactor)){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb2.setChecked(!toggleChecked[1]);
+			    	toggleChecked[1] = !toggleChecked[1];
+					filterTopRight(fb2.getRootView());
+					lastButton = n;
+				}
+				return false;  	
+			}
+			break;
+		case 2:
+			if ((x > fb3.getX())&&(x < fb3.getX() + fb3.getWidth())&&
+		        	(y > fb3.getY() + bullshitFactor)&&(y < fb3.getY() + fb3.getHeight() + bullshitFactor)){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb3.setChecked(!toggleChecked[2]);
+			    	toggleChecked[2] = !toggleChecked[2];
+					filterBottomLeft(fb3.getRootView());
+	        		lastButton = n;
+				}
+	        	return false;
+			}
+			break;
+		case 3:
+			if ((x > fb4.getX())&&(x < fb4.getX() + fb4.getWidth())&&
+		        	(y > fb4.getY() + bullshitFactor)&&(y < fb4.getY() + fb4.getHeight() + bullshitFactor)){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb4.setChecked(!toggleChecked[3]);
+			    	toggleChecked[3] = !toggleChecked[3];
+					filterBottomRight(fb4.getRootView());
+	        		lastButton = n;
+				}
+	        	return false;
+			}
+			break;
+		default:
+			break;
+		}
+		return true;
+	}
+	
     @Override
 	public boolean onTouchEvent(MotionEvent me)	{
     	if (me.getAction() == MotionEvent.ACTION_UP && longpresson == 1 && settings[3]){
@@ -351,13 +424,22 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			longpresson = 0;
     		
     	}
-    	Log.i(TAG,"Coordinates -  X: " + me.getX() + " Y: " + me.getY());
+    	
     	float x = me.getRawX();
     	float y = me.getRawY();
-        if ((x > fb1.getX())&&(x < fb1.getX() + fb1.getWidth())&&
-        	(y > fb1.getY())&&(y < fb1.getY() + fb1.getHeight())){
-        	filterTopLeft(fb1.getRootView());
-        }
+    	int currentButton;
+    	if (x < mDisplay.getWidth()/2){
+    		//upper left
+    		if (y < mDisplay.getHeight()/2) currentButton = 0;
+    		//lower left
+    		else currentButton = 2;
+    	} else {
+    		//upper right
+    		if (y < mDisplay.getHeight()/2) currentButton = 1;
+    		//lower right
+    		else currentButton = 3;
+    	}
+    	leftButton = checkFilterButton(currentButton,x,y);
     	
 		//return false;
 		return gestureScanner.onTouchEvent(me);
