@@ -187,7 +187,7 @@ public class SoundManager{
 		}
 		
 		short[] mixed = new short[a.length];
-		float max = 0;
+		float max = Short.MIN_VALUE;
 		
 		// Find the maximum value
 		for(int i = 0; i < a.length; i++) {
