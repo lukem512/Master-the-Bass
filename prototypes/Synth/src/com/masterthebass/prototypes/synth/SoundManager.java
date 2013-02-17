@@ -1,5 +1,7 @@
 package com.masterthebass.prototypes.synth;
 
+import android.util.Log;
+
 public class SoundManager{
 	/* Members */
 
@@ -179,6 +181,7 @@ public class SoundManager{
 	// Mixes two signals
 	// This is as easy as summing each sample and clipping
 	// TODO - should this be static?
+	// TODO - the resultant sound here is very screechy
 	public short[] mixTones(short[] a, short[] b) {
 		if (a.length != b.length) {
 			throw new IllegalArgumentException ("Tones are not of same length.");
@@ -187,14 +190,13 @@ public class SoundManager{
 		short[] mixed = new short[a.length];
 		int i = 0;
 		
-		for (short s : a) {
-			int news = (s+b[i]);
+		double divisor = Math.ceil(Short.MAX_VALUE/2);
+		
+		for (short s : a) {		
+			int news = (int) ((2*(s+b[i]))-((s*b[i])/divisor)-Short.MAX_VALUE);
 			
-			// reduce mixed audio a bit to reduce clipping
-			news *= 0.8;
-			
-			if (news < 0) {
-				mixed[i] = 0;
+			if (news < Short.MIN_VALUE) {
+				mixed[i] = Short.MIN_VALUE;
 			} else if (news > Short.MAX_VALUE) {
 				mixed[i] = Short.MAX_VALUE;
 			} else {
