@@ -185,20 +185,18 @@ public class SoundManager{
 		}
 		
 		short[] mixed = new short[a.length];
-		int i = 0;
+		float max = 0;
 		
-		for (short s : a) {
-			int news = (s+b[i]);
-			
-			if (news < 0) {
-				mixed[i] = 0;
-			} else if (news > Short.MAX_VALUE) {
-				mixed[i] = Short.MAX_VALUE;
-			} else {
-				mixed[i] = (short) news;
+		// Find the maximum value
+		for(int i = 0; i < a.length; i++) {
+			if( Math.abs( a[i] + b[i] ) > max ) {
+				max = Math.abs(a[i] + b[i]);
 			}
-			
-			i++;
+		}
+
+		// Scale to that maximum
+		for (int i = 0; i < a.length; i++) {
+			mixed[i] = (short) Math.round(Short.MAX_VALUE * (a[i] + b[i]) / max) ;
 		}
 		
 		return mixed;
