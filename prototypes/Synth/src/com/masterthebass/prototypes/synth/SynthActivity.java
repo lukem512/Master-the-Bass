@@ -2,6 +2,7 @@ package com.masterthebass.prototypes.synth;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.ToggleButton;
 
 // TODO	- rate modulation
 //		- maintain button results when activity is recreated
+//		- drop-down box for note waveform
+//		- ability to change settings for oscillators
 
 public class SynthActivity extends Activity {
 	
@@ -20,8 +23,23 @@ public class SynthActivity extends Activity {
 	private Oscillator depthLFO;
 	private Oscillator lowPassFilterLFO;
 	
+	private final int numNotes = 7;
+	private float[] noteFreq = new float[numNotes];
+	private boolean[] noteDown = new boolean[numNotes];
+	
+	private Thread generatorThread = null;
+	private Thread playerThread = null;
+	
+	private final int NOTEA = 0;
+	private final int NOTEB = 1;
+	private final int NOTEC = 2;
+	private final int NOTED = 3;
+	private final int NOTEE = 4;
+	private final int NOTEF = 5;
+	private final int NOTEG = 6;
+	
 	private float noteDuration = 1f;
-	private float volume = 1.0f;
+	private float volume = 0.7f;
 	
 	private final String TAG = "Synth";
 
@@ -42,47 +60,66 @@ public class SynthActivity extends Activity {
 		fm.attachOscillator(0, lowPassFilterLFO);
 		fm.attachOscillator(1, depthLFO);
 		
+		// Set up notes
+		noteFreq[NOTEA] = MidiNote.A4;
+		noteFreq[NOTEB] = MidiNote.B4;
+		noteFreq[NOTEC] = MidiNote.C4;
+		noteFreq[NOTED] = MidiNote.D4;
+		noteFreq[NOTEE] = MidiNote.E4;
+		noteFreq[NOTEF] = MidiNote.F4;
+		noteFreq[NOTEG] = MidiNote.G4;
+		
+		for (int i = NOTEA; i <= NOTEG; i++) {
+			noteDown[i] = false;
+		}
+		
 		setContentView(R.layout.synth_activity);
+		
+		// Start up the threads
+		if (playerThread == null) {
+			playerThread = new Thread(playerThreadObj);
+			playerThread.start();
+		}
+
+		if (generatorThread == null) {
+			generatorThread = new Thread(generatorThreadObj);
+			generatorThread.start();
+		}
 		
 		// Set up radio group
 		initialiseRadioButtons();
 	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+	    super.onConfigurationChanged(newConfig);
+	    setContentView(R.layout.synth_activity);
+	    
+	    // TODO - called when screen rotates/keyboard shown and hidden
+	}
+	
+	@Override
+    public void onStop() {
+    	super.onStop();
+    	
+    	// interrupt audio threads
+		if (playerThread != null) {
+			playerThread.interrupt();
+			playerThread = null;
+		}
+
+		if (generatorThread != null) {
+			generatorThread.interrupt();
+			generatorThread = null;
+		}
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.synth_activity, menu);
 		return true;
-	}
-	
-	private void playSound (float frequency, float duration) {
-		int sampleRate = am.getSampleRate();
-		int samples = (int) Math.ceil(sampleRate * duration);
-        short[] sampleData = new short[samples];
-        
-        // Apply the rate (frequency) LFO to the frequency
-        // this might require some further modification however!!
-        //if (rateLFO.isStarted()) {
-        	// TODO
-        //}
-        
-        Log.i (TAG, "Generating sound");
-        sampleData = sm.generateTone(duration, frequency, 1.0, sampleRate);
-        
-        // Apply the filter(s) (if needed)
-        Log.i (TAG, "Applying filters");        
-        int[] filterIDs = fm.getEnabledFiltersList();
-        
-        for (int id : filterIDs) {
-        	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
-        	sampleData = fm.applyFilter(id, sampleData);
-        }
-        
-        Log.i(TAG, "Playing sound");
-        am.playImmediately();
-        
-        Log.i(TAG, "Buffering sound");
-        am.buffer(sampleData);
 	}
 	
 	// Radio button handlers
@@ -148,35 +185,44 @@ public class SynthActivity extends Activity {
 	// Button handlers
 	
 	public void btnAClick (View v) {
-		playSound (MidiNote.A1, noteDuration);
+		noteDown[NOTEA] = !noteDown[NOTEA];
+		Log.i (TAG, "Note A is " + noteDown[NOTEA]);
 	}
 	
 	public void btnBClick (View v) {
-		playSound (MidiNote.B1, noteDuration);
+		noteDown[NOTEB] = !noteDown[NOTEB];
+		Log.i (TAG, "Note B is " + noteDown[NOTEB]);
 	}
 	
 	public void btnCClick (View v) {
-		playSound (MidiNote.C1, noteDuration);
+		noteDown[NOTEC] = !noteDown[NOTEC];
+		Log.i (TAG, "Note C is " + noteDown[NOTEC]);
 	}
 	
 	public void btnDClick (View v) {
-		playSound (MidiNote.D1, noteDuration);
+		noteDown[NOTED] = !noteDown[NOTED];
+		Log.i (TAG, "Note D is " + noteDown[NOTED]);
 	}
 	
 	public void btnEClick (View v) {
-		playSound (MidiNote.E1, noteDuration);
+		noteDown[NOTEE] = !noteDown[NOTEE];
+		Log.i (TAG, "Note E is " + noteDown[NOTEE]);
 	}
 	
 	public void btnFClick (View v) {
-		playSound (MidiNote.F1, noteDuration);
+		noteDown[NOTEF] = !noteDown[NOTEF];
+		Log.i (TAG, "Note F is " + noteDown[NOTEF]);
 	}
 	
 	public void btnGClick (View v) {
-		playSound (MidiNote.G1, noteDuration);
+		noteDown[NOTEG] = !noteDown[NOTEG];
+		Log.i (TAG, "Note G is " + noteDown[NOTEG]);
 	}
 	
 	public void toggleBtnLPFClick (View v) {
 		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnLPF);
+		
+		Log.i (TAG, "Toggling Low Pass Filter");
 		
 		if (btn.isChecked()) {
 			// Enable LPF!
@@ -199,16 +245,79 @@ public class SynthActivity extends Activity {
 		}
 	}
 	
-	public void toggleBtnRateLFOClick (View v) {
-		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnRateLFO);
-		
-		if (btn.isChecked()) {
-			// Enable Rate LFO!
-			//rateLFO.start();
-		} else {
-			// Disable Rate LFO!
-			//rateLFO.stop();
+	Runnable playerThreadObj = new Runnable() {
+		public void run() {
+			boolean running = true;
+			
+			Log.i(TAG+".playerThread", "Started!");
+			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+			
+			while (running) {
+				while (!am.isPlaying()) {
+					try {
+						if (am.play()) {
+							break;
+						} else {
+							Thread.sleep(80);
+						}
+					} catch (InterruptedException e) {
+						Log.i(TAG+".playerThread", "Play thread interruped.");
+						running = false;
+						break;
+					}
+				}
+				
+				if (Thread.interrupted()) {
+					Log.i(TAG+".playThread", "Play thread interruped.");
+					running = false;
+	            }
+			}
+			
+			Log.i(TAG+".playerThread", "Shutting down...");
 		}
-	}
+	};
 
+	Runnable generatorThreadObj = new Runnable() {
+		public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			
+			int sampleRate = am.getSampleRate();
+            boolean running = true;
+            
+            Log.i(TAG+".generatorThread", "Started!");
+            
+            while (running) {
+            	// Generate silence to mix onto
+            	short[] sampleData = sm.generateSilence(noteDuration, sampleRate);
+            	
+	        	// Generate audio
+            	for (int i = NOTEA; i <= NOTEG; i++) {
+            		if (noteDown[i]) {
+            			Log.i (TAG, "Mixing note " + i);
+            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
+            			sampleData = sm.mixTones(sampleData, noteSampleData);
+            		}
+        		}
+            	
+            	// Apply filters
+                int[] filterIDs = fm.getEnabledFiltersList();
+                
+                for (int id : filterIDs) {
+                	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
+                	sampleData = fm.applyFilter(id, sampleData);
+                }
+	    		
+	    		// Send to audio buffer
+	    		am.buffer(sampleData);
+		        
+		        if (Thread.interrupted()) {
+					Log.i(TAG+".generatorThread", "Tone generator thread interrupted.");
+					running = false;
+	            }
+            }
+            
+            Log.i(TAG+".generatorThread", "Shutting down...");
+		}
+	};
+	
 }

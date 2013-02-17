@@ -151,6 +151,7 @@ public class SoundManager{
     }
 	
 	// 'Generates' silence in 16-bit signed PCM for given duration at given SR
+	// TODO - should this be static?
 	public short[] generateSilence(double duration, int sampleRate) {
 		int numSamples = (int) Math.ceil(sampleRate * duration);
 		short generatedSnd[] = new short[numSamples];
@@ -163,6 +164,7 @@ public class SoundManager{
 	}
 	
 	// 'Generates' silence in double format for given duration at given SR
+	// TODO - should this be static?
 	public double[] generateUnscaledSilence(double duration, int sampleRate) {
 		int numSamples = (int) Math.ceil(sampleRate * duration);
 		double generatedSnd[] = new double[numSamples];
@@ -176,7 +178,8 @@ public class SoundManager{
 	
 	// Mixes two signals
 	// This is as easy as summing each sample and clipping
-	public static short[] mixTones(short[] a, short[] b) {
+	// TODO - should this be static?
+	public short[] mixTones(short[] a, short[] b) {
 		if (a.length != b.length) {
 			throw new IllegalArgumentException ("Tones are not of same length.");
 		}
@@ -186,6 +189,9 @@ public class SoundManager{
 		
 		for (short s : a) {
 			int news = (s+b[i]);
+			
+			// reduce mixed audio a bit to reduce clipping
+			news *= 0.8;
 			
 			if (news < 0) {
 				mixed[i] = 0;
