@@ -181,29 +181,24 @@ public class SoundManager{
 	// Mixes two signals
 	// This is as easy as summing each sample and clipping
 	// TODO - should this be static?
-	// TODO - the resultant sound here is very screechy
 	public short[] mixTones(short[] a, short[] b) {
 		if (a.length != b.length) {
 			throw new IllegalArgumentException ("Tones are not of same length.");
 		}
 		
 		short[] mixed = new short[a.length];
-		int i = 0;
+		float max = 0;
 		
-		double divisor = Math.ceil(Short.MAX_VALUE/2);
-		
-		for (short s : a) {		
-			int news = (int) ((2*(s+b[i]))-((s*b[i])/divisor)-Short.MAX_VALUE);
-			
-			if (news < Short.MIN_VALUE) {
-				mixed[i] = Short.MIN_VALUE;
-			} else if (news > Short.MAX_VALUE) {
-				mixed[i] = Short.MAX_VALUE;
-			} else {
-				mixed[i] = (short) news;
+		// Find the maximum value
+		for(int i = 0; i < a.length; i++) {
+			if( Math.abs( a[i] + b[i] ) > max ) {
+				max = Math.abs(a[i] + b[i]);
 			}
-			
-			i++;
+		}
+
+		// Scale to that maximum
+		for (int i = 0; i < a.length; i++) {
+			mixed[i] = (short) Math.round(Short.MAX_VALUE * (a[i] + b[i]) / max) ;
 		}
 		
 		return mixed;
