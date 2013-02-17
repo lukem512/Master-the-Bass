@@ -6,4 +6,5 @@
 14-02-2013 - 3 hours - continued work on synthesizer prototype, investigated oscillators and LFOs
 15-02-2013 - 4 hours - continued work on synthesizer prototype, sound working well and oscillator/LFO implementation in place. Low Pass Filter and Amplitude can now be modulated. Filter superclass has been changed (in prototype) to allow a filter to be applied with an attached oscillator. This implementation is to be defined per-filter.
 16-02-2013 - 4 hours - continued work on synthesizer prototype. Code now mature and working well. No known bugs. Fixed bug in Low Pass Filter where amplitude was being reduced by a factor of ~5.
-17-02-2013 - 4 hours - migrated code from synthesizer prototype to main trunk. sound on trunk is intermittent when a filter is applied. attempting to track down this bug.
+17-02-2013 - 4 hours - migrated code from synthesizer prototype to main trunk. Sound on trunk is intermittent when a filter is applied. Attempting to track down this bug.
+	   - 3 hours - implemented a mixing algorithm to play multiple sounds from different sources. This was added to Synth prototype. A bug has been identified where the audio being played is not consistent when being generated from a thread different to the main one.
