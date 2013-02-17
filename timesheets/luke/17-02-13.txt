@@ -1,0 +1,9 @@
+09-02-2013 - 2 hours - inverted effect of accelerometer on LPF cutoff
+10-02-2013 - 3 hours - misc. work on sound generation with Jon
+12-02-2013 - 1 hour - meeting
+13-02-2013 - 0.5 hours - meeting
+	   - 2 hours - began work on synthesizer application
+14-02-2013 - 3 hours - continued work on synthesizer prototype, investigated oscillators and LFOs
+15-02-2013 - 4 hours - continued work on synthesizer prototype, sound working well and oscillator/LFO implementation in place. Low Pass Filter and Amplitude can now be modulated. Filter superclass has been changed (in prototype) to allow a filter to be applied with an attached oscillator. This implementation is to be defined per-filter.
+16-02-2013 - 4 hours - continued work on synthesizer prototype. Code now mature and working well. No known bugs. Fixed bug in Low Pass Filter where amplitude was being reduced by a factor of ~5.
+17-02-2013 - 4 hours - migrated code from synthesizer prototype to main trunk. sound on trunk is intermittent when a filter is applied. attempting to track down this bug.
