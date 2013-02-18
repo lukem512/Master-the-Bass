@@ -1,7 +1,5 @@
 package com.masterthebass.prototypes.synth;
 
-import android.util.Log;
-
 // TODO	- clean up duplicated code in apply* functions
 
 public class LowPassFilter extends Filter {

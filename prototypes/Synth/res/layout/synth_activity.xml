@@ -69,80 +69,78 @@
         android:onClick="btnAClick"
         android:text="@string/btnAText" />
 
-    <RadioGroup
-        android:id="@+id/radioGroupWaveType"
+    <TextView
+        android:id="@+id/txtKeyboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnC"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp" >
+        android:text="@string/keyboardSection"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <RadioButton
-            android:id="@+id/radiobtnSine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/radioBtnSineText" />
+    <TextView
+        android:id="@+id/txtOscOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/btnB"
+        android:text="@string/oscOneSection"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <RadioButton
-            android:id="@+id/radiobtnSquare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/radioBtnSquareText" />
-
-        <RadioButton
-            android:id="@+id/radiobtnHarmonicSquare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/radioBtnHarmonicSquareText" />
-
-        <RadioButton
-            android:id="@+id/radiobtnSaw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/radioBtnSawText" />
-
-        <RadioButton
-            android:id="@+id/radiobtnTriangle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/radioBtnTriangleText" />
-
-        <RadioButton
-            android:id="@+id/radiobtnConcTriangle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/radioBtnConcTriangleText" />
-
-        <RadioButton
-            android:id="@+id/radiobtnConvTriangle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/radioBtnConvTriangleText" />
-
-    </RadioGroup>
+    <TextView
+        android:id="@+id/txtOscTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/btnB"
+        android:layout_centerVertical="true"
+        android:text="@string/oscTwoSection"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ToggleButton
         android:id="@+id/toggleBtnLPF"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/radioGroupWaveType"
-        android:layout_toRightOf="@+id/btnE"
+        android:layout_alignRight="@+id/txtOscTwo"
+        android:layout_below="@+id/txtOscTwo"
         android:onClick="toggleBtnLPFClick"
-        android:text="@string/toggleBtnLowPassFilterText"
-        android:textOff="@string/toggleBtnLowPassFilterText"
-        android:textOn="@string/toggleBtnLowPassFilterText" />
+        android:textOff="@string/toggleBtnOscActive"
+        android:textOn="@string/toggleBtnOscActive" />
 
     <ToggleButton
         android:id="@+id/toggleBtnDepthLFO"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/toggleBtnLPF"
-        android:layout_below="@+id/toggleBtnLPF"
+        android:layout_alignRight="@+id/txtOscOne"
+        android:layout_below="@id/txtKeyboard"
         android:onClick="toggleBtnDepthLFOClick"
-        android:text="@string/toggleBtnDepthLFOText"
-        android:textOff="@string/toggleBtnDepthLFOText"
-        android:textOn="@string/toggleBtnDepthLFOText" />
+        android:textOff="@string/toggleBtnOscActive"
+        android:textOn="@string/toggleBtnOscActive" />
+
+    <com.masterthebass.prototypes.synth.WaveButton
+        android:id="@+id/btnOscOneWave"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtKeyboard"
+        android:layout_toLeftOf="@+id/toggleBtnDepthLFO"
+        android:text="@string/btnWaveDefaultText" />
+
+    <com.masterthebass.prototypes.synth.WaveButton
+        android:id="@+id/btnOscTwoWave"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtOscTwo"
+        android:layout_toLeftOf="@+id/toggleBtnLPF"
+        android:text="@string/btnWaveDefaultText" />
+
+    <com.masterthebass.prototypes.synth.WaveButton
+        android:id="@+id/btnKeyboardWave"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnOscOneWave"
+        android:layout_alignBottom="@+id/btnOscOneWave"
+        android:layout_alignLeft="@+id/txtKeyboard"
+        android:text="@string/btnWaveDefaultText" />
 
 </RelativeLayout>

@@ -10,15 +10,11 @@
     <string name="btnEText">E</string>
     <string name="btnFText">F</string>
     <string name="btnGText">G</string>
-    <string name="radioBtnSineText">Sine</string>
-    <string name="radioBtnSawText">Saw-Tooth</string>
-    <string name="radioBtnSquareText">Square</string>
-    <string name="radioBtnHarmonicSquareText">Harmonic Square</string>
-    <string name="toggleBtnLowPassFilterText">Low-Pass Filter</string>
-    <string name="toggleBtnDepthLFOText">Depth LFO</string>
-    <string name="toggleBtnRateLFOText">Rate LFO</string>
-    <string name="radioBtnTriangleText">Triangle</string>
-    <string name="radioBtnConcTriangleText">Concave Triangle</string>
-    <string name="radioBtnConvTriangleText">Convex Triangle</string>
+    <string name="spinnerWaveTypePrompt">Select Wave Type</string>
+    <string name="toggleBtnOscActive">Active</string>
+    <string name="btnWaveDefaultText">Wave</string>
+    <string name="keyboardSection">Keyboard</string>
+    <string name="oscOneSection">Oscillator one</string>
+    <string name="oscTwoSection">Oscillator two</string>
 
 </resources>

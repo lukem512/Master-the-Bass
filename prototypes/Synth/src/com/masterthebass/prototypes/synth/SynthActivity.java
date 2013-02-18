@@ -1,27 +1,27 @@
 package com.masterthebass.prototypes.synth;
 
+import com.masterthebass.prototypes.synth.WaveButton.onWaveChangeListener;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ToggleButton;
 
 // TODO	- rate modulation
 //		- maintain button results when activity is recreated
-//		- drop-down box for note waveform
-//		- ability to change settings for oscillators
+//		- ability to change settings for oscillators (rate/depth)
+//		- ability to change settings for keyboard (master volume, envelope)
 
 public class SynthActivity extends Activity {
 	
 	private AudioOutputManager am;
 	private SoundManager sm;
 	private FilterManager fm;
-	private Oscillator depthLFO;
-	private Oscillator lowPassFilterLFO;
+	private Oscillator LFO1;
+	private Oscillator LFO2;
 	
 	private final int numNotes = 7;
 	private float[] noteFreq = new float[numNotes];
@@ -38,7 +38,7 @@ public class SynthActivity extends Activity {
 	private final int NOTEF = 5;
 	private final int NOTEG = 6;
 	
-	private float noteDuration = 1f;
+	private float noteDuration = 0.2f;
 	private float volume = 0.7f;
 	
 	private final String TAG = "Synth";
@@ -53,12 +53,13 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		lowPassFilterLFO = new Oscillator (am, WaveType.SINE, volume, 2f);
-		depthLFO = new Oscillator (am, WaveType.SINE, volume/2, 2f);
+		LFO1 = new Oscillator (am, WaveType.SINE, volume/2, 2f);
+		LFO2 = new Oscillator (am, WaveType.SINE, volume, 2f);
+		
 		
 		// Attach to filters
-		fm.attachOscillator(0, lowPassFilterLFO);
-		fm.attachOscillator(1, depthLFO);
+		fm.attachOscillator(0, LFO1);
+		fm.attachOscillator(1, LFO2);
 		
 		// Set up notes
 		noteFreq[NOTEA] = MidiNote.A4;
@@ -86,8 +87,8 @@ public class SynthActivity extends Activity {
 			generatorThread.start();
 		}
 		
-		// Set up radio group
-		initialiseRadioButtons();
+		// Initialise the controls for the components
+		intialiseButtons();
 	}
 	
 	@Override
@@ -122,67 +123,47 @@ public class SynthActivity extends Activity {
 		return true;
 	}
 	
-	// Radio button handlers
-
-	private void initialiseRadioButtons () {
-		// This will get the radiogroup
-		RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroupWaveType);
+	private void intialiseButtons() {
+		WaveButton b;
 		
-		// This overrides the radiogroup onCheckListener
-		rGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-		{
-		    public void onCheckedChanged(RadioGroup rGroup, int checkedId)
-		    {
-		        // This will get the radiobutton that has changed in its check state
-		        RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(checkedId);
-		        
-		        // This puts the value (true/false) into the variable
-		        boolean isChecked = checkedRadioButton.isChecked();
-		        
-		        // If the radiobutton that has changed in check state is now checked...
-		        if (isChecked)
-		        {
-		        	WaveType wave;
-		        	
-		        	switch (checkedRadioButton.getId()) {
-		        		case R.id.radiobtnSaw:
-			        		wave = WaveType.SAW_TOOTH;
-			        		break;
-			        		
-		        		case R.id.radiobtnSquare:
-			        		wave = WaveType.SQUARE;
-			        		break;
-			        		
-		        		case R.id.radiobtnHarmonicSquare:
-			        		wave = WaveType.HARMONIC_SQUARE;
-			        		break;
-			        		
-		        		case R.id.radiobtnTriangle:
-			        		wave = WaveType.TRIANGLE;
-			        		break;
-			        	
-		        		case R.id.radiobtnConcTriangle:
-			        		wave = WaveType.CONC_TRIANGLE;
-			        		break;
-			        	
-		        		case R.id.radiobtnConvTriangle:
-			        		wave = WaveType.CONV_TRIANGLE;
-			        		break;
-		        		
-		        		case R.id.radiobtnSine:
-		        		default:
-		        			wave = WaveType.SINE;
-		        			break;
-		        	}
-		        	
-		        	Log.i(TAG, "Setting wave type to " + wave);
-		            sm.setWaveType(wave);
-		        }
-		    }
-		});
+		b = (WaveButton) findViewById(R.id.btnKeyboardWave);		
+		b.setOnWaveChangeListener(new keyboardOnWaveChangeListener());
+		
+		b = (WaveButton) findViewById(R.id.btnOscOneWave);		
+		b.setOnWaveChangeListener(new oscOneOnWaveChangeListener());
+		
+		b = (WaveButton) findViewById(R.id.btnOscTwoWave);		
+		b.setOnWaveChangeListener(new oscTwoOnWaveChangeListener());
 	}
 	
 	// Button handlers
+	
+	private class keyboardOnWaveChangeListener implements onWaveChangeListener {
+		@Override
+		public void onClick(View v) {
+			WaveButton b = (WaveButton) findViewById(R.id.btnKeyboardWave);		
+			sm.setWaveType(b.getWave());
+			Log.i (TAG, "Setting keyboard wave.");
+		}
+	}
+	
+	private class oscOneOnWaveChangeListener implements onWaveChangeListener {
+		@Override
+		public void onClick(View v) {
+			WaveButton b = (WaveButton) findViewById(R.id.btnOscOneWave);		
+			LFO1.setWaveType(b.getWave());
+			Log.i (TAG, "Setting LFO1 wave.");
+		}
+	}
+	
+	private class oscTwoOnWaveChangeListener implements onWaveChangeListener {
+		@Override
+		public void onClick(View v) {
+			WaveButton b = (WaveButton) findViewById(R.id.btnOscTwoWave);		
+			LFO2.setWaveType(b.getWave());
+			Log.i (TAG, "Setting LFO2 wave.");
+		}
+	}
 	
 	public void btnAClick (View v) {
 		noteDown[NOTEA] = !noteDown[NOTEA];
@@ -207,6 +188,29 @@ public class SynthActivity extends Activity {
 	public void btnEClick (View v) {
 		noteDown[NOTEE] = !noteDown[NOTEE];
 		Log.i (TAG, "Note E is " + noteDown[NOTEE]);
+		
+		// TODO - this is debugging
+		// This should produce a continuous E tone for 2 seconds
+		// It does not :(
+		// The resultant sound is 'bitty'
+		// HOWEVER, THE GENERATED WAVEFORM IS CONTINUOUS!
+		// THIS SUGGESTS THE PROBLEM LIES WITH THE BUFFERING CODE
+		/*Log.i (TAG, "Starting note E generation");
+		am.pause();
+		for (int i = 0; i < 30; i++) {
+			// could the buffer size have something to do with it? we're using a weird mix of shorts and bytes (and obv 2*bytes = shorts)
+			short[] noteSampleData = sm.generateTone(0.1f, noteFreq[NOTEE], volume, am.getSampleRate());
+			am.buffer(noteSampleData); // <------------- Problem lies here, possibly?
+			Log.i (TAG, ""+i);
+		}*/
+		// THIS DOES WORK HOWEVER
+		/*for (int i = 0; i < 1; i++) {
+			short[] noteSampleData = sm.generateTone(3f, noteFreq[NOTEE], volume, am.getSampleRate());
+			am.buffer(noteSampleData);
+			Log.i (TAG, ""+i);
+		}*/
+		/*Log.i (TAG, "Playing!");
+		am.play();*/
 	}
 	
 	public void btnFClick (View v) {

@@ -1,7 +1,5 @@
 package com.masterthebass.prototypes.synth;
 
-import android.util.Log;
-
 public class Oscillator {
 	
 	// Waveform
@@ -96,26 +94,5 @@ public class Oscillator {
 	public double[] getSample (float duration) {
 		return sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
 	}
-	
-	/* Threads */
-	
-	private Runnable oscillator = new Runnable() {
-		public void run() {
-			//Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-			
-			while (started) {
-				final double[] sampleData = getSample (0.1f);
-				
-				// TODO - modulate whatever needs modulating!
-				// I don't yet know how to do this nicely!
-				
-				// TODO - function that maps
-				
-				if (Thread.interrupted()) {
-					return;
-				}
-			}
-		}
-	};
 	
 }

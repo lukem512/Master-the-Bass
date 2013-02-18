@@ -2,13 +2,14 @@ package com.masterthebass.prototypes.synth;
 
 import java.io.Serializable;
 
+import android.util.Log;
+
 public class Filter implements Serializable {
 	private static final long serialVersionUID = -176105425284552882L;
 	
 	private int ID;
 	private String name;
 	private boolean enabled;
-	private boolean hasOscillator;
 	private int sampleRate;
 	private static final int defaultSampleRate = 44100;
 	
@@ -21,7 +22,7 @@ public class Filter implements Serializable {
 	}
 	
 	protected float getDuration (short[] rawPCM) {
-		return (float) Math.ceil(rawPCM.length/sampleRate);
+		return (rawPCM.length/(float)sampleRate);
 	}
 	
 	public boolean getState (){
