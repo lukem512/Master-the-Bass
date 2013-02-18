@@ -38,7 +38,7 @@ public class Filtersmenu extends Activity {
 	private Spinner spinner1, spinner2, spinner3, spinner4;
 	//getting the filter list ID's and adding the filter ID's to array
 	private int[] filterListID;	
-	private ArrayList filters  = new ArrayList();
+	private ArrayList<String> filters  = new ArrayList<String>();
 	/*  settings:
 	 *  0 - 3 are filter on/off buttons 
 	 *  4 vibration button
