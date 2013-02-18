@@ -24,6 +24,8 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private int mode = AudioTrack.MODE_STREAM;
 
+	private final int maxRetries = 16;
+
 	private String logTag = "AudioOutputManager";
 
 	/* Constructor */
@@ -128,14 +130,18 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		return 44100;
 	}
 
+	// TODO - add timeout
 	public void buffer(byte[] pcm) {
 		byte[] buffer;
-		int length, pos, written;
+		int length, pos, written, prev, retries;
 
 		//Log.d(logTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
 
 		pos = 0;
-		while (pos < pcm.length) {			
+		prev = 0;
+		retries = 0;
+		
+		while ((pos < pcm.length) && (retries < maxRetries)) {			
 			//Log.d(logTag+".buffer", "At position " + pos + ".");
 
 			// Ensure there are enough bytes left to copy
@@ -159,6 +165,13 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 			pos += written;
 			numBytesBuffered += written;
+			
+			
+			if (written == prev) {
+				retries++;
+			} else {
+				prev = written;
+			}
 
 			//Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
