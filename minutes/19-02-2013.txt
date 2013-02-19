@@ -10,3 +10,4 @@ Sound generation - inherent bug where sound is 'buzzy'. Luke to fix this ASAP.
 Accelerometer - accelerometer calibration code to be updated and improved. Steve to implement this tonight.
 
 Interface - Ricky has done larger images for new UI, Guy + Petro to implement ASAP.
+		  - images for each type of waveform
