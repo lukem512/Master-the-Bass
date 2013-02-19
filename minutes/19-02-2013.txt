@@ -1,0 +1,12 @@
+Meeting Minutes
+19/02/2013
+---------------
+
+Sound generation - inherent bug where sound is 'buzzy'. Luke to fix this ASAP.
+				 - an interface between the accelerometer and the sound generation/filter cutoff. Perhaps this will manifest itself as a function that will map the accelerometer values to a known range, say 0 to 1. Steve and Jon to work on this as a priority.
+				 - initially this could just be smoothing the values to roughly approximate a sine wave. Jon to work on this before Thursday and to have working prototype.
+				 - envelope generator would be a nice-to-have feature, but less essential
+				 
+Accelerometer - accelerometer calibration code to be updated and improved. Steve to implement this tonight.
+
+Interface - Ricky has done larger images for new UI, Guy + Petro to implement ASAP.
