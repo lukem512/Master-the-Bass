@@ -1,43 +1,105 @@
 package masterthebass.prototypes.generatedsoundtest;
 
-public class FilterManager {
-    Filter [] FilterArray;
-	// Ctor
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+public class FilterManager implements Serializable {
+	private static final long serialVersionUID = 754321647758395857L;
+	
+	private Hashtable<Integer, Filter> FilterList;
+	
+	// helper function to convert a list of Integers to their
+	// primitive cousins, int
+	private int[] convertIntegers(List<Integer> integers)
+	{
+	    int[] ret = new int[integers.size()];
+	    Iterator<Integer> iterator = integers.iterator();
+	    for (int i = 0; i < ret.length; i++)
+	    {
+	        ret[i] = iterator.next().intValue();
+	    }
+	    return ret;
+	}
+	
+	// constructor
 	public FilterManager () {
-		FilterArray = new Filter[2];
-		FilterArray[0] = new LowPassFilter(0, "LowPassFilter");
-		FilterArray[1] = new NoiseFilter(1, "NoiseFilter");
-		// TODO: create an instance of every filter and add to a list
-	}
-	
-	// TODO: implement - return array of filter IDs
-	Filter[] getFiltersList () {
-		return FilterArray;	
-	}
-	
-	Filter getFilter(int ID){
-		return FilterArray[ID];
-	}
-	
-	// TODO: implement - return the name of a filter given its ID
-	String getFilterName (int ID) {
-		return this.FilterArray[ID].getName();
-	}
-	
-	// TODO: implement - toggle on/off of a filter given its ID
-	void toggleFilter (int ID) {
-		this.FilterArray[ID].toggle();
+		// instantiate filter list
+		FilterList = new Hashtable<Integer, Filter>();
 		
+		// create an instance of every filter and add to a list
+		FilterList.put(0, new LowPassFilter(0, "Low Pass Filter"));
+	}
+    
+	// return array of filter IDs
+	public int[] getFiltersList () {
+		int[] IDs = new int[FilterList.size()];
+		int index = 0;
+		
+		Set<Integer> keys = FilterList.keySet();
+		Iterator<Integer> itr = keys.iterator();
+		
+	    while(itr.hasNext()) {
+	      IDs[index] = ((Integer) itr.next());
+	      index++;
+	    }
+		
+		return IDs;	
 	}
 	
-	// TODO: implement
-	void enableFilter (int ID) {
-		this.FilterArray[ID].enable();
+	// return array of enabled filter IDs
+	public int[] getEnabledFiltersList () {
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		Set<Integer> keys = FilterList.keySet();
+		Iterator<Integer> itr = keys.iterator();
+		int id;
+		
+	    while(itr.hasNext()) {
+	      id = ((Integer) itr.next());
+	      
+	      if (getFilter(id).getState()) {
+	    	  list.add(id);
+	      }
+	    }
+		
+	    return convertIntegers(list);
 	}
 	
-	// TODO: implement
-	void disableFilter (int ID){
-		this.FilterArray[ID].enable();		
+	// returns a filter object given its ID
+	public Filter getFilter (int ID){
+		return FilterList.get(ID);
+	}
+	
+	// return the name of a filter given its ID
+	public String getFilterName (int ID) {
+		return getFilter(ID).getName();
+	}
+	
+	// toggle on/off of a filter given its ID
+	public void toggleFilter (int ID) {
+		getFilter(ID).toggle();
+	}
+
+	// enable a filter given its ID
+	public void enableFilter (int ID) {
+		getFilter(ID).enable();
+	}
+	
+	// disable a filter given its ID
+	public void disableFilter (int ID){
+		getFilter(ID).disable();
+	}
+	
+	// applies a filter
+	public short[] applyFilter (int ID, short[] rawPCM) {
+		Filter f = getFilter(ID);
+		return f.applyFilter(rawPCM);
 	}
 }
+
+
+
 

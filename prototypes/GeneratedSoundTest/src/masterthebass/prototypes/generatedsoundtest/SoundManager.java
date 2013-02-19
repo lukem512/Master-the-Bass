@@ -1,66 +1,46 @@
 package masterthebass.prototypes.generatedsoundtest;
 
-
-import android.util.Log;
-
 public class SoundManager{
-	
 	/* Members */
+
+	@SuppressWarnings("unused")
+	private final static String LogTag = "SoundManager";
+	private final static double twopi = (2*Math.PI);
 	
-	private String logTag = "SoundManager";
+	private WaveType waveType = WaveType.SINE;
 	private double Final;
-	
-	public static enum WAVE_TYPE {SINE, SQUARE, HARMONIC_SQUARE, SAW_TOOTH};
-	
+
 	/* Constructor */
-	
+
 	public SoundManager() {
-		resetPeriod();
+		resetOffset ();
 	}
-	
-	/* Public static methods */
 
-	// Generate a tone at a given frequency, for a given duration
-	// Returns a byte array of the sound in 16-bit WAV PCM format
-	public byte[] generateTone(double duration, double frequency, double volume, int sampleRate) {
-		int numSamples = (int) Math.ceil(sampleRate * duration);
-		byte generatedSnd[];
+	/* Destructor */
 
-		// Sanity check volume
-		if (volume < 0.0) {
-			volume = 0.0;
-		} else if (volume > 1.0) {
-			volume = 1.0;
-		}
-		generatedSnd = doGenerateTone(numSamples, frequency, volume, sampleRate, Final, WAVE_TYPE.SAW_TOOTH);
-        
-        // Save starting offset for next tone
-        Final = (numSamples + Final) % (sampleRate/frequency);
-        
-        return generatedSnd;
-    }
-	
-	private byte[] doGenerateTone (int numSamples, double frequency, double volume, int sampleRate, double offset, WAVE_TYPE wave) {
-		double sample = 0.0;
-		byte generatedSnd[] = new byte[2 * numSamples];
-		int i, idx;
+	public void destruct() {
+		// Do nothing
+	}
+
+	/* Private methods */
+
+	// TODO - try a lookup table for sine values
+	// TODO - ensure the angle is always < 2PI!!!!!! <------------------------------------------------------------------------------------------------------
+	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
+		double sample;
+		double generatedSnd[] = new double[numSamples];
 		int sampleNumber = 0;
-		int samplesPerPeriod = (int) (sampleRate* (1.0/frequency));
-
+		int samplesPerPeriod = (int) (sampleRate*(1.0/frequency));
 		double sampleByFreq = (sampleRate/frequency);
-		double twopi = (2*Math.PI);
-		int volValue = (int) (32767*volume);
-
-        // Generate the tone
-		idx = 0;
-        for (i = 0; i < numSamples; i++) {  
-    		double x = ((i + offset)/sampleByFreq);
-    		double twopix = twopi * x;
-    		
+		double x, twopix;
+		
+		for (int i = 0; i < numSamples; i++) {  
             switch (wave) {
             		// Sine wave
 	            	default:
 	            	case SINE:
+	            		x = ((i + offset)/sampleByFreq);
+	            		twopix = (twopi * x) % twopi;
 	            		sample = Math.sin(twopix);
 	            		break;
 	       
@@ -71,37 +51,173 @@ public class SoundManager{
 	            		}  else  {
 	            			sample = -1.0;
 	            		}
-	            		sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
 	            		break;
 	            		
             		// Square wave with harmonics
 		            // i.e. constructed from sine waves using FT
 	            	case HARMONIC_SQUARE:
+	            		x = ((i + offset)/sampleByFreq);
+	            		twopix = (twopi * x) % twopi;
 	            		sample = Math.sin(twopix) + Math.sin(3*twopix)/3 + Math.sin(5*twopix)/5 + Math.sin(7*twopix)/7 + Math.sin(9*twopix)/9;
 	            		break;
 	               
 	            	// Saw-tooth wave
 	            	case SAW_TOOTH:
-		            	sample = 2.0 * (x - Math.floor(x + 0.5));
+	            		x = ((i + offset)/sampleByFreq);
+		            	sample = 1.0 * (x - Math.floor(x + 0.5));
 		              	break;
+		              	
+		            // Straight Triangle wave
+	            	case TRIANGLE:
+	            		x = ((i + offset)/sampleByFreq);
+	            		sample = Math.abs(1.0 - x % (2*1.0));
+	            		break;
+	            		
+	            	// Concave Triangle wave
+	            	case CONC_TRIANGLE:
+	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 2.0);
+	            		break;
+	            		
+	            	// Convex Triangle wave
+	            	case CONV_TRIANGLE:
+	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 0.5);
+	            		break;
             }
             
-            // Scale to max amplitude
-            sample = sample * volValue;
+            // Increment sample number
+            // this is modulo the number of samples per period
+            sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
             
-            // Generate 16-bit samples
-            final short val = (short) sample;
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+            // Apply volume scalar
+            generatedSnd[i] = sample * volume;
+        }
+        
+        // Return the sound
+        return generatedSnd;
+	}
+
+	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
+	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
+		double unscaledSnd[] = new double[numSamples];
+		short generatedSnd[] = new short[numSamples];
+		
+		unscaledSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, offset, wave);
+
+        // Scale the tone
+        for (int i = 0; i < numSamples; i++) {  
+            // Scale to max amplitude
+        	generatedSnd[i] = (short) (unscaledSnd[i] * Short.MAX_VALUE);
         }
         
         // Return the sound
         return generatedSnd;
 	}
 	
+	/* Public static methods */
+	
+	// Generate a tone at a given frequency, for a given duration
+	// Returns a short array of the sound in 16-bit WAV PCM format
+	public short[] generateTone(double duration, double frequency, double volume, int sampleRate) {		
+		int numSamples = (int) Math.ceil(sampleRate * duration);
+		short generatedSnd[];
 
-	// Resets the period of the waveform
-	public void resetPeriod() {
+		// Sanity check volume
+		if (volume < 0.0) {
+			volume = 0.0;
+		} else if (volume > 1.0) {
+			volume = 1.0;
+		}
+
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, waveType);
+        
+        // Save starting offset for next tone
+        Final = (numSamples + Final) % (sampleRate/frequency);
+        Final = Final % twopi;
+        
+        return generatedSnd;
+    }
+	
+	// Generate a tone at a given frequency, for a given duration
+	// Returns a double array of samples between -1.0 and 1.0
+	public double[] generateUnscaledTone(double duration, double frequency, double volume, int sampleRate) {		
+		int numSamples = (int) Math.ceil(sampleRate * duration);
+		double generatedSnd[];
+
+		// Sanity check volume
+		if (volume < 0.0) {
+			volume = 0.0;
+		} else if (volume > 1.0) {
+			volume = 1.0;
+		}
+
+		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, Final, waveType);
+        
+        // Save starting offset for next tone
+        Final = (numSamples + Final) % (sampleRate/frequency);
+        Final = Final % twopi;
+        
+        return generatedSnd;
+    }
+	
+	// 'Generates' silence in 16-bit signed PCM for given duration at given SR
+	public short[] generateSilence(double duration, int sampleRate) {
+		int numSamples = (int) Math.ceil(sampleRate * duration);
+		short generatedSnd[] = new short[numSamples];
+		
+		for (int i = 0; i < numSamples; i++) {
+			generatedSnd[i] = 0;
+		}
+		
+		return generatedSnd;
+	}
+	
+	// 'Generates' silence in double format for given duration at given SR
+	public double[] generateUnscaledSilence(double duration, int sampleRate) {
+		int numSamples = (int) Math.ceil(sampleRate * duration);
+		double generatedSnd[] = new double[numSamples];
+		
+		for (int i = 0; i < numSamples; i++) {
+			generatedSnd[i] = 0;
+		}
+		
+		return generatedSnd;
+	}
+	
+	// Mixes two signals
+	// This is as easy as summing each sample and clipping
+	public short[] mixTones(short[] a, short[] b) {
+		if (a.length != b.length) {
+			throw new IllegalArgumentException ("Tones are not of same length.");
+		}
+		
+		short[] mixed = new short[a.length];
+		float max = Short.MIN_VALUE;
+		
+		// Find the maximum value
+		for(int i = 0; i < a.length; i++) {
+			if( Math.abs( a[i] + b[i] ) > max ) {
+				max = Math.abs(a[i] + b[i]);
+			}
+		}
+
+		// Scale to that maximum
+		for (int i = 0; i < a.length; i++) {
+			mixed[i] = (short) Math.round(Short.MAX_VALUE * (a[i] + b[i]) / max) ;
+		}
+		
+		return mixed;
+	}
+	
+	public void setWaveType (WaveType waveType) {
+		this.waveType = waveType;
+	}
+	
+	public WaveType getWaveType () {
+		return waveType;
+	}
+
+	// Resets the offset of the waveform
+	private void resetOffset() {
 		Final = 0;
 	}
 }

@@ -14,12 +14,12 @@ public class MainActivity extends Activity {
 	private SoundManager sm;
 	private AudioOutputManager am;
 	private FilterManager fm;
-	private LinkedList<byte[]> sampleList;
+	private LinkedList<short[]> sampleList;
 	private Thread toneGeneratorThread, playThread, bufferThread;
 	private boolean tone_stop = true;
 	private double base = 50;
 	private double vol = 0.7;
-	private double dur = 0.1;
+	private double dur = 0.01;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 		am = new AudioOutputManager();
 		sm = new SoundManager();
 		fm = new FilterManager();
-		sampleList = new LinkedList<byte[]>();
+		sampleList = new LinkedList<short[]>();
 		
 		setContentView(R.layout.activity_main);
 	}
@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
 			
 			int sampleRate = am.getSampleRate();
 			int samples = (int) Math.ceil(sampleRate * dur);
-            byte [] sampleData = new byte[samples];
+            short[] sampleData = new short[samples];
             
             //FileManager fileman = new FileManager();
             
@@ -105,7 +105,7 @@ public class MainActivity extends Activity {
             LowPassFilter f = (LowPassFilter) fm.getFilter (0);
             
             // DEBUGGING
-         //   Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
+            //   Log.d("toneBuf", "Got filter \""+f.getName()+"\"\n");
             
             int i = 0;
             boolean up = false;
@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
             		sampleData = sm.generateTone(dur, base, vol, sampleRate);
             		
             		// apply the filter
-            		sampleData = f.applyFilter (sampleData);
+            		//sampleData = f.applyFilter (sampleData);
             		
             		sampleList.add(sampleData);
             		//fileman.appendBinaryFile(FileManager.getSDPath(), "test.wav", sampleData);
@@ -146,11 +146,11 @@ public class MainActivity extends Activity {
         public void run() {      	
         	android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
         	
-            byte[] sampleData;
+            short[] sampleData;
             while(!tone_stop)
             {             
             	try {
-            		sampleData = (byte[]) sampleList.removeFirst();
+            		sampleData = (short[]) sampleList.removeFirst();
             		am.buffer(sampleData);
             		Log.d("toneGen", "Wrote generated frequency to buffer.");
             	}
