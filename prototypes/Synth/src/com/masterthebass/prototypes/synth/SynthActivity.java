@@ -1,5 +1,8 @@
 package com.masterthebass.prototypes.synth;
 
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+
 import com.masterthebass.prototypes.synth.WaveButton.onWaveChangeListener;
 
 import android.os.Bundle;
@@ -10,7 +13,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ToggleButton;
 
-// TODO	- rate modulation
+// TODO - thread UI to be RESPONSIVE
+//		- rate modulation
 //		- maintain button results when activity is recreated
 //		- ability to change settings for oscillators (rate/depth)
 //		- ability to change settings for keyboard (master volume, envelope)
@@ -24,11 +28,11 @@ public class SynthActivity extends Activity {
 	private Oscillator LFO2;
 	
 	private final int numNotes = 7;
-	private float[] noteFreq = new float[numNotes];
+	private double[] noteFreq = new double[numNotes];
 	private boolean[] noteDown = new boolean[numNotes];
 	
-	private Thread generatorThread = null;
-	private Thread playerThread = null;
+	private Thread generatorThread;
+	private Thread writerThread;
 	
 	private final int NOTEA = 0;
 	private final int NOTEB = 1;
@@ -38,10 +42,13 @@ public class SynthActivity extends Activity {
 	private final int NOTEF = 5;
 	private final int NOTEG = 6;
 	
-	private float noteDuration = 0.2f;
-	private float volume = 0.7f;
+	private double noteDuration = 0.05;
+	private double volume = 0.7;
 	
-	private final String TAG = "Synth";
+	private LinkedList<short[]> sampleList;
+	private int sampleListMaxSize;
+	
+	private final static String TAG = "Synth";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +60,12 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		LFO1 = new Oscillator (am, WaveType.SINE, volume/2, 2f);
-		LFO2 = new Oscillator (am, WaveType.SINE, volume, 2f);
-		
+		LFO1 = new Oscillator (am, WaveType.SINE, volume, 5);
+		LFO2 = new Oscillator (am, WaveType.SINE, volume, 3);
 		
 		// Attach to filters
-		fm.attachOscillator(0, LFO1);
-		fm.attachOscillator(1, LFO2);
+		fm.attachOscillator(0, LFO1); // Low Pass Filter
+		fm.attachOscillator(1, LFO2); // Amplitude Filter
 		
 		// Set up notes
 		noteFreq[NOTEA] = MidiNote.A4;
@@ -75,17 +81,6 @@ public class SynthActivity extends Activity {
 		}
 		
 		setContentView(R.layout.synth_activity);
-		
-		// Start up the threads
-		if (playerThread == null) {
-			playerThread = new Thread(playerThreadObj);
-			playerThread.start();
-		}
-
-		if (generatorThread == null) {
-			generatorThread = new Thread(generatorThreadObj);
-			generatorThread.start();
-		}
 		
 		// Initialise the controls for the components
 		intialiseButtons();
@@ -105,9 +100,9 @@ public class SynthActivity extends Activity {
     	super.onStop();
     	
     	// interrupt audio threads
-		if (playerThread != null) {
-			playerThread.interrupt();
-			playerThread = null;
+		if (writerThread != null) {
+			writerThread.interrupt();
+			writerThread = null;
 		}
 
 		if (generatorThread != null) {
@@ -168,59 +163,43 @@ public class SynthActivity extends Activity {
 	public void btnAClick (View v) {
 		noteDown[NOTEA] = !noteDown[NOTEA];
 		Log.i (TAG, "Note A is " + noteDown[NOTEA]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnBClick (View v) {
 		noteDown[NOTEB] = !noteDown[NOTEB];
 		Log.i (TAG, "Note B is " + noteDown[NOTEB]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnCClick (View v) {
 		noteDown[NOTEC] = !noteDown[NOTEC];
 		Log.i (TAG, "Note C is " + noteDown[NOTEC]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnDClick (View v) {
 		noteDown[NOTED] = !noteDown[NOTED];
 		Log.i (TAG, "Note D is " + noteDown[NOTED]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnEClick (View v) {
 		noteDown[NOTEE] = !noteDown[NOTEE];
 		Log.i (TAG, "Note E is " + noteDown[NOTEE]);
-		
-		// TODO - this is debugging
-		// This should produce a continuous E tone for 2 seconds
-		// It does not :(
-		// The resultant sound is 'bitty'
-		// HOWEVER, THE GENERATED WAVEFORM IS CONTINUOUS!
-		// THIS SUGGESTS THE PROBLEM LIES WITH THE BUFFERING CODE
-		/*Log.i (TAG, "Starting note E generation");
-		am.pause();
-		for (int i = 0; i < 30; i++) {
-			// could the buffer size have something to do with it? we're using a weird mix of shorts and bytes (and obv 2*bytes = shorts)
-			short[] noteSampleData = sm.generateTone(0.1f, noteFreq[NOTEE], volume, am.getSampleRate());
-			am.buffer(noteSampleData); // <------------- Problem lies here, possibly?
-			Log.i (TAG, ""+i);
-		}*/
-		// THIS DOES WORK HOWEVER
-		/*for (int i = 0; i < 1; i++) {
-			short[] noteSampleData = sm.generateTone(3f, noteFreq[NOTEE], volume, am.getSampleRate());
-			am.buffer(noteSampleData);
-			Log.i (TAG, ""+i);
-		}*/
-		/*Log.i (TAG, "Playing!");
-		am.play();*/
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnFClick (View v) {
 		noteDown[NOTEF] = !noteDown[NOTEF];
 		Log.i (TAG, "Note F is " + noteDown[NOTEF]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void btnGClick (View v) {
 		noteDown[NOTEG] = !noteDown[NOTEG];
 		Log.i (TAG, "Note G is " + noteDown[NOTEG]);
+		checkAudioThreadsInitialised();
 	}
 	
 	public void toggleBtnLPFClick (View v) {
@@ -249,35 +228,51 @@ public class SynthActivity extends Activity {
 		}
 	}
 	
-	Runnable playerThreadObj = new Runnable() {
+	private void checkAudioThreadsInitialised() {	
+		// Create the buffer
+		sampleList = new LinkedList<short[]>();
+		sampleListMaxSize = 8;
+		
+		// Start up the threads
+		if (writerThread == null) {
+			writerThread = new Thread(writerThreadObj);
+			writerThread.start();
+		}
+
+		if (generatorThread == null) {
+			generatorThread = new Thread(generatorThreadObj);
+			generatorThread.start();
+		}
+		
+		// Set the audio to playing
+		am.play();
+	}
+	
+	// Threads for audio generation and playback
+	
+	Runnable writerThreadObj = new Runnable() {
 		public void run() {
 			boolean running = true;
+			short[] sampleData;
 			
-			Log.i(TAG+".playerThread", "Started!");
-			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+			Log.i(TAG+".writerThread", "Started!");
 			
 			while (running) {
-				while (!am.isPlaying()) {
-					try {
-						if (am.play()) {
-							break;
-						} else {
-							Thread.sleep(80);
-						}
-					} catch (InterruptedException e) {
-						Log.i(TAG+".playerThread", "Play thread interruped.");
-						running = false;
-						break;
-					}
+				try {
+					sampleData = sampleList.removeFirst();
+					am.buffer(sampleData);
+				}
+				catch (NoSuchElementException e) {
+					Log.w (TAG+".writerThread", "Sample buffer is empty.");
 				}
 				
 				if (Thread.interrupted()) {
-					Log.i(TAG+".playThread", "Play thread interruped.");
+					Log.i(TAG+".writerThread", "Tone buffering thread interrupted.");
 					running = false;
 	            }
 			}
 			
-			Log.i(TAG+".playerThread", "Shutting down...");
+			Log.i(TAG+".writerThread", "Shutting down...");
 		}
 	};
 
@@ -287,34 +282,37 @@ public class SynthActivity extends Activity {
 			
 			int sampleRate = am.getSampleRate();
             boolean running = true;
+            short[] sampleData;
             
             Log.i(TAG+".generatorThread", "Started!");
             
             while (running) {
-            	// Generate silence to mix onto
-            	short[] sampleData = sm.generateSilence(noteDuration, sampleRate);
+            	if (sampleList.size() < sampleListMaxSize) {
+	            	// Generate silence to mix onto
+	            	sampleData = sm.generateSilence(noteDuration, sampleRate);
+	            	
+		        	// Generate audio
+	            	for (int i = NOTEA; i <= NOTEG; i++) {
+	            		if (noteDown[i]) {
+	            			Log.i (TAG, "Mixing note " + i);
+	            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
+	            			sampleData = sm.mixTones(sampleData, noteSampleData);
+	            		}
+	        		}
+	            	
+	            	// Apply filters
+	                int[] filterIDs = fm.getEnabledFiltersList();
+	                
+	                for (int id : filterIDs) {
+	                	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
+	                	sampleData = fm.applyFilter(id, sampleData);
+	                }
+		    		
+		    		// Send to audio buffer
+	                sampleList.add(sampleData);
+            	}
             	
-	        	// Generate audio
-            	for (int i = NOTEA; i <= NOTEG; i++) {
-            		if (noteDown[i]) {
-            			Log.i (TAG, "Mixing note " + i);
-            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
-            			sampleData = sm.mixTones(sampleData, noteSampleData);
-            		}
-        		}
-            	
-            	// Apply filters
-                int[] filterIDs = fm.getEnabledFiltersList();
-                
-                for (int id : filterIDs) {
-                	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
-                	sampleData = fm.applyFilter(id, sampleData);
-                }
-	    		
-	    		// Send to audio buffer
-	    		am.buffer(sampleData);
-		        
-		        if (Thread.interrupted()) {
+            	if (Thread.interrupted()) {
 					Log.i(TAG+".generatorThread", "Tone generator thread interrupted.");
 					running = false;
 	            }

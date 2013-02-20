@@ -6,10 +6,10 @@ public class Oscillator {
 	private WaveType waveType;
 	
 	// Amplitude (0.0 - 1.0)
-	private float depth;
+	private double depth;
 	
 	// Frequency (Hz)
-	private float rate;
+	private double rate;
 	
 	protected SoundManager sm;
 	protected AudioOutputManager am;
@@ -29,11 +29,11 @@ public class Oscillator {
 		construct (waveType, 0.5f, 10f, am);
 	}
 	
-	public Oscillator (AudioOutputManager am, WaveType waveType, float depth, float rate) {
+	public Oscillator (AudioOutputManager am, WaveType waveType, double depth, double rate) {
 		construct (waveType, depth, rate, am);
 	}
 	
-	private void construct (WaveType waveType, float depth, float rate, AudioOutputManager am) {
+	private void construct (WaveType waveType, double depth, double rate, AudioOutputManager am) {
 		this.am = am;
 		sm = new SoundManager();
 		
@@ -55,25 +55,25 @@ public class Oscillator {
 		sm.setWaveType(waveType);
 	}
 	
-	public float getDepth () {
+	public double getDepth () {
 		return depth;
 	}
 	
-	public void setDepth (float depth) {
+	public void setDepth (double depth) {
 		if (depth > 1.0) {
-			depth = 1.0f;
+			depth = 1.0;
 		} else if (depth < 0.0) {
-			depth = 0.0f;
+			depth = 0.0;
 		}
 		
 		this.depth = depth;
 	}
 	
-	public float getRate () {
+	public double getRate () {
 		return rate;
 	}
 	
-	public void setRate (float rate) {
+	public void setRate (double rate) {
 		this.rate = rate;
 	}
 	
@@ -91,7 +91,7 @@ public class Oscillator {
 		started = false;
 	}
 	
-	public double[] getSample (float duration) {
+	public double[] getSample (double duration) {
 		return sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
 	}
 	

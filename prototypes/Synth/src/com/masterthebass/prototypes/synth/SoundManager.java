@@ -1,17 +1,24 @@
 package com.masterthebass.prototypes.synth;
 
+// TODO - multiple waveforms!
+
 public class SoundManager{
 	/* Members */
 
 	@SuppressWarnings("unused")
-	private final String LogTag = "SoundManager";
-	private WaveType waveType = WaveType.SINE;
-	private double Final;
+	private final static String LogTag = "SoundManager";
+	private final static double twoPI = (2*Math.PI);
+	
+	private WaveType waveType;
+
+	private double angleIncrement;
+	private double currentAngle;
 
 	/* Constructor */
 
 	public SoundManager() {
-		resetOffset ();
+		currentAngle = 0;
+		waveType = WaveType.SINE;
 	}
 
 	/* Destructor */
@@ -22,80 +29,24 @@ public class SoundManager{
 
 	/* Private methods */
 
-	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
-		double sample;
-		double generatedSnd[] = new double[numSamples];
-		int sampleNumber = 0;
-		int samplesPerPeriod = (int) (sampleRate*(1.0/frequency));
-
-		double sampleByFreq = (sampleRate/frequency);
-		double twopi = (2*Math.PI);
-		
-		for (int i = 0; i < numSamples; i++) {  
-    		double x = ((i + offset)/sampleByFreq);
-    		double twopix = twopi * x;
-    		
-            switch (wave) {
-            		// Sine wave
-	            	default:
-	            	case SINE:
-	            		sample = Math.sin(twopix);
-	            		break;
-	       
-	            	// Square wave
-	            	case SQUARE:
-	            		if (sampleNumber < (samplesPerPeriod/2)) {
-	            			sample = 1.0;
-	            		}  else  {
-	            			sample = -1.0;
-	            		}
-	            		break;
-	            		
-            		// Square wave with harmonics
-		            // i.e. constructed from sine waves using FT
-	            	case HARMONIC_SQUARE:
-	            		sample = Math.sin(twopix) + Math.sin(3*twopix)/3 + Math.sin(5*twopix)/5 + Math.sin(7*twopix)/7 + Math.sin(9*twopix)/9;
-	            		break;
-	               
-	            	// Saw-tooth wave
-	            	case SAW_TOOTH:
-		            	sample = 1.0 * (x - Math.floor(x + 0.5));
-		              	break;
-		              	
-		            // Straight Triangle wave
-	            	case TRIANGLE:
-	            		sample = Math.abs(1.0 - x % (2*1.0));
-	            		break;
-	            		
-	            	// Concave Triangle wave
-	            	case CONC_TRIANGLE:
-	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 2.0);
-	            		break;
-	            		
-	            	// Convex Triangle wave
-	            	case CONV_TRIANGLE:
-	            		sample = Math.pow(Math.abs(sampleNumber - 1.0), 0.5);
-	            		break;
-            }
-            
-            // Increment sample number
-            // this is modulo the number of samples per period
-            sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
-            
-            // Apply volume scalar
-            generatedSnd[i] = sample * volume;
-        }
-        
-        // Return the sound
-        return generatedSnd;
+	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate, WaveType wave) {
+		double[] outBuff = new double[numSamples];
+	    angleIncrement = twoPI * frequency / sampleRate;
+	    
+	    for (int i = 0; i < numSamples; i++) {
+	        outBuff[i] = Math.sin(currentAngle) * volume;
+	        currentAngle = ((currentAngle + angleIncrement) % twoPI);  
+	    }
+	    
+	    return outBuff;  
 	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
-	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, double offset, WaveType wave) {
+	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, WaveType wave) {
 		double unscaledSnd[] = new double[numSamples];
 		short generatedSnd[] = new short[numSamples];
 		
-		unscaledSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, offset, wave);
+		unscaledSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, wave);
 
         // Scale the tone
         for (int i = 0; i < numSamples; i++) {  
@@ -122,10 +73,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, Final, waveType);
-        
-        // Save starting offset for next tone
-        Final = (numSamples + Final) % (sampleRate/frequency);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, waveType);
         
         return generatedSnd;
     }
@@ -143,10 +91,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, Final, waveType);
-        
-        // Save starting offset for next tone
-        Final = (numSamples + Final) % (sampleRate/frequency);
+		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, waveType);
         
         return generatedSnd;
     }
@@ -206,10 +151,5 @@ public class SoundManager{
 	
 	public WaveType getWaveType () {
 		return waveType;
-	}
-
-	// Resets the offset of the waveform
-	private void resetOffset() {
-		Final = 0;
 	}
 }
