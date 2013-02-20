@@ -1,5 +1,3 @@
-09-02-2013 - 2 hours - inverted effect of accelerometer on LPF cutoff
-10-02-2013 - 3 hours - misc. work on sound generation with Jon
 12-02-2013 - 1 hour - meeting
 13-02-2013 - 0.5 hours - meeting
 	   - 2 hours - began work on synthesizer application
