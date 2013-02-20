@@ -9,12 +9,12 @@
     
     <ToggleButton
            android:id="@+id/filter1"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
+           android:layout_width="200dp"
+           android:layout_height="200dp"
    	       android:layout_marginTop="50dp"
    	       android:layout_marginLeft="50dp"
            android:onClick="filterTopLeft"
-           android:background="@drawable/selector_toggle"
+           android:background="@drawable/filter1_off"
            android:textOff=""
            android:textOn= "" />
     
@@ -25,7 +25,7 @@
    	       android:layout_marginTop="50dp"
    	       android:layout_marginLeft="250dp"
            android:onClick="filterTopRight"
-           android:background="@drawable/selector_toggle"
+           android:background="@drawable/filter2_off"
            android:textOff=""
            android:textOn= "" />
     
@@ -36,7 +36,7 @@
    	       android:layout_marginTop="250dp"
    	       android:layout_marginLeft="50dp"
            android:onClick="filterBottomLeft"
-           android:background="@drawable/selector_toggle"
+           android:background="@drawable/filter3_off"
            android:textOff=""
            android:textOn= "" />
     
@@ -47,7 +47,7 @@
    	       android:layout_marginTop="250dp"
    	       android:layout_marginLeft="250dp"
            android:onClick="filterBottomRight"
-           android:background="@drawable/selector_toggle"
+           android:background="@drawable/filter4_off"
            android:textOff=""
            android:textOn= "" />
     
