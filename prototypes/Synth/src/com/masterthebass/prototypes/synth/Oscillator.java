@@ -92,7 +92,9 @@ public class Oscillator {
 	}
 	
 	public double[] getSample (double duration) {
-		return sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
+		double[] sampleData = sm.generateUnscaledTone(duration, getRate(), getDepth(), am.getSampleRate());
+		sm.commit();
+		return sampleData;
 	}
 	
 }

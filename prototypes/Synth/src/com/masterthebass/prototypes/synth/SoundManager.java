@@ -7,18 +7,15 @@ public class SoundManager{
 
 	@SuppressWarnings("unused")
 	private final static String LogTag = "SoundManager";
-	private final static double twoPI = (2*Math.PI);
 	
 	private WaveType waveType;
-
-	private double angleIncrement;
-	private double currentAngle;
+	private Wave wave;
 
 	/* Constructor */
 
 	public SoundManager() {
-		currentAngle = 0;
 		waveType = WaveType.SINE;
+		wave = new SineWave();
 	}
 
 	/* Destructor */
@@ -30,15 +27,7 @@ public class SoundManager{
 	/* Private methods */
 
 	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate, WaveType wave) {
-		double[] outBuff = new double[numSamples];
-	    angleIncrement = twoPI * frequency / sampleRate;
-	    
-	    for (int i = 0; i < numSamples; i++) {
-	        outBuff[i] = Math.sin(currentAngle) * volume;
-	        currentAngle = ((currentAngle + angleIncrement) % twoPI);  
-	    }
-	    
-	    return outBuff;  
+		return this.wave.generateTone(numSamples, frequency, volume, sampleRate);
 	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
@@ -151,5 +140,17 @@ public class SoundManager{
 	
 	public WaveType getWaveType () {
 		return waveType;
+	}
+	
+	public void setWave (Wave wave) {
+		this.wave = wave;
+	}
+	
+	public Wave getWave () {
+		return wave;
+	}
+	
+	public void commit () {
+		wave.commit();
 	}
 }

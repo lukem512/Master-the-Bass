@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import com.masterthebass.prototypes.synth.WaveButton.onWaveChangeListener;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.util.Log;
@@ -13,7 +14,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ToggleButton;
 
-// TODO - thread UI to be RESPONSIVE
+// TODO	- ABILITY TO MIX NOTES
+//
 //		- rate modulation
 //		- maintain button results when activity is recreated
 //		- ability to change settings for oscillators (rate/depth)
@@ -24,10 +26,11 @@ public class SynthActivity extends Activity {
 	private AudioOutputManager am;
 	private SoundManager sm;
 	private FilterManager fm;
+	
 	private Oscillator LFO1;
 	private Oscillator LFO2;
 	
-	private final int numNotes = 7;
+	private final static int numNotes = 7;
 	private double[] noteFreq = new double[numNotes];
 	private boolean[] noteDown = new boolean[numNotes];
 	
@@ -42,8 +45,8 @@ public class SynthActivity extends Activity {
 	private final int NOTEF = 5;
 	private final int NOTEG = 6;
 	
-	private double noteDuration = 0.05;
-	private double volume = 0.7;
+	private final static double noteDuration = 0.05;
+	private double volume = 1.0;
 	
 	private LinkedList<short[]> sampleList;
 	private int sampleListMaxSize;
@@ -100,10 +103,10 @@ public class SynthActivity extends Activity {
     	super.onStop();
     	
     	// interrupt audio threads
-		if (writerThread != null) {
+		/*if (writerThread != null) {
 			writerThread.interrupt();
 			writerThread = null;
-		}
+		}*/
 
 		if (generatorThread != null) {
 			generatorThread.interrupt();
@@ -129,6 +132,28 @@ public class SynthActivity extends Activity {
 		
 		b = (WaveButton) findViewById(R.id.btnOscTwoWave);		
 		b.setOnWaveChangeListener(new oscTwoOnWaveChangeListener());
+	}
+	
+	private void checkAudioThreadsInitialised() {	
+		// Create the buffer
+		sampleList = new LinkedList<short[]>();
+		sampleListMaxSize = 8;
+		
+		// Start up the threads
+		if (writerThread == null) {
+			writerThread = new Thread(writerThreadObj, "Writer Thread");
+			writerThread.setDaemon(true);
+			writerThread.start();
+		}
+
+		if (generatorThread == null) {
+			generatorThread = new Thread(generatorThreadObj, "Generator Thread");
+			generatorThread.setDaemon(true);
+			generatorThread.start();
+		}
+		
+		// Set the audio to playing
+		am.play();
 	}
 	
 	// Button handlers
@@ -228,26 +253,6 @@ public class SynthActivity extends Activity {
 		}
 	}
 	
-	private void checkAudioThreadsInitialised() {	
-		// Create the buffer
-		sampleList = new LinkedList<short[]>();
-		sampleListMaxSize = 8;
-		
-		// Start up the threads
-		if (writerThread == null) {
-			writerThread = new Thread(writerThreadObj);
-			writerThread.start();
-		}
-
-		if (generatorThread == null) {
-			generatorThread = new Thread(generatorThreadObj);
-			generatorThread.start();
-		}
-		
-		// Set the audio to playing
-		am.play();
-	}
-	
 	// Threads for audio generation and playback
 	
 	Runnable writerThreadObj = new Runnable() {
@@ -263,7 +268,7 @@ public class SynthActivity extends Activity {
 					am.buffer(sampleData);
 				}
 				catch (NoSuchElementException e) {
-					Log.w (TAG+".writerThread", "Sample buffer is empty.");
+					//Log.w (TAG+".writerThread", "Sample buffer is empty.");
 				}
 				
 				if (Thread.interrupted()) {
@@ -278,27 +283,37 @@ public class SynthActivity extends Activity {
 
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			sm = new SoundManager();
+			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
 			
 			int sampleRate = am.getSampleRate();
             boolean running = true;
+            boolean sampleModified = false;
             short[] sampleData;
+            
+            // Generate silence to mix onto
+            short[] silence = sm.generateSilence(noteDuration, sampleRate);
             
             Log.i(TAG+".generatorThread", "Started!");
             
             while (running) {
             	if (sampleList.size() < sampleListMaxSize) {
-	            	// Generate silence to mix onto
-	            	sampleData = sm.generateSilence(noteDuration, sampleRate);
+            		// Start with a silent 'wave'
+	            	sampleData = silence;
 	            	
 		        	// Generate audio
+	            	// TODO - this audio mixing doesn't sound nice
 	            	for (int i = NOTEA; i <= NOTEG; i++) {
 	            		if (noteDown[i]) {
 	            			Log.i (TAG, "Mixing note " + i);
 	            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
 	            			sampleData = sm.mixTones(sampleData, noteSampleData);
+	            			sampleModified = true;
 	            		}
 	        		}
+	            	
+	            	// Commit the changes to sound manager
+	            	sm.commit();
 	            	
 	            	// Apply filters
 	                int[] filterIDs = fm.getEnabledFiltersList();
@@ -306,10 +321,16 @@ public class SynthActivity extends Activity {
 	                for (int id : filterIDs) {
 	                	Log.i (TAG, "Applying filter " + id + " - " + fm.getFilterName(id));   
 	                	sampleData = fm.applyFilter(id, sampleData);
+	                	sampleModified = true;
 	                }
 		    		
 		    		// Send to audio buffer
-	                sampleList.add(sampleData);
+	                if (sampleModified) {
+		                sampleList.add(sampleData);	
+	                }
+	                
+	                // Reset flag
+	                sampleModified = false;
             	}
             	
             	if (Thread.interrupted()) {

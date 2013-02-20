@@ -10,8 +10,6 @@ import android.util.Log;
 //attachAuxEffect - attaches and 'auxiliary audio effect' to the sound
 //android.media.audiofx.AudioEffect
 
-// TODO - keep track of the number of bytes in the buffer itself!
-
 public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateListener {
 
 	/* Members */
@@ -123,8 +121,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		return nativeSampleRate;
 	}
 	
-	// TODO - short buffering!!
-
 	public void buffer(short[] pcm) {
 		int length, pos, written, prev, retries;
 
