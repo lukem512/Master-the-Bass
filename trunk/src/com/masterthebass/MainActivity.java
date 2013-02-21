@@ -311,56 +311,20 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
      * functions that called when one of the
      * filter buttons is pressed
      */
-    private int ftopleft = 0;
-    private int ftopright = 0;
-    private int fbottomleft = 0;
-    private int fbottomright = 0;    
     
     public void filterTopLeft(View view){
-    	ToggleButton toggletopleft = (ToggleButton) findViewById(R.id.filter1);    	
-    	if(ftopleft == 0){
-    		toggletopleft.setBackgroundResource(R.drawable.filter1_on);
-    		ftopleft = 1;
-    	}else{
-    		toggletopleft.setBackgroundResource(R.drawable.filter1_off);
-    		ftopleft = 0;    		
-    	}   	
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
-    	ToggleButton toggletopright = (ToggleButton) findViewById(R.id.filter2);    	
-    	if(ftopright == 0){
-    		toggletopright.setBackgroundResource(R.drawable.filter2_on);
-    		ftopright = 1;
-    	}else{
-    		toggletopright.setBackgroundResource(R.drawable.filter2_off);
-    		ftopright = 0;    		
-    	} 
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
-    	ToggleButton togglebottomleft = (ToggleButton) findViewById(R.id.filter3);    	
-    	if(fbottomleft == 0){
-    		togglebottomleft.setBackgroundResource(R.drawable.filter3_on);
-    		fbottomleft = 1;
-    	}else{
-    		togglebottomleft.setBackgroundResource(R.drawable.filter3_off);
-    		fbottomleft = 0;    		
-    	} 
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
-    	ToggleButton togglebottomright = (ToggleButton) findViewById(R.id.filter4);    	
-    	if(fbottomright == 0){
-    		togglebottomright.setBackgroundResource(R.drawable.filter4_on);
-    		fbottomright = 1;
-    	}else{
-    		togglebottomright.setBackgroundResource(R.drawable.filter4_off);
-    		fbottomright = 0;    		
-    	} 
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
