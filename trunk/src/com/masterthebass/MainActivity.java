@@ -165,6 +165,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		minAmplitude = 0.2;
 		maxCutoffFreq = 5000;
 		minCutoffFreq = 150;
+
+		// Set up low-pass filter
+		filterman.enableFilter(0);
+		
+		// Set up amplitude filter
+		//filterman.enableFilter(1);
 		
 		// Run the audio threads
 		startAudioThreads();
@@ -706,7 +712,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    	
 	    	// Change the cutoff (shelf) frequency
             lpf.setCutoffFrequency(newCutoff);
-	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	
 	    	// Change the volume
 	    	af.setAmplitude (newAmp);
@@ -772,8 +778,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		                	Log.i (TAG, "Applying filter " + id + " - " + filterman.getFilterName(id));   
 		                	sampleData = filterman.applyFilter(id, sampleData);
 		                }
-		                
-		                // TODO -  add LPF/AmpF in a nice manner
 			    		
 			    		// Send to audio buffer
 			            sampleList.add(sampleData);			                
