@@ -10,4 +10,9 @@ public abstract class Wave {
 	public abstract void reset();
 	public abstract void commit();
 	
+	@Override
+	public String toString() {
+		return "Abstract Wave";
+	}
+	
 }

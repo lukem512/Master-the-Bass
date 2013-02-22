@@ -1,21 +1,21 @@
 package com.masterthebass.prototypes.synth;
 
-// TODO - multiple waveforms!
-
 public class SoundManager{
 	/* Members */
+	
+	private Wave wave;
 
 	@SuppressWarnings("unused")
 	private final static String LogTag = "SoundManager";
-	
-	private WaveType waveType;
-	private Wave wave;
 
 	/* Constructor */
 
 	public SoundManager() {
-		waveType = WaveType.SINE;
 		wave = new SineWave();
+	}
+	
+	public SoundManager(Wave wave) {
+		this.wave = wave;
 	}
 
 	/* Destructor */
@@ -26,16 +26,16 @@ public class SoundManager{
 
 	/* Private methods */
 
-	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate, WaveType wave) {
-		return this.wave.generateTone(numSamples, frequency, volume, sampleRate);
+	private double[] vmGenerateUnscaledTone(int numSamples, double frequency, double volume, int sampleRate) {
+		return wave.generateTone(numSamples, frequency, volume, sampleRate);
 	}
 
 	// Generates a 44.1KHz, mono, signed 16-bit PCM tone at a given frequency for a given duration
-	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate, WaveType wave) {
+	private short[] vmGenerateTone(int numSamples, double frequency, double volume, int sampleRate) {
 		double unscaledSnd[] = new double[numSamples];
 		short generatedSnd[] = new short[numSamples];
 		
-		unscaledSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, wave);
+		unscaledSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate);
 
         // Scale the tone
         for (int i = 0; i < numSamples; i++) {  
@@ -62,7 +62,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate, waveType);
+		generatedSnd = vmGenerateTone(numSamples, frequency, volume, sampleRate);
         
         return generatedSnd;
     }
@@ -80,7 +80,7 @@ public class SoundManager{
 			volume = 1.0;
 		}
 
-		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate, waveType);
+		generatedSnd = vmGenerateUnscaledTone(numSamples, frequency, volume, sampleRate);
         
         return generatedSnd;
     }
@@ -132,14 +132,6 @@ public class SoundManager{
 		}
 		
 		return mixed;
-	}
-	
-	public void setWaveType (WaveType waveType) {
-		this.waveType = waveType;
-	}
-	
-	public WaveType getWaveType () {
-		return waveType;
 	}
 	
 	public void setWave (Wave wave) {

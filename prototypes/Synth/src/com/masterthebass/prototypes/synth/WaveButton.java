@@ -10,7 +10,7 @@ public class WaveButton extends Button {
 	private int index = 0;
 	private final int defaultIndex = 0;
 
-	private WaveType[] waves;
+	private Wave[] waves;
 
     private onWaveChangeListener mOnWaveChangeListener = null;
 
@@ -23,7 +23,7 @@ public class WaveButton extends Button {
 		construct(defaultIndex);
 	}
 	
-	public WaveButton(Context context, WaveType wave) {
+	public WaveButton(Context context, Wave wave) {
 		super(context);
 		construct(wave);
 	}
@@ -38,14 +38,21 @@ public class WaveButton extends Button {
 		construct(defaultIndex);
 	}
 	
-	private void construct(WaveType wave) {
+	private void construct(Wave wave) {
 		setWave(wave);
 		construct (index);
 	}
 	
+	private void initialiseWavesArray() {
+		waves = new Wave[2];
+		
+		waves[0] = new SineWave();
+		waves[1] = new SquareWave();
+	}
+	
 	private void construct(int waveIndex) {
 		index = waveIndex;
-		waves = WaveType.values();
+		initialiseWavesArray();
 		updateButtonText();
 		
 		this.setOnClickListener(new View.OnClickListener() {
@@ -73,11 +80,11 @@ public class WaveButton extends Button {
     	mOnWaveChangeListener = cl;
     }
 	
-	public WaveType getWave() {
+	public Wave getWave() {
 		return waves[index];
 	}
 	
-	public void setWave(WaveType wave) {
+	public void setWave(Wave wave) {
 		for (int i = 0; i < waves.length; i++) {
 			if (waves[i] == wave) {
 				index = i;

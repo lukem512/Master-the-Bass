@@ -36,5 +36,10 @@ public class SineWave extends Wave {
 	public void commit() {
 		storedCurrentAngle = currentAngle;
 	}
+	
+	@Override
+	public String toString() {
+		return "Sine Wave";
+	}
 
 }

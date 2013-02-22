@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 import com.masterthebass.prototypes.synth.WaveButton.onWaveChangeListener;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.util.Log;
@@ -15,6 +14,8 @@ import android.view.View;
 import android.widget.ToggleButton;
 
 // TODO	- ABILITY TO MIX NOTES
+//		- VOLUME IS REALLY LOW
+//		- MORE WAVEFORMS
 //
 //		- rate modulation
 //		- maintain button results when activity is recreated
@@ -63,8 +64,8 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		LFO1 = new Oscillator (am, WaveType.SINE, volume, 5);
-		LFO2 = new Oscillator (am, WaveType.SINE, volume, 3);
+		LFO1 = new Oscillator (am, new SineWave(), volume, 5);
+		LFO2 = new Oscillator (am, new SineWave(), volume, 3);
 		
 		// Attach to filters
 		fm.attachOscillator(0, LFO1); // Low Pass Filter
@@ -162,7 +163,7 @@ public class SynthActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			WaveButton b = (WaveButton) findViewById(R.id.btnKeyboardWave);		
-			sm.setWaveType(b.getWave());
+			sm.setWave(b.getWave());
 			Log.i (TAG, "Setting keyboard wave.");
 		}
 	}
@@ -171,7 +172,7 @@ public class SynthActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			WaveButton b = (WaveButton) findViewById(R.id.btnOscOneWave);		
-			LFO1.setWaveType(b.getWave());
+			LFO1.setWave(b.getWave());
 			Log.i (TAG, "Setting LFO1 wave.");
 		}
 	}
@@ -180,7 +181,7 @@ public class SynthActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			WaveButton b = (WaveButton) findViewById(R.id.btnOscTwoWave);		
-			LFO2.setWaveType(b.getWave());
+			LFO2.setWave(b.getWave());
 			Log.i (TAG, "Setting LFO2 wave.");
 		}
 	}
@@ -283,8 +284,10 @@ public class SynthActivity extends Activity {
 
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
-			sm = new SoundManager();
 			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			
+			sm = new SoundManager();
+			sm.setWave(new SquareWave());
 			
 			int sampleRate = am.getSampleRate();
             boolean running = true;
@@ -309,11 +312,11 @@ public class SynthActivity extends Activity {
 	            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
 	            			sampleData = sm.mixTones(sampleData, noteSampleData);
 	            			sampleModified = true;
+	            			
+	            			// Commit the changes to sound manager
+	    	            	sm.commit();
 	            		}
 	        		}
-	            	
-	            	// Commit the changes to sound manager
-	            	sm.commit();
 	            	
 	            	// Apply filters
 	                int[] filterIDs = fm.getEnabledFiltersList();
