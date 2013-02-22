@@ -6,13 +6,13 @@ import android.util.Log;
 
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
-	private float cutoffFrequency;
-	private float maxCutoffFrequency;
-	private float minCutoffFrequency;
-	private final static float amplitudeScalar = 5f;
-	private final static float defaultCutoff = 5000f;
-	private final static float defaultMaxCutoff = 5000f;
-	private final static float defaultMinCutoff = 0f;
+	private double cutoffFrequency;
+	private double maxCutoffFrequency;
+	private double minCutoffFrequency;
+	private final static double amplitudeScalar = 5;
+	private final static double defaultCutoff = 5000;
+	private final static double defaultMaxCutoff = 5000;
+	private final static double defaultMinCutoff = 0;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
@@ -25,9 +25,9 @@ public class LowPassFilter extends Filter {
 		minCutoffFrequency = defaultMinCutoff;
 	}
 	
-	public void setCutoffFrequency (float cutoffFrequency) {
-		if (cutoffFrequency > 0) {
-			this.cutoffFrequency = cutoffFrequency;
+	public void setCutoffFrequency (double newCutoff) {
+		if (newCutoff > 0) {
+			this.cutoffFrequency = newCutoff;
 		}
 	}
 	
@@ -43,15 +43,15 @@ public class LowPassFilter extends Filter {
 		}
 	}
 	
-	public float getCutoffFrequency () {
+	public double getCutoffFrequency () {
 		return cutoffFrequency;
 	}
 	
-	public float getMaxCutoffFrequency () {
+	public double getMaxCutoffFrequency () {
 		return maxCutoffFrequency;
 	}
 	
-	public float getMinCutoffFrequency () {
+	public double getMinCutoffFrequency () {
 		return minCutoffFrequency;
 	}
 	
@@ -61,7 +61,7 @@ public class LowPassFilter extends Filter {
 		return (float) ((oscillation * (maxCutoffFrequency - minCutoffFrequency)) + minCutoffFrequency);
 	}
 
-	private void getLPCoefficientsButterworth2Pole(int samplerate, float cutoff, double ax[], double by[]) {
+	private void getLPCoefficientsButterworth2Pole(int samplerate, double cutoff, double ax[], double by[]) {
 	    double sqrt2 = Math.sqrt(2);
 	    double PI = Math.PI;
 

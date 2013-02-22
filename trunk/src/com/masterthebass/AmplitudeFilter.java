@@ -2,8 +2,8 @@ package com.masterthebass;
 
 public class AmplitudeFilter extends Filter {
 	private static final long serialVersionUID = -4543222800830811103L;
-	private float amplitude;
-	private final static float defaultAmplitude = 1.0f;
+	private double amplitude;
+	private final static double defaultAmplitude = 1.0f;
 
 	public AmplitudeFilter(int ID, String name) {
 		super(ID, name);
@@ -19,18 +19,18 @@ public class AmplitudeFilter extends Filter {
 		setAmplitude (amplitude);
 	}
 	
-	public void setAmplitude (float amplitude) {
+	public void setAmplitude (double newAmp) {
 		// check bounds
-		if (amplitude > 1) {
-			amplitude = 1;
-		} else if (amplitude < 0) {
-			amplitude = 0;
+		if (newAmp > 1) {
+			newAmp = 1;
+		} else if (newAmp < 0) {
+			newAmp = 0;
 		}
 		
-		this.amplitude = amplitude;
+		this.amplitude = newAmp;
 	}
 	
-	public float getAmplitude () {
+	public double getAmplitude () {
 		return amplitude;
 	}
 

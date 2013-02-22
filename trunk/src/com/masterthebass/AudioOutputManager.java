@@ -16,8 +16,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private AudioTrack audio;	
 
-	private int numBytesBuffered;
-
 	private int nativeSampleRate;
 	private int bufferSize;
 	private int minBufferSize;
@@ -26,7 +24,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private final int maxRetries = 16;
 
-	private String logTag = "AudioOutputManager";
+	private final String LogTag = "AudioOutputManager";
 
 	/* Constructor */
 
@@ -35,20 +33,17 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		getSampleRateFromHardware();
 
 		// Instantiate audio manager
-		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT/*, 1.0*/, mode);
+		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,/* 1.0,*/ mode);
 		audio.stop();
-
-		// Set flags
-		numBytesBuffered = 0;
 		
-		Log.d(logTag+".ctor", "AudioOutputManager object constructed.");
+		Log.d(LogTag+".ctor", "AudioOutputManager object constructed.");
 	}
 
 	/* Private methods */
 
 	private void getSampleRateFromHardware() {
 		nativeSampleRate = AudioTrack.getNativeOutputSampleRate(mode);
-		Log.d(logTag+".getSampleRateFromHardware", "Native sample rate is " + nativeSampleRate + " Hz.");
+		Log.d(LogTag+".getSampleRateFromHardware", "Native sample rate is " + nativeSampleRate + " Hz.");
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, double bufDuration, int mode) {
@@ -56,24 +51,24 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, int mode) {
-		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
+		minBufferSize = getMinimumBufferSizeInSamples (channel, format);
 		
 		bufferSize = minBufferSize;
-		Log.d(logTag+".createAudioTrack", "Setting buffer size to " + minBufferSize + " bytes.");
+		Log.d(LogTag+".createAudioTrack", "Setting buffer size to " + minBufferSize + " bytes.");
 		
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, int bufSize, int mode) {
-		minBufferSize = AudioTrack.getMinBufferSize(nativeSampleRate, channel, format);
-		Log.w(logTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " bytes.");
+		minBufferSize = getMinimumBufferSizeInSamples (channel, format);
+		Log.w(LogTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " samples.");
 
 		if (bufSize < minBufferSize) {
 			bufSize = minBufferSize;
 		}
 
 		bufferSize = bufSize;
-		Log.d(logTag+".createAudioTrack", "Setting buffer size to " + bufferSize + " bytes.");
+		Log.d(LogTag+".createAudioTrack", "Setting buffer size to " + bufferSize + " samples.");
 
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, bufSize, mode);
 	}
@@ -82,21 +77,18 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		pause();
 		audio.flush();
 		audio.stop();
-		Log.d(logTag+".stopStreaming", "Paused, flushed and stopped audio.");
+		Log.d(LogTag+".stopStreaming", "Paused, flushed and stopped audio.");
+	}
+	
+	private int getMinimumBufferSizeInSamples(int channel, int format) {
+		return AudioTrack.getMinBufferSize(nativeSampleRate, channel, format)/2;
 	}
 
 	/* Public methods */
 
-	public boolean play() {
-		if (numBytesBuffered >= minBufferSize) {
-			audio.play();
-			Log.d(logTag+".play", "Set audio to playing.");
-			return true;
-		} else {
-			Log.w(logTag+".play", "Not enough samples to play yet.");
-			Log.w(logTag+".play", "Got " + numBytesBuffered + " need " + minBufferSize + ".");
-			return false;
-		}
+	public void play() {
+		audio.play();
+		Log.d(LogTag+".play", "Set audio to playing.");
 	}
 
 	public void stop() {
@@ -105,12 +97,12 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		} else {
 			audio.stop();
 		}
-		Log.d(logTag+".stop", "Set audio to stopped.");
+		Log.d(LogTag+".stop", "Set audio to stopped.");
 	}
 
 	public void pause() {
 		audio.pause();
-		Log.d(logTag+".pause", "Set audio to paused.");
+		Log.d(LogTag+".pause", "Set audio to paused.");
 	}
 
 	public boolean isPaused() {
@@ -126,46 +118,38 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	}
 
 	public int getSampleRate() {
-		//return nativeSampleRate;
-		return 44100;
+		return nativeSampleRate;
 	}
-
-	// TODO - add timeout
-	public void buffer(byte[] pcm) {
-		byte[] buffer;
+	
+	public void buffer(short[] pcm) {
 		int length, pos, written, prev, retries;
 
-		//Log.d(logTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
+		//Log.i(LogTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
 
 		pos = 0;
 		prev = 0;
 		retries = 0;
 		
-		while ((pos < pcm.length) && (retries < maxRetries)) {			
-			//Log.d(logTag+".buffer", "At position " + pos + ".");
+		while ((pos < pcm.length) /*&& (retries < maxRetries)*/) {			
+			//Log.i(LogTag+".buffer", "At position " + pos + ".");
 
-			// Ensure there are enough bytes left to copy
+			// Ensure there are enough bytes left to copy		
 			if (pcm.length < (pos + bufferSize)) {
 				length = pcm.length - pos;
 			} else {
 				length = bufferSize;
 			}
 
-			buffer = new byte[length];
-			System.arraycopy(pcm, pos, buffer, 0, length);
-
 			try {
-				written = audio.write(buffer, 0, length);
+				written = audio.write(pcm, pos, length);
 			}
 			catch (IllegalStateException e) {
-				Log.e(logTag+".buffer", "Could not write to AudioTrack.");
+				Log.e(LogTag+".buffer", "Could not write to AudioTrack.");
 				e.printStackTrace();
 				return;
 			}
 
 			pos += written;
-			numBytesBuffered += written;
-			
 			
 			if (written == prev) {
 				retries++;
@@ -173,29 +157,15 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 				prev = written;
 			}
 
-			//Log.d(logTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
+			//Log.i(LogTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
 			if (Thread.interrupted()) {
-				Log.d(logTag+".buffer", "Thread was interrupted.");
+				Log.i(LogTag+".buffer", "Thread was interrupted.");
 				return;
 			}
 		}
 
-		//Log.d(logTag+".buffer", "Exiting...");
-	}
-	
-	public void buffer(short[] pcm) {
-		byte[] bytepcm = new byte[pcm.length * 2];
-		int idx = 0;
-		
-		// convert to byte[]
-		for (int i = 0; i < pcm.length; i = i+2) {
-			bytepcm[idx++] = (byte) (pcm[i] & 0x00ff);
-			bytepcm[idx++] = (byte) ((pcm[i] & 0xff00) >>> 8);
-		}
-		
-		// call buffer with byte array
-		buffer (bytepcm);
+		//Log.i(LogTag+".buffer", "Exiting...");
 	}
 
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */

@@ -95,5 +95,11 @@ public class FilterManager implements Serializable {
 	public void disableFilter (int ID){
 		getFilter(ID).disable();
 	}
+	
+	// applies a filter
+	public short[] applyFilter (int ID, short[] rawPCM) {
+		Filter f = getFilter(ID);
+		return f.applyFilter(rawPCM);
+	}
 }
 

@@ -1,11 +1,13 @@
 package com.masterthebass;
 
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
-import android.view.Menu;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,7 +23,7 @@ import android.hardware.SensorManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-// TODO - the audio is discontinuous!
+// TODO - get audio to play!
 
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
 	// Manager instances
@@ -79,21 +81,27 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Sensor oSensor;
 	
 	private int i, resetThreshold, resetCounter;
-	private float accelThreshold;
-	private float maxGrad;
+	private double accelThreshold;
+	private double maxGrad;
 	
-	private float maxAmplitude;
-	private float minAmplitude;
+	private double maxAmplitude;
+	private double minAmplitude;
 	
 	private int movingAverageCount;
-	private float[] gradMovingAverage;
+	private double[] gradMovingAverage;
 	
 	// Audio generation variables
-	private Thread toneGeneratorThread, playThread;
-	private boolean tone_stop = true;
-	private float base;
-	private float vol;
-	private float dur;
+	private Thread generatorThread;
+	private Thread writerThread;
+	
+	private LinkedList<short[]> sampleList;
+	private int sampleListMaxSize;
+	
+	private boolean playing = true;
+	
+	private double noteDuration;
+	private double volume;
+	private double noteFrequency;
 	
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
@@ -141,7 +149,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		prevTotalAccel = 0;
 		
 		movingAverageCount = 10;
-		gradMovingAverage = new float[movingAverageCount];
+		gradMovingAverage = new double[movingAverageCount];
 		
 		for (int k = 0; k < movingAverageCount; k++) {
 			gradMovingAverage[k] = 0;
@@ -149,13 +157,17 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	}
    	
    	private void initAudio () {
-		base = MidiNote.B4;
-		vol = 1.0f;
-		dur = 0.0005f;
-		maxAmplitude = 1.0f;
-		minAmplitude = 0.2f;
+   		// Set up default values
+		noteFrequency = MidiNote.B4;
+		volume = 1.0;
+		noteDuration = 0.05;
+		maxAmplitude = 1.0;
+		minAmplitude = 0.2;
 		maxCutoffFreq = 5000;
 		minCutoffFreq = 150;
+		
+		// Run the audio threads
+		startAudioThreads();
    	}
    	
    	/** Activity lifecycle/UI methods */
@@ -167,7 +179,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
-        //filterSelected = new int[filterman.getFiltersList().length];
     }
     
     @Override
@@ -257,56 +268,59 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     //0 is play background, 1 is pause 
     private int buttonOn = 0;
     
-    private void startAudio() {
-    	// set audio stopped flag to false
-		tone_stop = false;
+    private void startAudio() {				
+		// Start playing!
+		audioman.play();
 		
-		// run the audio threads
-		startAudioThreads();
+		// set flag
+		playing = true;
 		
 		// set sensor update to true
 		writing = true;
     }
     
-    private void startAudioThreads() {
-    	//Log.d(LogTag+".stopAudio", "Starting playThread and toneGeneratorThread.");
+    private void startAudioThreads() {	
+    	// Create the buffer
+    	if (sampleList == null) {
+			sampleList = new LinkedList<short[]>();
+			sampleListMaxSize = 8;
+    	}
 		
-    	// Play the audio, when the buffer is ready
-		if (playThread == null) {
-			playThread = new Thread(playTone);
-			playThread.start();
+		// Start up the threads
+		if (writerThread == null) {
+			writerThread = new Thread(writerThreadObj, "Writer Thread");
+			writerThread.setDaemon(true);
+			writerThread.start();
 		}
-		
-		// generate a tone
-		if (toneGeneratorThread == null) {
-			toneGeneratorThread = new Thread(toneGenerator);
-			toneGeneratorThread.start();
+
+		if (generatorThread == null) {
+			generatorThread = new Thread(generatorThreadObj, "Generator Thread");
+			generatorThread.setDaemon(true);
+			generatorThread.start();
 		}
     }
     
     private void stopAudio() {
 		// stop audio
 		audioman.stop();
-		tone_stop = true;
+		
+		// set flag
+		playing = false;
 		
 		// set sensor update to false
 		writing = false;
     }
     
-    private void stopAudioThreads() {
-    	//Log.d(LogTag+".stopAudio", "Interrupting playThread and toneGeneratorThread.");
-    	
-    	// Interrupt thread generating audio
-    	if (toneGeneratorThread != null) {
-    		toneGeneratorThread.interrupt();
-    		toneGeneratorThread = null;
-    	}
-    	
-    	// Interrupt thread playing audio
-    	if (playThread != null) {
-    		playThread.interrupt();
-    		playThread = null;
-    	}
+    private void stopAudioThreads() {   
+    	if (writerThread != null) {
+			writerThread.interrupt();
+			writerThread = null;
+		}
+
+		if (generatorThread != null) {
+			generatorThread.interrupt();
+			generatorThread = null;
+		}
     }
     
     //for toggling play button to stop
@@ -322,10 +336,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		buttonOn = 0;
     	}  
     	
-    	if (tone_stop) {	
+    	if (audioman.isStopped()) {	
     		startAudio();
+    		playing = true;
 		} else {			
 			stopAudio();
+			playing = false;
 		}
     }
     
@@ -620,8 +636,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    if(writing)
 		{
 	    	long dTime;
-	    	float newCutoff = maxCutoffFreq;
-	    	float newAmp = minAmplitude;
+	    	double newCutoff = maxCutoffFreq;
+	    	double newAmp = minAmplitude;
 			
 			if (useTimeA) {
 				dTime = (timeA - timeB);
@@ -644,7 +660,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             // TODO - there should be a notion of gravity associated with the cutoff
             // i.e. it should be dependent upon the previous cutoff and the gradient
 	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
-				float grad = 0;	
+	    		double grad = 0;	
 				
 				for (int k = 0; k < movingAverageCount; k++) {
 					grad += gradMovingAverage[k];
@@ -660,7 +676,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				newCutoff = (((Math.abs(grad)*-(maxCutoffFreq/maxGrad)))+maxCutoffFreq+minCutoffFreq);
 				
 				// Calculate the new amplitude
-				float gradAmp = (grad/maxGrad);
+				double gradAmp = (grad/maxGrad);
 				
 				if (gradAmp > minAmplitude) {
 					if (gradAmp < maxAmplitude) {
@@ -703,94 +719,74 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	/** Audio threads **/
 	
-	Runnable playTone = new Runnable() {
+	Runnable writerThreadObj = new Runnable() {
 		public void run() {
 			boolean running = true;
+			short[] sampleData;
 			
-			Log.d(LogTag+".playTone", "Started!");
-			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+			Log.i(TAG+".writerThread", "Started!");
 			
 			while (running) {
-				while (!audioman.isPlaying()) {
-					try {
-						if (audioman.play()) {
-							break;
-						} else {
-							Thread.sleep(80);
-						}
-					} catch (InterruptedException e) {
-						Log.d(LogTag+".playTone", "Play thread interruped.");
-						running = false;
-						break;
-					}
+				try {
+					sampleData = sampleList.removeFirst();
+					audioman.buffer(sampleData);
+				}
+				catch (NoSuchElementException e) {
+					//Log.w (TAG+".writerThread", "Sample buffer is empty.");
 				}
 				
 				if (Thread.interrupted()) {
-					Log.d(LogTag+".playTone", "Play thread interruped.");
+					Log.i(TAG+".writerThread", "Tone buffering thread interrupted.");
 					running = false;
 	            }
 			}
 			
-			Log.d(LogTag+".playTone", "Shutting down...");
+			Log.i(TAG+".writerThread", "Shutting down...");
 		}
 	};
-	
-	Runnable toneGenerator = new Runnable() {
+
+	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
 			
 			int sampleRate = audioman.getSampleRate();
-			int samples = (int) Math.ceil(sampleRate * dur);
-            short [] sampleData = new short[samples];
             boolean running = true;
+            short[] sampleData;
             
-            Log.d(LogTag+".toneGenerator", "Started!");
+            // Generate silence to mix onto
+            short[] silence = soundman.generateSilence(noteDuration, sampleRate);
             
-            // Get the low-pass filter
-            LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
-            
-            // ...and the Amplitude filter
-            AmplitudeFilter af = (AmplitudeFilter) filterman.getFilter (1);
+            Log.i(TAG+".generatorThread", "Started!");
             
             while (running) {
-		        while(!tone_stop) {             
-		        	// generate audio
-		        	sampleData = soundman.generateTone(dur, base, vol, sampleRate);
-		    		
-		        	// apply the user-defined filters
-		    		/*for (int i = 0; i < 4; i++) {
-		    			int id = filterarray[i];
-		    			Filter filter = filterman.getFilter(id);
-		    			
-		    			if (filter.getState()) {
-		    				sampleData = filter.applyFilter(sampleData);
-		    				//Log.d (LogTag, "Applying filter #" + id + " : " + filter.getName());
-		    			}
-		    		}
-		        	
-		    		// apply the filter for the 'wub' noise
-		    		sampleData = lpf.applyFilter (sampleData);
-		    		
-		    		// apply the filter to change the volume
-		    		sampleData = af.applyFilter (sampleData);*/
-		    		
-		    		// send to audio buffer
-		    		audioman.buffer(sampleData);
-		    		
-		    		if (Thread.interrupted()) {
-						Log.d(LogTag+".toneGenerator", "Tone buffering thread interrupted.");
-						running = false;
-						break;
-		            }
-		        }
-		        
-		        if (Thread.interrupted()) {
-					Log.d(LogTag+".toneGenerator", "Tone buffering thread interrupted.");
+            	if (playing) {
+            		if (sampleList.size() < sampleListMaxSize) {
+            			// Generate the tone
+            			sampleData = soundman.generateTone(noteDuration, noteFrequency, volume, sampleRate);
+            			soundman.commit();
+	            	
+		            	// Apply filters
+		                int[] filterIDs = filterman.getEnabledFiltersList();
+		                
+		                for (int id : filterIDs) {
+		                	Log.i (TAG, "Applying filter " + id + " - " + filterman.getFilterName(id));   
+		                	sampleData = filterman.applyFilter(id, sampleData);
+		                }
+		                
+		                // TODO -  add LPF/AmpF in a nice manner
+			    		
+			    		// Send to audio buffer
+			            sampleList.add(sampleData);			                
+            		}
+            	}
+            	
+            	if (Thread.interrupted()) {
+					Log.i(TAG+".generatorThread", "Tone generator thread interrupted.");
 					running = false;
 	            }
             }
             
-            Log.d(LogTag+".toneGenerator", "Shutting down...");
+            Log.i(TAG+".generatorThread", "Shutting down...");
 		}
 	};
 }
