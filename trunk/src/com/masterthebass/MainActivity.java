@@ -199,8 +199,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     void scaleFilter(ToggleButton b){
     	//b.setWidth(20);
     	//b.setHeight(20);
-    	b.setScaleX((float) 0.5);
-    	b.setScaleY((float) 0.5);
+    	//b.setScaleX((float) 0.5);
+    	//b.setScaleY((float) 0.8);
     }
     
     @Override

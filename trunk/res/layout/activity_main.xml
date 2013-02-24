@@ -34,47 +34,75 @@
         android:background="@drawable/selector_help"
         android:onClick="toggleplayonoff" />
 
-    <ToggleButton
-        android:id="@+id/filter1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/btnSettings"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/selector_toggle"
-        android:onClick="filterTopLeft" />
-
-    <ToggleButton
-        android:id="@+id/filter4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/selector_toggle"
-        android:onClick="filterBottomRight" />
-
-    <ToggleButton
-        android:id="@+id/filter3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/filter4"
-        android:background="@drawable/selector_toggle"
-        android:onClick="filterBottomLeft" />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/filter1"
+        android:layout_below="@+id/btnSettings"
+        android:layout_above="@+id/buttonrecord"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
         android:layout_centerHorizontal="true" >
 
-        <ToggleButton
-            android:id="@+id/filter2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/selector_toggle"
-            android:onClick="filterTopRight" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_filter1"
+                    android:onClick="filterTopLeft" />
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_filter3"
+                    android:onClick="filterBottomLeft" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:background="@drawable/selector_filter2"
+                    android:onClick="filterTopRight" />
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_filter4"
+                    android:onClick="filterBottomRight" />
+
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
