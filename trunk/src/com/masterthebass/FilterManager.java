@@ -11,6 +11,7 @@ import java.util.Set;
 
 public class FilterManager implements Serializable {
 	private static final long serialVersionUID = 754321647758395857L;
+	public final static String TAG = "com.masterthebass.FILTERS";
 	
 	private Hashtable<Integer, Filter> FilterList;
 	
@@ -90,11 +91,14 @@ public class FilterManager implements Serializable {
 
 	// enable a filter given its ID
 	public void enableFilter (int ID) {
+		Log.i(TAG,"filter enabled");
 		getFilter(ID).enable();
 	}
 	
 	// disable a filter given its ID
 	public void disableFilter (int ID){
+		Log.i(TAG,"filter disabled");
+		
 		getFilter(ID).disable();
 	}
 }

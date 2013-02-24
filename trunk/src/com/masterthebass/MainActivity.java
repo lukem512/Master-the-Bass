@@ -35,11 +35,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	// Flag to indicate startup has completed
 	private boolean resumeHasRun = false;
-	//filters on\off
-	private boolean gesture1 = false;
-	private boolean gesture2 = false;
-	private boolean gesture3 = false;
-	private boolean gesture4 = false;
 	//settings on\off
 	private boolean[] settings;
 	/*  settings:
@@ -317,19 +312,57 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
      * filter buttons is pressed
      */
     
+    private boolean filter1 = false;
+    private boolean filter2 = false;
+    private boolean filter3 = false;
+    private boolean filter4 = false;
+    
+    
     public void filterTopLeft(View view){
+    	
+    	if(filter1 == false){
+   			filterman.enableFilter(filterarray[0]); 					
+   			filter1 = true;
+    	}else{
+    		filterman.disableFilter(filterarray[0]);		
+    		filter1 = false;
+ 		}
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
+    	
+    	if(filter2 == false){
+   			filterman.enableFilter(filterarray[1]); 					
+   			filter2 = true;
+    	}else{
+    		filterman.disableFilter(filterarray[1]);		
+    		filter2 = false;
+ 		}
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
+    	
+    	if(filter3 == false){
+   			filterman.enableFilter(filterarray[2]); 					
+   			filter3 = true;
+    	}else{
+    		filterman.disableFilter(filterarray[2]);		
+    		filter3 = false;
+ 		}
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
+    	
+    	if(filter4 == false){
+   			filterman.enableFilter(filterarray[3]); 					
+   			filter4 = true;
+    	}else{
+    		filterman.disableFilter(filterarray[3]);		
+    		filter4 = false;
+ 		}
     	//filter4
     	Log.i(TAG,"clicked 4");
     }

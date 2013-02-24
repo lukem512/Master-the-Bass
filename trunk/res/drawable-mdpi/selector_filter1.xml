@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:state_pressed="true"  
-          android:drawable="@drawable/filter1_on"/>
-    <item android:state_focused="true"
-      	  android:drawable="@drawable/filter1_on"/>
-    <item android:drawable="@drawable/filter1_off" />
-
+    <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/filter1_on"
+          android:state_checked="true" />
+    <item android:drawable="@drawable/filter1_off"
+        android:state_checked="false"/>
 </selector>

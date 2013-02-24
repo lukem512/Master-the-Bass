@@ -5,6 +5,7 @@
        android:screenOrientation="portrait"        
     android:background="@drawable/settings_background">
     
+       
               <com.masterthebass.SliderView android:id="@+id/slider"
 		android:layout_width ="wrap_content"
 		android:layout_height="wrap_content"
@@ -19,31 +20,21 @@
 		android:text="inverval selected"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"/>
-     
-
-       <ToggleButton
-           android:id="@+id/toggleButton5"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:onClick="onVibrationClicked"
-           android:background="@drawable/selector_toggle"
-           android:textOff=""
-           android:textOn= "" />
 
        <Spinner
            android:id="@+id/spinner2"
            android:layout_width="230dp"
            android:layout_height="wrap_content"
+           android:layout_alignLeft = "@+id/spinner1"
            android:layout_below="@+id/spinner1"
-           android:layout_toRightOf="@+id/toggleButton5"
            android:background="@drawable/dropdown_off" />
 
        <Spinner
            android:id="@+id/spinner3"
            android:layout_width="230dp"
+           android:layout_alignLeft="@+id/spinner2"
            android:layout_height="wrap_content"
            android:layout_below="@+id/spinner2"
-           android:layout_toRightOf="@+id/toggleButton5"
            android:background="@drawable/dropdown_off" />
 
        <Spinner
@@ -54,13 +45,23 @@
            android:layout_below="@+id/spinner3"
            android:background="@drawable/dropdown_off" />
 
+       <ToggleButton
+           android:id="@+id/toggleButton5"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/spinner4"
+           android:layout_below="@+id/spinner4"
+           android:layout_marginLeft="85dp"
+           android:background="@drawable/selector_toggle"
+           android:onClick="onVibrationClicked" />
+
        <Spinner
            android:id="@+id/spinner1"
            android:layout_width="230dp"
            android:layout_height="wrap_content"
-           android:layout_below="@+id/toggleButton5"
-           android:layout_marginTop="60dp"
-           android:layout_toRightOf="@+id/toggleButton5"
+           android:layout_alignParentRight="true"
+           android:layout_alignParentTop="true"
+           android:layout_marginTop="121dp"
            android:background="@drawable/dropdown_off" />
 
    </RelativeLayout>

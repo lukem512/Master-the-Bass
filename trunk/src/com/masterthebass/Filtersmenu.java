@@ -233,26 +233,6 @@ public class Filtersmenu extends Activity {
         setResult(RESULT_OK,a);
         finish();
     }
-	
-    public void onBtn0Clicked(View view) {
-        boolean on = ((ToggleButton) view).isChecked();
-        settings[0] = on;
-    }
-    
-    public void onBtn1Clicked(View view) {
-        boolean on = ((ToggleButton) view).isChecked();
-        settings[1] = on;
-    }
-    
-    public void onBtn2Clicked(View view) {
-        boolean on = ((ToggleButton) view).isChecked();
-        settings[2] = on;
-    }
-    
-    public void onBtn3Clicked(View view) {
-        boolean on = ((ToggleButton) view).isChecked();
-        settings[3] = on;
-    }
     
     public void onVibrationClicked(View view) {
         boolean on = ((ToggleButton) view).isChecked();
