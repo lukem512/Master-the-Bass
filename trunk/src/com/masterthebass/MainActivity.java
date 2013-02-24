@@ -131,8 +131,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		oSensor = oSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);									// TODO - this is DEPRECATED, use instead (https://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[]))
 		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
 		
-		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-		mDisplay = mWindowManager.getDefaultDisplay();
 		
 		oSensorErrorLogged = false;
 		mSensorErrorLogged = false;
@@ -178,10 +176,31 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mDisplay = mWindowManager.getDefaultDisplay();
         fb1 = (ToggleButton)findViewById(R.id.filter1);
+        //fb1.setX(0);
+        //fb1.setY(50);
         fb2 = (ToggleButton)findViewById(R.id.filter2);
+        //fb1.setX(150);
+        //fb1.setY(50);
         fb3 = (ToggleButton)findViewById(R.id.filter3);
+        //fb1.setX(0);
+        //fb1.setY(150);
         fb4 = (ToggleButton)findViewById(R.id.filter4);
+        //fb1.setX(150);
+        //fb1.setY(150);
+        scaleFilter(fb1);
+        scaleFilter(fb2);
+        scaleFilter(fb3);
+        scaleFilter(fb4);
+    }
+    
+    void scaleFilter(ToggleButton b){
+    	//b.setWidth(20);
+    	//b.setHeight(20);
+    	b.setScaleX((float) 0.5);
+    	b.setScaleY((float) 0.5);
     }
     
     @Override
@@ -276,7 +295,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		buttonOn = 1;
 		
     	}else{
-    		buttonplay.setBackgroundResource(R.drawable.selector);
+    		buttonplay.setBackgroundResource(R.drawable.selector_help);
     		buttonOn = 0;
     	}  
     	
