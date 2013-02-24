@@ -280,24 +280,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}
     }
     
-    //0 is play background, 1 is pause 
-    private int buttonOn = 0;
     
     //for toggling play button to stop
-    public void toggleplayonoff(View view){
+    public void toggleplayonoff(){
     	
-    	//add a a call to a function so that it plays and stops****
-    	Button buttonplay = (Button) findViewById(R.id.buttonplay); 
-    	
-    	if(buttonOn == 0 ){
-
-    		buttonplay.setBackgroundResource(R.drawable.selector_pause);	
-    		buttonOn = 1;
-		
-    	}else{
-    		buttonplay.setBackgroundResource(R.drawable.selector_help);
-    		buttonOn = 0;
-    	}  
     	
     	if (tone_stop) {	
 			tone_stop = false;
@@ -354,7 +340,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] filterarray = new int[]{0,0,0,0,0,0};
-	private static int longpresson = 0;
 	
 	long lastGesture = System.currentTimeMillis();	
 
@@ -429,11 +414,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
     @Override
 	public boolean onTouchEvent(MotionEvent me)	{
-    	if (me.getAction() == MotionEvent.ACTION_UP && longpresson == 1 && settings[3]){
-    		filterman.disableFilter(filterarray[3]);		
-			gesture4 = false;
-			longpresson = 0;
-    		
+    	//when finger is lifted off screen
+    	if (me.getAction() == MotionEvent.ACTION_UP){
+    		toggleplayonoff();    		
     	}
     	
     	float x = me.getRawX();
@@ -462,8 +445,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	float y = e.getRawY();
     	
 		if (settings[4]) v.vibrate(300);
-		//to start playing the bass line
-		//if(x > fb1.getX() + fb1.getWidth() && ){}
+		toggleplayonoff();
 		Log.i(LogTag, "Down");		
 		return false;
 	}
