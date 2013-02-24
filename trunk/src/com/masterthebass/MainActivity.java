@@ -445,29 +445,54 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		return true;
 	}
 	
-    @Override
-	public boolean onTouchEvent(MotionEvent me)	{
+	private boolean isInSpeaker(float x, float y){
+		int dispX = mDisplay.getWidth()/2;
+		int dispY = mDisplay.getHeight()/2;
+		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 20)){
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent me) {
+		float x = me.getRawX();
+    	float y = me.getRawY();
     	//when finger is lifted off screen
     	if (me.getAction() == MotionEvent.ACTION_UP){
-    		toggleplayonoff();    		
+    		if (tone_stop == false) toggleplayonoff();
+    		return true;
     	}
-    	
-    	float x = me.getRawX();
-    	float y = me.getRawY();
-    	int currentButton;
-    	if (x < mDisplay.getWidth()/2){
-    		//upper left
-    		if (y < mDisplay.getHeight()/2) currentButton = 0;
-    		//lower left
-    		else currentButton = 2;
-    	} else {
-    		//upper right
-    		if (y < mDisplay.getHeight()/2) currentButton = 1;
-    		//lower right
-    		else currentButton = 3;
+    	//when finger touches the screen
+    	if (me.getAction() == MotionEvent.ACTION_DOWN){
+    		if (isInSpeaker(x,y)){
+    			toggleplayonoff();
+    		}else{
+        		super.dispatchTouchEvent(me);
+    		}
+    		return true;
     	}
-    	leftButton = checkFilterButton(currentButton,x,y);
-    	
+    	//if swipe
+    	if (!isInSpeaker(x,y)){
+    		int currentButton;
+    		if (x < mDisplay.getWidth()/2){
+    			//upper left
+    			if (y < mDisplay.getHeight()/2) currentButton = 0;
+    			//lower left
+    			else currentButton = 2;
+    		} else {
+    			//upper right
+    			if (y < mDisplay.getHeight()/2) currentButton = 1;
+    			//lower right
+    			else currentButton = 3;
+    		}
+    		leftButton = checkFilterButton(currentButton,x,y);
+    	}
+	    return true;
+	}
+	
+    @Override
+	public boolean onTouchEvent(MotionEvent me)	{
 		//return false;
 		return gestureScanner.onTouchEvent(me);
 	}
@@ -478,7 +503,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	float y = e.getRawY();
     	
 		if (settings[4]) v.vibrate(300);
-		toggleplayonoff();
 		Log.i(LogTag, "Down");		
 		return false;
 	}
