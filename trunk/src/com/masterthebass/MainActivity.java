@@ -80,6 +80,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private SensorManager oSensorManager;
 	private Sensor oSensor;
 	
+	private TiltCalc tilt;
+	
 	private int i, resetThreshold, resetCounter;
 	private double accelThreshold;
 	private double maxGrad;
@@ -106,6 +108,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
 	
+	private float[] tiltDegree;
+	private float[] tiltval;
+	private float tiltCutoff;
+	
+
 	// Log output tag
 	private final static String LogTag = "Main";
 	
@@ -116,6 +123,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
+   		tilt        = new TiltCalc(this);
+   		tiltval     = new float[3];
    	}
    	
    	private void initSensors () {
