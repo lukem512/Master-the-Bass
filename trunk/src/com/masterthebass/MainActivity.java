@@ -174,17 +174,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
         fb1 = (ToggleButton)findViewById(R.id.filter1);
-        //fb1.setX(0);
-        //fb1.setY(50);
         fb2 = (ToggleButton)findViewById(R.id.filter2);
-        //fb1.setX(150);
-        //fb1.setY(50);
         fb3 = (ToggleButton)findViewById(R.id.filter3);
-        //fb1.setX(0);
-        //fb1.setY(150);
         fb4 = (ToggleButton)findViewById(R.id.filter4);
-        //fb1.setX(150);
-        //fb1.setY(150);
         scaleFilter(fb1);
         scaleFilter(fb2);
         scaleFilter(fb3);
@@ -312,57 +304,20 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
      * filter buttons is pressed
      */
     
-    private boolean filter1 = false;
-    private boolean filter2 = false;
-    private boolean filter3 = false;
-    private boolean filter4 = false;
-    
     
     public void filterTopLeft(View view){
-    	
-    	if(filter1 == false){
-   			filterman.enableFilter(filterarray[0]); 					
-   			filter1 = true;
-    	}else{
-    		filterman.disableFilter(filterarray[0]);		
-    		filter1 = false;
- 		}
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
-    	
-    	if(filter2 == false){
-   			filterman.enableFilter(filterarray[1]); 					
-   			filter2 = true;
-    	}else{
-    		filterman.disableFilter(filterarray[1]);		
-    		filter2 = false;
- 		}
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
-    	
-    	if(filter3 == false){
-   			filterman.enableFilter(filterarray[2]); 					
-   			filter3 = true;
-    	}else{
-    		filterman.disableFilter(filterarray[2]);		
-    		filter3 = false;
- 		}
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
-    	
-    	if(filter4 == false){
-   			filterman.enableFilter(filterarray[3]); 					
-   			filter4 = true;
-    	}else{
-    		filterman.disableFilter(filterarray[3]);		
-    		filter4 = false;
- 		}
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
@@ -389,11 +344,15 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	//detects what button clicked and returns false if none
 	private boolean checkFilterButton(int n, float x, float y){
-		int bullshitFactor = 100;
+		//TODO: get rid of bullshit factor
+		//int bullshitFactor = 100;
+		int location[] = new int [2];
+		//TODO: change all getX and Y to location
 		switch (n){
 		case 0:
-			if ((x > fb1.getX())&&(x < fb1.getX() + fb1.getWidth())&&
-		        	(y > fb1.getY() + bullshitFactor)&&(y < fb1.getY() + fb1.getHeight() + bullshitFactor)){
+			fb1.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb1.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb1.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
 			    	fb1.setChecked(!toggleChecked[0]);
 			    	toggleChecked[0] = !toggleChecked[0];
@@ -404,8 +363,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			break;
 		case 1:
-			if ((x > fb2.getX())&&(x < fb2.getX() + fb2.getWidth())&&
-		        	(y > fb2.getY() + bullshitFactor)&&(y < fb2.getY() + fb2.getHeight() + bullshitFactor)){
+			fb2.getLocationInWindow(location);
+			Log.d(TAG, "Button X: " + location[0] + " Button Y: " + location[1]);
+			if ((x > location[0])&&(x < location[0] + fb2.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
+				Log.d(TAG, "past the conditions");
 				if ((n != lastButton)||(leftButton == true)){
 			    	fb2.setChecked(!toggleChecked[1]);
 			    	toggleChecked[1] = !toggleChecked[1];
@@ -416,8 +378,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			break;
 		case 2:
-			if ((x > fb3.getX())&&(x < fb3.getX() + fb3.getWidth())&&
-		        	(y > fb3.getY() + bullshitFactor)&&(y < fb3.getY() + fb3.getHeight() + bullshitFactor)){
+			fb3.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb3.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb3.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
 			    	fb3.setChecked(!toggleChecked[2]);
 			    	toggleChecked[2] = !toggleChecked[2];
@@ -428,8 +391,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			break;
 		case 3:
-			if ((x > fb4.getX())&&(x < fb4.getX() + fb4.getWidth())&&
-		        	(y > fb4.getY() + bullshitFactor)&&(y < fb4.getY() + fb4.getHeight() + bullshitFactor)){
+			fb4.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb4.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb4.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
 			    	fb4.setChecked(!toggleChecked[3]);
 			    	toggleChecked[3] = !toggleChecked[3];
@@ -447,8 +411,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private boolean isInSpeaker(float x, float y){
 		int dispX = mDisplay.getWidth()/2;
-		int dispY = mDisplay.getHeight()/2;
-		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 20)){
+		int dispY = mDisplay.getHeight()/2 + 30;
+		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 50)){
 			return false;
 		}
 		return true;
@@ -461,11 +425,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	//when finger is lifted off screen
     	if (me.getAction() == MotionEvent.ACTION_UP){
     		if (tone_stop == false) toggleplayonoff();
+    		super.dispatchTouchEvent(me);
     		return true;
     	}
     	//when finger touches the screen
     	if (me.getAction() == MotionEvent.ACTION_DOWN){
     		if (isInSpeaker(x,y)){
+    			leftButton = true;
     			toggleplayonoff();
     		}else{
         		super.dispatchTouchEvent(me);
@@ -474,6 +440,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}
     	//if swipe
     	if (!isInSpeaker(x,y)){
+    		Log.d(TAG,"hovering over button");
     		int currentButton;
     		if (x < mDisplay.getWidth()/2){
     			//upper left
@@ -487,6 +454,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     			else currentButton = 3;
     		}
     		leftButton = checkFilterButton(currentButton,x,y);
+    	} else {
+    		leftButton = true;
     	}
 	    return true;
 	}
@@ -721,11 +690,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    	
 	    	// Change the cutoff (shelf) frequency
             lpf.setCutoffFrequency(newCutoff);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	
 	    	// Change the volume
 	    	af.setAmplitude (newAmp);
-	    	Log.i(LogTag, "Setting amplitude to : " + newAmp);
+	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;

@@ -87,7 +87,6 @@
                     android:id="@+id/filter2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
                     android:background="@drawable/selector_filter2"
                     android:onClick="filterTopRight" />
 
