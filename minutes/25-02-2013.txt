@@ -12,10 +12,14 @@ User interface - new interface is almost functional, requires the new sound code
 	- Ricky to update Settings menu to include a better method for picking the filters
 	- Frequency slider would be good to have.
 	- Button to change waveform would be good to have. This button exists in Synth prototype under WaveButton.java
+	- Help menu to be added (even if not populated).
+	- Longer-term (slightly!) we need a tutorial!
+	- For thursday midnight - merge new UI with trunk.
 
 Sound generation - sound is now smooth. This is to be integrated into the new UI when that is checked in.
 
 Accelerometer - smoothing function still to be written by Jon and Steve. No progress here.
+	- Double-slider to send updated values immediately so Jon can run tests. Petro to do by midnight.
 	- Working prototype for Thursday midnight.
 
 Recording - the recording feature needs to be included, with a pop-up menu to ask "Do you want to save the recording?" when the record button is turned off. Much of the functionality for this is already in place, although the facility to specify the filename needs to be created.
@@ -24,6 +28,7 @@ Recording - the recording feature needs to be included, with a pop-up menu to as
 
 Documentation - Presentation to be done. This is due in for the 18th of March. This is the priority. (Ricky, can you get started on this after you've got the UI stuff done?)
 	- Modify our Requirements Document to reflect the current application and to include "nice to have" features for the future (that we would implement 'beyond the scope of the assignment').
+		- Ricky/Petro to do UI section of this.
 	- Create Testing plan and Results document
 		- I.e. for ease-of-use with interface
 		- Features they like and dislike
@@ -31,3 +36,5 @@ Documentation - Presentation to be done. This is due in for the 18th of March. T
 	- Document specifying reasons for changing UI
 		- and history of UI!
 	- More documents are required (Manual etc), to be specified later
+	
+Next meeting on Friday.
