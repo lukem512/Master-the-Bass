@@ -393,6 +393,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	public static void addSliderValues(int[] a){
 		sliderValues = a;
+		Log.d(TAG,"Left: " + sliderValues[0] + " Right: "+ sliderValues[1]);
 	}
 	
     @Override
