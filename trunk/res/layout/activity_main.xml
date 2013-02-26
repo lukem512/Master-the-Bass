@@ -34,6 +34,7 @@
         android:layout_alignBottom="@+id/btnSettings"
         android:layout_alignParentRight="true"
         android:layout_marginRight="19dp"
-        android:background="@drawable/selector_record" />
+        android:background="@drawable/selector_record"
+        android:onClick="toggleRecord" />
 
 </RelativeLayout>

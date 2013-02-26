@@ -8,8 +8,11 @@ import android.os.Vibrator;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -21,9 +24,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
-// TODO - get audio to play!
+// TODO - ensure audio is still smooth - it seems not to be.
 
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
 	// Manager instances
@@ -70,7 +74,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private boolean isNegative, lIsNegative;
 	private boolean oSensorErrorLogged, mSensorErrorLogged;
-	private boolean writing = false;
+	private boolean writing;
+	private boolean recording;
 	
 	private WindowManager mWindowManager;
 	private Display mDisplay;
@@ -167,7 +172,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.B4;
+		noteFrequency = MidiNote.C3;
 		volume = 1.0;
 		noteDuration = 0.05;
 		maxAmplitude = 1.0;
@@ -336,6 +341,57 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			generatorThread.interrupt();
 			generatorThread = null;
 		}
+    }
+    
+    private PopupWindow pw;
+    
+    private void initiatePopupWindow() {
+        try {
+            //We need to get the instance of the LayoutInflater, use the context of this activity
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            
+            //Inflate the view from a predefined XML layout
+            View layout = inflater.inflate(R.layout.save_popup,
+                    (ViewGroup) findViewById(R.id.save_popup));
+            
+            // create a 300px width and 470px height PopupWindow
+            pw = new PopupWindow(layout, 300, 470, true);
+            
+            // display the popup in the center
+            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+     
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void startRecord() {
+    	recording = true;
+    	fileman.openFile("masterthebass.pcm");
+    }
+    
+    private void stopRecord() {
+    	initiatePopupWindow();
+    	fileman.closeFile();
+    	recording = false;
+    }
+    
+    public void btnSaveNoClick(View view) {
+    	pw.dismiss();
+    }
+    
+    public void btnSaveYesClick(View view) {
+    	//fileman.writeBinaryFile(recordedData);
+    	pw.dismiss();
+    }
+    
+    //for toggling record
+    public void toggleRecord(View view) {
+    	if (recording) {
+    		stopRecord();
+    	} else {
+    		startRecord();
+    	}
     }
     
     //for toggling play button to stop
@@ -790,7 +846,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		                }
 			    		
 			    		// Send to audio buffer
-			            sampleList.add(sampleData);			                
+			            sampleList.add(sampleData);
+			            
+			            // Add to file buffer if required
+			            if (recording) {
+			            	// TODO - add sampleData to recordedData
+			            	Log.i(TAG+".generatorThread", "Buffered sound to file!");
+			            }
             		}
             	}
             	

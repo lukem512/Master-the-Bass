@@ -11,24 +11,86 @@ import android.os.Environment;
 import android.util.Log;
 
 public class FileManager {
-		private String logTag = "FileManager";
+		private final static String logTag = "FileManager";
+		
+		private File file;
 	
 		/* Constructor */
 	
 		public FileManager() {
-			// Do nothing
-		}
-	
-		/* Read binary file functions */
-	
-		public byte[] readBinaryFile(String filename) throws IOException {
-			File fp = new File(filename);
-			int fpLen = (int) fp.length();
-			FileInputStream fis = new FileInputStream(fp);
-			return pumpBinaryFile(fis, fpLen);
+			file = null;
 		}
 		
-		private byte[] pumpBinaryFile(InputStream in, int size) throws IOException {
+		/* I/O file functions */
+		
+		public boolean openFile(String name) {
+			file = new File(name);
+			return true;
+		}
+		
+		public boolean openFile(String path, String name) {
+			return openFile(path+"/"+name);
+		}
+		
+		public void closeFile() {
+			file = null;
+		}
+		
+		public void deleteFile() {
+			if (file != null) {
+				file.delete();
+			}
+		}
+		
+		public short[] readBinaryFile() throws IOException {
+			if (file != null) {
+				byte[] data = readBinaryFileFromHandle(file);
+				return byteToShortArray(data);
+			} else {
+				return null;
+			}
+		}
+		
+		public boolean writeBinaryFile(short[] data) {
+			if (file != null) {
+				return writeBinaryFileToHandle(file, shortToByteArray(data), 0);
+			} else {
+				return false;
+			}
+		}
+		
+		public boolean writeBinaryFile(short[] data, int offsetInBytes) {
+			if (file != null) {
+				return writeBinaryFileToHandle(file, shortToByteArray(data), offsetInBytes);
+			} else {
+				return false;
+			}
+		}
+		
+		public boolean appendBinaryFile(short[] data) {
+			if (file != null) {
+				return appendBinaryFileToHandle(file, shortToByteArray(data));
+			} else {
+				return false;
+			}
+		}
+		
+		/* Static methods */
+		
+		/* Read binary file functions */
+	
+		public static byte[] readBinaryFile(String filename) throws IOException {
+			File fp = new File(filename);
+			return readBinaryFileFromHandle(fp);
+		}
+		
+		private static byte[] readBinaryFileFromHandle(File handle) throws IOException {
+			int len = (int) handle.length();
+			FileInputStream fis = new FileInputStream(handle);
+			return pumpBinaryFile(fis, len);
+		}
+		
+		private static byte[] pumpBinaryFile(InputStream in, int size) throws IOException {
 			int bufferSize = 1024, done = 0;
 		    byte[] buffer = new byte[bufferSize];
 		    byte[] result = new byte[size];
@@ -49,13 +111,48 @@ public class FileManager {
 		
 		/* Write binary file function */
 		
-		public boolean writeBinaryFile(String path, String filename, byte[] data) {
+		private static byte[] shortToByteArray(short[] data) {
+			byte[] byteData = new byte[2*data.length];
+			int i = 0;
+			
+			for (short s : data) {
+				byteData[i++] = (byte) (s & 0x00ff);
+				byteData[i++] = (byte) ((s & 0xff00) >>> 8);
+			}
+			
+			return byteData;
+		}
+		
+		private static short[] byteToShortArray(byte[] data) {
+			if (data.length % 2 != 0) {
+				throw new IllegalArgumentException ("Byte array must be even in length");
+			}
+			
+			short[] shortData = new short[data.length/2];
+			int j = 0;
+			
+			for (int i = 0; i < shortData.length; i++) {
+				shortData[i] = (short)((data[j] & 0xFF) | data[j+1]<<8);
+				j = j+2;
+			}
+			
+			return shortData;
+		}
+		 
+		public static boolean writeBinaryFile(String path, String filename, short[] data) {
+			return writeBinaryFile(path, filename, shortToByteArray(data), 0);
+		}
+		
+		public static boolean writeBinaryFile(String path, String filename, byte[] data) {
 			return writeBinaryFile(path, filename, data, 0);
 		}
 		
-		public boolean writeBinaryFile(String path, String filename, byte[] data, int offset) {
+		public static boolean writeBinaryFile(String path, String filename, short[] data, int offsetInBytes) {
+			return writeBinaryFile(path, filename, shortToByteArray(data), offsetInBytes);
+		}
+		
+		public static boolean writeBinaryFile(String path, String filename, byte[] data, int offset) {
 			File fp;
-			FileOutputStream fs;
 			
 			try {
 				fp = new File(path, filename);
@@ -65,10 +162,16 @@ public class FileManager {
 				return false;
 			} 
 			
+			return writeBinaryFileToHandle(fp, data, offset);
+		}
+		
+		private static boolean writeBinaryFileToHandle(File handle, byte[] data, int offset) {
+			FileOutputStream fs;
+			
 			try {
-				fs = new FileOutputStream(new File(path, filename));
+				fs = new FileOutputStream(handle);
 			} catch (FileNotFoundException e) {
-				Log.w(logTag+".writeBinaryFile", "Could not open file "+path+"/"+filename);
+				Log.w(logTag+".writeBinaryFile", "Could not open file "+handle.getAbsolutePath());
 				e.printStackTrace();
 				return false;
 			}
@@ -78,19 +181,22 @@ public class FileManager {
 				fs.write(data, offset, data.length);
 				fs.close();
 			} catch (IOException e) {
-				Log.w(logTag+".writeBinaryFile", "Could not write to file " + fp.getAbsolutePath());
+				Log.w(logTag+".writeBinaryFile", "Could not write to file " + handle.getAbsolutePath());
 				e.printStackTrace();
 				return false;
 			}
 			
-			Log.d(logTag+".writeBinaryFile", "Wrote " + data.length + " bytes to " + fp.getAbsolutePath());
+			Log.d(logTag+".writeBinaryFile", "Wrote " + data.length + " bytes to " + handle.getAbsolutePath());
 			
 			return true;
 		}
 		
-		public boolean appendBinaryFile(String path, String filename, byte[] data) {			
+		public static boolean appendBinaryFile(String path, String filename, short[] data) {
+			return appendBinaryFile(path, filename, shortToByteArray(data));
+		}
+		
+		public static boolean appendBinaryFile(String path, String filename, byte[] data) {			
 			File fp;
-			FileOutputStream fs;
 			
 			try {
 				fp = new File(path, filename);
@@ -100,10 +206,16 @@ public class FileManager {
 				return false;
 			} 
 			
+			return appendBinaryFileToHandle(fp, data);
+		}
+		
+		private static boolean appendBinaryFileToHandle(File handle, byte[] data) {			
+			FileOutputStream fs;
+			
 			try {
-				fs = new FileOutputStream(new File(path, filename), true);
+				fs = new FileOutputStream(handle, true);
 			} catch (FileNotFoundException e) {
-				Log.w(logTag+".appendBinaryFile", "Could not open file "+path+"/"+filename);
+				Log.w(logTag+".appendBinaryFile", "Could not open file "+handle.getAbsolutePath());
 				e.printStackTrace();
 				return false;
 			}
@@ -113,17 +225,15 @@ public class FileManager {
 				fs.write(data, 0, data.length);
 				fs.close();
 			} catch (IOException e) {
-				Log.w(logTag+".appendBinaryFile", "Could not write to file " + fp.getAbsolutePath());
+				Log.w(logTag+".appendBinaryFile", "Could not write to file " + handle.getAbsolutePath());
 				e.printStackTrace();
 				return false;
 			}
 			
-			Log.d(logTag+".appendBinaryFile", "Wrote " + data.length + " bytes to " + fp.getAbsolutePath());
+			Log.d(logTag+".appendBinaryFile", "Wrote " + data.length + " bytes to " + handle.getAbsolutePath());
 			
 			return true;
 		}
-		
-		/* Static functions */
 		
 		public static String getSDPath() {
 			return Environment.getExternalStorageDirectory().getPath();
