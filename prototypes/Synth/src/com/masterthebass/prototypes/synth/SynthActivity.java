@@ -68,7 +68,7 @@ public class SynthActivity extends Activity {
 		LFO2 = new Oscillator (am, new SineWave(), volume, 3);
 		
 		// Attach to filters
-		fm.attachOscillator(0, LFO1); // Low Pass Filter
+		//fm.attachOscillator(0, LFO1); // Low Pass Filter
 		fm.attachOscillator(1, LFO2); // Amplitude Filter
 		
 		// Set up notes
@@ -104,10 +104,10 @@ public class SynthActivity extends Activity {
     	super.onStop();
     	
     	// interrupt audio threads
-		/*if (writerThread != null) {
+		if (writerThread != null) {
 			writerThread.interrupt();
 			writerThread = null;
-		}*/
+		}
 
 		if (generatorThread != null) {
 			generatorThread.interrupt();
@@ -228,8 +228,8 @@ public class SynthActivity extends Activity {
 		checkAudioThreadsInitialised();
 	}
 	
-	public void toggleBtnLPFClick (View v) {
-		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnLPF);
+	public void toggleBtnOscOneClick (View v) {
+		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnOscOne);
 		
 		Log.i (TAG, "Toggling Low Pass Filter");
 		
@@ -242,8 +242,8 @@ public class SynthActivity extends Activity {
 		}
 	}
 	
-	public void toggleBtnDepthLFOClick (View v) {
-		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnDepthLFO);
+	public void toggleBtnOscTwoClick (View v) {
+		ToggleButton btn = (ToggleButton) findViewById(R.id.toggleBtnOscTwo);
 		
 		if (btn.isChecked()) {
 			// Enable Depth LFO!
@@ -285,9 +285,6 @@ public class SynthActivity extends Activity {
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
 			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
-			
-			sm = new SoundManager();
-			sm.setWave(new SquareWave());
 			
 			int sampleRate = am.getSampleRate();
             boolean running = true;

@@ -1,26 +1,25 @@
 package com.masterthebass.prototypes.synth;
 
-public class SquareWave extends Wave {
+public class TriangleWave extends Wave {
 	
 	private int storedSampleNumber;
 	private int sampleNumber;
+	
+	// TODO - this doesn't work!
 
 	@Override
 	public double[] generateTone(int numSamples, double frequency, double volume, int sampleRate) {
 		double[] sampleData = new double[numSamples];
 		int samplesPerPeriod = samplesPerPeriod(frequency, sampleRate);
+		double negator = 2*MAX;
 		
 		// Restore the previous sample number!
 		sampleNumber = storedSampleNumber;
 		
 		// Generate the samples
 		for (int i = 0; i < numSamples; i++) {
-			if (sampleNumber < (samplesPerPeriod/2)) {
-				sampleData[i] = MAX;
-			}  else  {
-				sampleData[i] = MIN;
-			}
-			
+			double x = (i/samplesPerPeriod);
+			sampleData[i] = Math.abs(MAX - x % negator);
 			sampleData[i] = sampleData[i] * volume;
 			sampleNumber = (sampleNumber + 1) % samplesPerPeriod;
 		}
@@ -41,7 +40,7 @@ public class SquareWave extends Wave {
 	
 	@Override
 	public String toString() {
-		return "Square Wave";
+		return "Triangle Wave";
 	}
 
 }

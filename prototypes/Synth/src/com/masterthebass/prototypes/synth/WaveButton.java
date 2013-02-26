@@ -44,10 +44,12 @@ public class WaveButton extends Button {
 	}
 	
 	private void initialiseWavesArray() {
-		waves = new Wave[2];
+		waves = new Wave[4];
 		
 		waves[0] = new SineWave();
 		waves[1] = new SquareWave();
+		waves[2] = new HarmonicSquareWave();
+		waves[3] = new TriangleWave();
 	}
 	
 	private void construct(int waveIndex) {

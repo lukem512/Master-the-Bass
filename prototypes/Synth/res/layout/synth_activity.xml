@@ -96,22 +96,22 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ToggleButton
-        android:id="@+id/toggleBtnLPF"
+        android:id="@+id/toggleBtnOscTwo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/txtOscTwo"
         android:layout_below="@+id/txtOscTwo"
-        android:onClick="toggleBtnLPFClick"
+        android:onClick="toggleBtnOscTwoClick"
         android:textOff="@string/toggleBtnOscActive"
         android:textOn="@string/toggleBtnOscActive" />
 
     <ToggleButton
-        android:id="@+id/toggleBtnDepthLFO"
+        android:id="@+id/toggleBtnOscOne"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/txtOscOne"
         android:layout_below="@id/txtKeyboard"
-        android:onClick="toggleBtnDepthLFOClick"
+        android:onClick="toggleBtnOscOneClick"
         android:textOff="@string/toggleBtnOscActive"
         android:textOn="@string/toggleBtnOscActive" />
 
@@ -121,7 +121,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/txtKeyboard"
-        android:layout_toLeftOf="@+id/toggleBtnDepthLFO"
+        android:layout_toLeftOf="@+id/toggleBtnOscTwo"
         android:text="@string/btnWaveDefaultText" />
 
     <com.masterthebass.prototypes.synth.WaveButton
@@ -130,7 +130,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtOscTwo"
-        android:layout_toLeftOf="@+id/toggleBtnLPF"
+        android:layout_toLeftOf="@+id/toggleBtnOscOne"
         android:text="@string/btnWaveDefaultText" />
 
     <com.masterthebass.prototypes.synth.WaveButton
