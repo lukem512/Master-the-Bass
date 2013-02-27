@@ -1,5 +1,6 @@
 package com.masterthebass;
 
+import java.nio.ShortBuffer;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -103,6 +104,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private LinkedList<short[]> sampleList;
 	private int sampleListMaxSize;
+	
+	private ShortBuffer recordedData;
+	private int recordedDataMaxSize;
 	
 	private boolean playing = true;
 	
@@ -367,21 +371,41 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     private void startRecord() {
     	recording = true;
-    	fileman.openFile("masterthebass.pcm");
+    	fileman.openFile(fileman.getSDPath(), "masterthebass.pcm");
+    	
+    	if (recordedData == null) {
+    		// set max size
+    		recordedDataMaxSize = 10 * audioman.getSampleRate();
+    		recordedData = ShortBuffer.allocate(recordedDataMaxSize);
+    	}
+    	
+    	recordedData.rewind();
     }
     
     private void stopRecord() {
     	initiatePopupWindow();
-    	fileman.closeFile();
-    	recording = false;
     }
     
     public void btnSaveNoClick(View view) {
+    	// Close the file
+    	fileman.closeFile();
+    	recordedData.clear();
+    	recording = false;
     	pw.dismiss();
     }
     
     public void btnSaveYesClick(View view) {
-    	//fileman.writeBinaryFile(recordedData);
+    	// Write data to file
+    	short[] data = new short[recordedData.position()];
+    	Log.i (LogTag, "Got " + data.length + " samples to buffer");
+    	recordedData.rewind();
+    	recordedData.get(data);
+    	fileman.writeBinaryFile(data);
+    	
+    	// Close the file
+    	fileman.closeFile();
+    	recordedData.clear();
+    	recording = false;
     	pw.dismiss();
     }
     
@@ -850,8 +874,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			            
 			            // Add to file buffer if required
 			            if (recording) {
-			            	// TODO - add sampleData to recordedData
-			            	Log.i(TAG+".generatorThread", "Buffered sound to file!");
+			            	if (recordedData.hasRemaining()) {
+			            		recordedData.put(sampleData);
+			            	} else {
+			            		// TODO - set recording to false and prompt user to save
+			            	}
 			            }
             		}
             	}
