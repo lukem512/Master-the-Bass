@@ -1,5 +1,6 @@
 package com.masterthebass;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -106,6 +107,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private boolean playing = true;
 	
+	private int maxFreq = 5000;
+	private int minFreq = 600;
+	
 	private double noteDuration;
 	private double volume;
 	private double noteFrequency;
@@ -113,8 +117,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
 	
-	private float[] tiltDegree;
-	private float[] tiltval;
+	private float[] gyroTiltVal;
+	private float[] accTiltVal;
 	private float tiltCutoff;
 	
 
@@ -129,7 +133,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
    		tilt        = new TiltCalc(this);
-   		tiltval     = new float[3];
+   		accTiltVal     = new float[3];
+   		gyroTiltVal = new float[3];
+   		
    	}
    	
    	private void initSensors () {
@@ -181,10 +187,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		minCutoffFreq = 150;
 
 		// Set up low-pass filter
-		filterman.enableFilter(0);
+		//filterman.enableFilter(0);
 		
 		// Set up amplitude filter
-		//filterman.enableFilter(1);
+		filterman.enableFilter(1);
 		
 		// Run the audio threads
 		startAudioThreads();
@@ -365,7 +371,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         }
     }
     
-    private void startRecord() {
+  /*  private void startRecord() {
     	recording = true;
     	fileman.openFile("masterthebass.pcm");
     }
@@ -374,7 +380,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	initiatePopupWindow();
     	fileman.closeFile();
     	recording = false;
-    }
+    }  
     
     public void btnSaveNoClick(View view) {
     	pw.dismiss();
@@ -392,7 +398,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	} else {
     		startRecord();
     	}
-    }
+    } */
     
     //for toggling play button to stop
     public void toggleplayonoff(View view) {
@@ -592,6 +598,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		return false;
 	}
 
+	//Rounds a float to 'decimalPlace' decimal places
+	public static float Round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
+    }
+	
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 		// Auto-generated method stub
@@ -722,8 +735,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 			
 			// Add to moving average
-			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);
-			i++;
+			/*gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);
+			i++;*/
 			
 			// Get the low-pass filter
             LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
@@ -731,7 +744,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
             // TODO - there should be a notion of gravity associated with the cutoff
             // i.e. it should be dependent upon the previous cutoff and the gradient
-	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
+	    	/*if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 	    		double grad = 0;	
 				
 				for (int k = 0; k < movingAverageCount; k++) {
@@ -774,14 +787,37 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 					newCutoff = lpf.getCutoffFrequency();
 					newAmp = af.getAmplitude();
 				}
+			}  */
+            
+         // Get the low-pass filter
+			tilt.getAccTilt(accTiltVal);			
+			tilt.getGyroTilt(gyroTiltVal);	
+			if ( Math.abs(gyroTiltVal[1]) > 0.05) {						//If phone is moving, update tilt value
+					tiltCutoff = Math.abs(Round(accTiltVal[1], 3));
 			}
+			
+	    	//Log.i(LogTag, "tilt =  : " + tiltCutoff); 				
+	    	//Log.i(LogTag, "gyro tilt =  : " + gyroTiltVal[0]);
+	    	//Log.i(LogTag, "acc tilt =  : " + accTiltVal[1]); 	
+		/*	float grad = 0;	
+			for (int k = 0; k < movingAverageCount; k++) {
+				grad += gradMovingAverage[k];
+			}
+			grad /= movingAverageCount; */
+	           
+			newCutoff =  (Math.pow(1.00170489031, (maxFreq - (maxFreq/1.52)*tiltCutoff))+200);
+			newAmp = (tiltCutoff*0.65789473684);
+			
+			//newCutoff = ((int)((Math.abs(tiltCutoff*2)*-(maxFreq/3)))+maxFreq+minFreq);
 	    	
+			
+		//	1.00170489031
 	    	// Change the cutoff (shelf) frequency
             lpf.setCutoffFrequency(newCutoff);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+            Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	
 	    	// Change the volume
-	    	af.setAmplitude (newAmp);
+			af.setAmplitude(newAmp);
 	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
