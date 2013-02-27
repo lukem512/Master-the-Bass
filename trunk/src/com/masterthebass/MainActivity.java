@@ -265,6 +265,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	intent.putExtra(FILTERMAN_CLASS, filterman);
     	startActivityForResult(intent,1);
     }
+    public void startHelp(View view){
+    	Intent intent = new Intent(this, Help.class);
+    	startActivity(intent);
+    	
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == 1) {
@@ -320,18 +325,38 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     
     public void filterTopLeft(View view){
+    	if(toggleChecked[0]){
+    		filterman.enableFilter(filterarray[0]);
+    	}else{
+    		filterman.disableFilter(filterarray[0]);    		
+    	}
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
+    	if(toggleChecked[1]){
+    		filterman.enableFilter(filterarray[1]);
+    	}else{
+    		filterman.disableFilter(filterarray[1]);    		
+    	}
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
+    	if(toggleChecked[2]){
+    		filterman.enableFilter(filterarray[2]);
+    	}else{
+    		filterman.disableFilter(filterarray[2]);    		
+    	}
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
+    	if(toggleChecked[3]){
+    		filterman.enableFilter(filterarray[3]);
+    	}else{
+    		filterman.disableFilter(filterarray[3]);    		
+    	}
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
@@ -341,7 +366,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private GestureDetector gestureScanner;
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static int[] filterarray = new int[]{0,0,0,0,0,0};
+	private static int[] filterarray = new int[]{0,1,2,3,0,0};
 	
 	long lastGesture = System.currentTimeMillis();	
 

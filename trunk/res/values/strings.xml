@@ -10,6 +10,8 @@
     <string name="title_activity_main">Master the Bass</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_filters">Filters</string>
-    <string name="settingVibration">Gesture vibration</string>		
+    <string name="settingVibration">Gesture vibration</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_help">Help</string>
 
 </resources>
