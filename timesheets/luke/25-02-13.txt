@@ -1,0 +1,3 @@
+25-02-2013 - 1 hour - group meeting
+26-02-2013 - 4 hours - started work on recording functionality, put callbacks in place and modified FileManager class - c4c979d878fd188e4bcf7024ae2ac9897a47d122
+27-02-2013 - 5 hours - finished the majority of the recording code, popup menu now works, filename can be specified and the buffer wont overflow. - 629ff108678ee83013feb4b10d924fe8e0af98b8
