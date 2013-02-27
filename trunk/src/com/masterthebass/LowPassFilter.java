@@ -2,7 +2,8 @@ package com.masterthebass;
 
 import android.util.Log;
 
-//http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
+// References:	http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
+// 				http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter
 
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
@@ -69,16 +70,19 @@ public class LowPassFilter extends Filter {
 		return minCutoffFrequency;
 	}
 	
+	// TODO - this function should return a value between 0 and 1
+	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {
 		double T;
 		double tau;
 	    double alpha;
 	    
-	    T = sampleLength/((double)getSampleRate());
-	    tau = 1/(twoPI*cutoffFrequency);
-	    alpha = 1/(T*tau);
+	    //tau = RC; // time constant for decay in seconds
+	    //fc = 1/(twoPI*tau); // cutoff frequency
 	    
-	    Log.i (LogTag, "alpha is " + alpha);
+	    // TODO - hack
+	    alpha = cutoffFrequency/(maxCutoffFrequency - minCutoffFrequency);
+
 	    return alpha;
 	}
 	
@@ -116,7 +120,7 @@ public class LowPassFilter extends Filter {
 		} else {
 			double sample;
 			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
-			double alpha = 0.15;//getAlpha(count);
+			double alpha = getAlpha(count);
 			
 			for (int i=0;i<count;i++) {
 				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
