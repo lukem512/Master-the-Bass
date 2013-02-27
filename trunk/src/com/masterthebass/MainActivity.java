@@ -375,7 +375,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	
     	if (recordedData == null) {
     		// set max size
-    		recordedDataMaxSize = 10 * audioman.getSampleRate();
+    		recordedDataMaxSize = audioman.getSampleRate();
     		recordedData = ShortBuffer.allocate(recordedDataMaxSize);
     	}
     	
@@ -412,6 +412,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     //for toggling record
     public void toggleRecord(View view) {
     	if (recording) {
+    		if (!audioman.isStopped()) {
+    			toggleplayonoff(view);
+    		}
     		stopRecord();
     	} else {
     		startRecord();
@@ -433,10 +436,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	
     	if (audioman.isStopped()) {	
     		startAudio();
-    		playing = true;
 		} else {			
 			stopAudio();
-			playing = false;
 		}
     }
     
@@ -878,6 +879,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			            		recordedData.put(sampleData);
 			            	} else {
 			            		// TODO - set recording to false and prompt user to save
+			            		// THIS CAN'T BE DONE BY CALLING stopRecord() DIRECTLY
+			            		// AS THE POPUP CAN'T BE SHOWN BY A THREAD OTHER THAN THE UI
 			            	}
 			            }
             		}
