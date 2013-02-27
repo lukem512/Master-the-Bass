@@ -78,6 +78,7 @@ public class LowPassFilter extends Filter {
 	    tau = 1/(twoPI*cutoffFrequency);
 	    alpha = 1/(T*tau);
 	    
+	    Log.i (LogTag, "alpha is " + alpha);
 	    return alpha;
 	}
 	
@@ -119,7 +120,7 @@ public class LowPassFilter extends Filter {
 			
 			for (int i=0;i<count;i++) {
 				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
-				filteredPCM[i] = sample * amplitudeScalar;
+				filteredPCM[i] = sample;
 				//Log.i (LogTag, "filteredPCM["+i+"] is " + filteredPCM[i]);
 			}
 			
