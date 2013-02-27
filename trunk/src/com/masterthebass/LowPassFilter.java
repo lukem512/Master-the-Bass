@@ -2,32 +2,46 @@ package com.masterthebass;
 
 import android.util.Log;
 
-// TODO	- clean up duplicated code in apply* functions
+//http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
 
 public class LowPassFilter extends Filter {
 	private static final long serialVersionUID = 7533216475347295857L;
+	private static final String LogTag = "Low-Pass Filter";
+	private static final double twoPI = Math.PI * 2;
 	private double cutoffFrequency;
 	private double maxCutoffFrequency;
 	private double minCutoffFrequency;
-	private final static double amplitudeScalar = 5;
+	private final static double amplitudeScalar = 4;
 	private final static double defaultCutoff = 5000;
 	private final static double defaultMaxCutoff = 5000;
 	private final static double defaultMinCutoff = 0;
+	
+	private double[] a, b;
+	double[] inLeft, outLeft;
+	double alpha;
+	
+	double[] filteredPCM;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
 		
 		// set default cutoff to 5000Hz
-		cutoffFrequency = defaultCutoff;
+		setCutoffFrequency(defaultCutoff);
 		
 		// set default bounds
 		maxCutoffFrequency = defaultMaxCutoff;
 		minCutoffFrequency = defaultMinCutoff;
+		
+		// initialise arrays
+		/*int memSize = (a.length >= b.length) ? a.length : b.length;
+	    inLeft = new double[memSize];
+	    outLeft = new double[memSize];*/
 	}
 	
 	public void setCutoffFrequency (double newCutoff) {
 		if (newCutoff > 0) {
 			this.cutoffFrequency = newCutoff;
+			//getCoeffs();
 		}
 	}
 	
@@ -55,52 +69,63 @@ public class LowPassFilter extends Filter {
 		return minCutoffFrequency;
 	}
 	
-	// maps the current oscillation value
-	// to a cutoff frequency between the bounds
-	private float map(double oscillation) {		
-		return (float) ((oscillation * (maxCutoffFrequency - minCutoffFrequency)) + minCutoffFrequency);
+	private double getAlpha(int sampleLength) {
+		double T;
+		double tau;
+	    double alpha;
+	    
+	    T = sampleLength/((double)getSampleRate());
+	    tau = 1/(twoPI*cutoffFrequency);
+	    alpha = 1/(T*tau);
+	    
+	    return alpha;
 	}
-
-	private void getLPCoefficientsButterworth2Pole(int samplerate, double cutoff, double ax[], double by[]) {
-	    double sqrt2 = Math.sqrt(2);
-	    double PI = Math.PI;
-
-	    double QcRaw  = (2 * PI * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
-	    double QcWarp = Math.tan(QcRaw); 				// Warp cutoff frequency
-	    double gain = 1 / (1+sqrt2/QcWarp + 2/(QcWarp*QcWarp));
-
-	    by[2] = (double) ((1 - sqrt2/QcWarp + 2/(QcWarp*QcWarp)) * gain);
-	    by[1] = (double) ((2 - 2 * 2/(QcWarp*QcWarp)) * gain);
-	    by[0] = 1;
-	    ax[0] = (double) (1 * gain);
-	    ax[1] = (double) (2 * gain);
-	    ax[2] = (double) (1 * gain);
+	
+	private double[] shortArrayToDoubleArray(short[] shortArray) {
+		double[] doubleArray = new double[shortArray.length];
+		int i = 0;
+		
+		for (short s : shortArray) {
+			doubleArray[i++] = ((s / ((double) Short.MAX_VALUE)) + 1.0 ) / 2.0;
+			//Log.i (LogTag, s+"->"+doubleArray[i-1]);
+		}
+		
+		return doubleArray;
+	}
+	
+	private short[] doubleArrayToShortArray(double[] doubleArray) {
+		short[] shortArray = new short[doubleArray.length];
+		int i = 0;
+		
+		for (double d : doubleArray) {			
+			shortArray[i++] = (short) (((2 * d) - 1) * Short.MAX_VALUE); // losing volume because of this? TODO
+			
+			//Log.i (LogTag, d+"->"+shortArray[i-1]);
+		}
+		
+		return shortArray;
 	}
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
-		short[] xv = new short[3];
-		short[] yv = new short[3];
 		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
 		
-		getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
-		
-		for (int i = 0; i < 3; i++) {
-			xv[i] = 0;
-			yv[i] = 0;
+		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
+			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
+		} else {
+			double sample;
+			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
+			double alpha = 0.15;//getAlpha(count);
+			
+			for (int i=0;i<count;i++) {
+				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
+				filteredPCM[i] = sample * amplitudeScalar;
+				//Log.i (LogTag, "filteredPCM["+i+"] is " + filteredPCM[i]);
+			}
+			
+			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
 		}
 		
-		for (int i=0;i<count;i++) {
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = rawPCM[i];
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] = (short) (yv[0] * amplitudeScalar);
-		}
-
 		return rawPCM;
 	}
 }
