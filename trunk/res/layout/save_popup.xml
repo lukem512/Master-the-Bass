@@ -22,8 +22,6 @@
 	    android:layout_height="wrap_content"
 	    android:inputType="text"
 	    android:ems="10" >
-	
-	    <requestFocus />
 	</EditText>
 	
 	<LinearLayout
