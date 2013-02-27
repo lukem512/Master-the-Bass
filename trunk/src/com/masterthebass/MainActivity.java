@@ -7,9 +7,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -21,6 +24,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -177,18 +182,27 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         fb2 = (ToggleButton)findViewById(R.id.filter2);
         fb3 = (ToggleButton)findViewById(R.id.filter3);
         fb4 = (ToggleButton)findViewById(R.id.filter4);
-        scaleFilter(fb1);
-        scaleFilter(fb2);
-        scaleFilter(fb3);
-        scaleFilter(fb4);
+        Button record = (Button)findViewById(R.id.buttonrecord);
+        Button help = (Button)findViewById(R.id.buttonplay);
+        Button settings = (Button)findViewById(R.id.btnSettings);
+        scaleLayout(fb1);
+        scaleButtons(record);
+        scaleButtons(help);
+        scaleButtons(settings);
     }
-    
-    void scaleFilter(ToggleButton b){
-    	//b.setWidth(20);
-    	//b.setHeight(20);
-    	//b.setScaleX((float) 0.5);
-    	//b.setScaleY((float) 0.8);
+   //scaling play, settings and help buttons
+    private void scaleButtons(Button b){
+    	ViewGroup.LayoutParams parms = b.getLayoutParams();
+    	parms.width = mDisplay.getWidth()/5;
+    	parms.height= mDisplay.getWidth()/5;
+    	b.setLayoutParams(parms);
     }
+    //scaling filter buttons
+    private void scaleLayout(ToggleButton b){
+    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5, 1);
+    	LinearLayout rLGreen = ((LinearLayout) b.getParent());
+    	rLGreen.setLayoutParams(parms);
+    } 
     
     @Override
     public void onStart() {
