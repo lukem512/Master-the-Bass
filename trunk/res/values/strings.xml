@@ -11,5 +11,8 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_filters">Filters</string>
     <string name="settingVibration">Gesture vibration</string>		
+    <string name="btnRecordSave_text">Save</string>
+    <string name="btnRecordCancel_text">Cancel</string>
+    <string name="recording_save_text_text">Where do you want to save this recording?</string>
 
 </resources>

@@ -15,6 +15,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.text.Editable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -25,6 +26,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -348,6 +350,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     }
     
     private PopupWindow pw;
+    View pwView;
     
     private void initiatePopupWindow() {
         try {
@@ -355,14 +358,14 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             
             //Inflate the view from a predefined XML layout
-            View layout = inflater.inflate(R.layout.save_popup,
+            pwView = inflater.inflate(R.layout.save_popup,
                     (ViewGroup) findViewById(R.id.save_popup));
             
             // create a 300px width and 470px height PopupWindow
-            pw = new PopupWindow(layout, 300, 470, true);
+            pw = new PopupWindow(pwView, 300, 470, true);
             
             // display the popup in the center
-            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+            pw.showAtLocation(pwView, Gravity.CENTER, 0, 0);
      
         } catch (Exception e) {
             e.printStackTrace();
@@ -371,11 +374,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     private void startRecord() {
     	recording = true;
-    	fileman.openFile(fileman.getSDPath(), "masterthebass.pcm");
     	
     	if (recordedData == null) {
     		// set max size
-    		recordedDataMaxSize = audioman.getSampleRate();
+    		recordedDataMaxSize = 60 * audioman.getSampleRate();
     		recordedData = ShortBuffer.allocate(recordedDataMaxSize);
     	}
     	
@@ -384,26 +386,35 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     private void stopRecord() {
     	initiatePopupWindow();
+    	
+    	// TODO - auto-increment file names
+    	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);     	
+    	editFileName.setText(fileman.getPath() + "/audio.PCM");
     }
     
     public void btnSaveNoClick(View view) {
-    	// Close the file
-    	fileman.closeFile();
+    	// Clear the buffer
     	recordedData.clear();
     	recording = false;
     	pw.dismiss();
     }
     
     public void btnSaveYesClick(View view) {
-    	// Write data to file
+    	// Get audio data
     	short[] data = new short[recordedData.position()];
-    	Log.i (LogTag, "Got " + data.length + " samples to buffer");
     	recordedData.rewind();
     	recordedData.get(data);
+    	
+    	// Write it to the file specified
+    	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);
+    	String filename = editFileName.getText().toString();
+    	fileman.openFile(filename);
     	fileman.writeBinaryFile(data);
     	
     	// Close the file
     	fileman.closeFile();
+    	
+    	// Clear the buffer
     	recordedData.clear();
     	recording = false;
     	pw.dismiss();
@@ -875,12 +886,17 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			            
 			            // Add to file buffer if required
 			            if (recording) {
-			            	if (recordedData.hasRemaining()) {
-			            		recordedData.put(sampleData);
+			            	if (recordedData != null) {
+				            	if (recordedData.hasRemaining()) {
+				            		recordedData.put(sampleData);
+				            	} else {
+				            		// TODO - set recording to false and prompt user to save
+				            		// THIS CAN'T BE DONE BY CALLING stopRecord() DIRECTLY
+				            		// AS THE POPUP CAN'T BE SHOWN BY A THREAD OTHER THAN THE UI
+				            	}
 			            	} else {
-			            		// TODO - set recording to false and prompt user to save
-			            		// THIS CAN'T BE DONE BY CALLING stopRecord() DIRECTLY
-			            		// AS THE POPUP CAN'T BE SHOWN BY A THREAD OTHER THAN THE UI
+			            		Log.e (LogTag, "Recording was initiated before buffer was instantiated");
+			            		// TODO - stop recording
 			            	}
 			            }
             		}

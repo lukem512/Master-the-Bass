@@ -12,6 +12,7 @@ import android.util.Log;
 
 public class FileManager {
 		private final static String logTag = "FileManager";
+		private final static String defaultName = "unknown";
 		
 		private File file;
 	
@@ -25,6 +26,7 @@ public class FileManager {
 		
 		public boolean openFile(String name) {
 			file = new File(name);
+			createDirectoryStructure(file);
 			return true;
 		}
 		
@@ -39,6 +41,22 @@ public class FileManager {
 		public void deleteFile() {
 			if (file != null) {
 				file.delete();
+			}
+		}
+		
+		public String getName() {
+			if (file != null) {
+				return file.getName();
+			} else {
+				return defaultName;
+			}
+		}
+		
+		public String getPath() {
+			if (file != null) {
+				return file.getPath();
+			} else {
+				return FileManager.getSDPath() + "/MasterTheBass";
 			}
 		}
 		
@@ -88,6 +106,14 @@ public class FileManager {
 			int len = (int) handle.length();
 			FileInputStream fis = new FileInputStream(handle);
 			return pumpBinaryFile(fis, len);
+		}
+		
+		private static void createDirectoryStructure (File handle) {
+			File parent = handle.getParentFile();
+			
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
 		}
 		
 		private static byte[] pumpBinaryFile(InputStream in, int size) throws IOException {

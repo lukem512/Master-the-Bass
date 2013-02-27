@@ -2,40 +2,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/save_popup"
-    android:layout_height="fill_parent"
     android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="#444444"
     android:padding="10dp"
+    android:orientation="vertical"
     android:screenOrientation="portrait" >
-    
-     <TextView
-         android:id="@+id/recording_save_text"
-         android:layout_width="103dp"
-         android:layout_height="80dp"
-         android:layout_gravity="center_vertical"
-         android:text="Do you want to save this recording?" >
 
-     </TextView>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal|bottom" >
-
-        <Button
-            android:id="@+id/btnSaveYes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Yes"
-            android:onClick="btnSaveYesClick" />
-
-        <Button
-            android:id="@+id/btnSaveNo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No"
-            android:onClick="btnSaveNoClick" />
-    </LinearLayout>
+	<TextView
+	    android:id="@+id/recording_save_text"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/recording_save_text_text"
+	    android:textColor="#FFFFFF" />
+	
+	<EditText
+	    android:id="@+id/editFileName"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:inputType="text"
+	    android:ems="10" >
+	
+	    <requestFocus />
+	</EditText>
+	
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal|bottom"
+	    android:orientation="horizontal" >
+	
+	    <Button
+	        android:id="@+id/btnRecordCancel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="btnSaveNoClick"
+	        android:text="@string/btnRecordCancel_text" />
+	    
+	    <Button
+	        android:id="@+id/btnRecordSave"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="btnSaveYesClick"
+	        android:text="@string/btnRecordSave_text" />
+	
+	</LinearLayout>
 
 </LinearLayout>
