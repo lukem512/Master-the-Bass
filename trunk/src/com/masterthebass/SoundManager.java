@@ -1,7 +1,5 @@
 package com.masterthebass;
 
-import android.util.Log;
-
 public class SoundManager{
 	
 	/* Members */
