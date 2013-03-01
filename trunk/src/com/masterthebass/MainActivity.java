@@ -457,14 +457,19 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     
     //for toggling record
     public void toggleRecord(View view) {
+    	
+    	Button buttonrecord = (Button) findViewById(R.id.buttonrecord);
+    	
     	if (recording) {
     		if (!audioman.isStopped()) {
     			toggleplayonoff();
     		}
+    		buttonrecord.setBackgroundResource(R.drawable.rec_button_off);	
+    		
     		stopRecord();
     	} else {
     		//record button on
-    		//buttonrecord
+    		buttonrecord.setBackgroundResource(R.drawable.rec_button_on);	
     		startRecord();
     	}
     }
