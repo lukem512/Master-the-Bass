@@ -60,10 +60,7 @@ public class Filtersmenu extends Activity {
 		setContentView(R.layout.activity_filters);
 		
 		// Initiate switches
-		ToggleButton btn0 = (ToggleButton) findViewById(R.id.toggleButton1);
-		ToggleButton btn1 = (ToggleButton) findViewById(R.id.toggleButton2);
-		ToggleButton btn2 = (ToggleButton) findViewById(R.id.toggleButton3);
-		ToggleButton btn3 = (ToggleButton) findViewById(R.id.toggleButton4);
+		
 		ToggleButton btn4 = (ToggleButton) findViewById(R.id.toggleButton5);
 		
 		
@@ -100,16 +97,13 @@ public class Filtersmenu extends Activity {
 			Log.d (LogTag, "Received filterdropdown: "+filterdropdown[i]);
 		}
         
-        if (btn0 == null || btn1 == null || btn2 == null || btn3 == null || btn4 == null) {
+        if ( btn4 == null) {
         	Log.e(LogTag,"One or more of the toggle buttons are null!");
         } else {
         	Log.d(LogTag, "Toggle buttons aren't null");
         }
         
-        btn0.setChecked(settings[0]);
-        btn1.setChecked(settings[1]);
-        btn2.setChecked(settings[2]);
-        btn3.setChecked(settings[3]);
+      
         btn4.setChecked(settings[4]);
         Log.d(LogTag,"the item in filterdropdown[0] = " + filterdropdown[0]);
         
@@ -272,4 +266,5 @@ public class Filtersmenu extends Activity {
         boolean on = ((ToggleButton) view).isChecked();
         settings[4] = on;
     }
+    
 }

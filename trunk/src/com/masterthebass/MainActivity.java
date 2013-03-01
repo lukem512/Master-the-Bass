@@ -3,9 +3,10 @@ package com.masterthebass;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
@@ -14,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Menu;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.text.Editable;
 import android.util.Log;
@@ -28,10 +31,14 @@ import android.hardware.SensorManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 // TODO - ensure audio is still smooth - it seems not to be.
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
 	// Manager instances
 	private AudioOutputManager audioman;
@@ -41,11 +48,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	// Flag to indicate startup has completed
 	private boolean resumeHasRun = false;
-	//filters on\off
-	private boolean gesture1 = false;
-	private boolean gesture2 = false;
-	private boolean gesture3 = false;
-	private boolean gesture4 = false;
 	//settings on\off
 	private boolean[] settings;
 	/*  settings:
@@ -118,12 +120,20 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
-	
+
 	private float[] tiltDegree;
 	private float[] tiltval;
 	private float tiltCutoff;
 	
 
+	private ToggleButton fb1;
+	private ToggleButton fb2;
+	private ToggleButton fb3;
+	private ToggleButton fb4;
+	private boolean toggleChecked[] = {false,false,false,false};
+	private int lastButton = 5;
+	private boolean leftButton = true;
+	
 	// Log output tag
 	private final static String LogTag = "Main";
 	
@@ -148,8 +158,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		oSensor = oSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);									// TODO - this is DEPRECATED, use instead (https://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[]))
 		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
 		
-		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-		mDisplay = mWindowManager.getDefaultDisplay();
 		
 		oSensorErrorLogged = false;
 		mSensorErrorLogged = false;
@@ -205,7 +213,33 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mDisplay = mWindowManager.getDefaultDisplay();
+        fb1 = (ToggleButton)findViewById(R.id.filter1);
+        fb2 = (ToggleButton)findViewById(R.id.filter2);
+        fb3 = (ToggleButton)findViewById(R.id.filter3);
+        fb4 = (ToggleButton)findViewById(R.id.filter4);
+        Button record = (Button)findViewById(R.id.buttonrecord);
+        Button help = (Button)findViewById(R.id.buttonplay);
+        Button settings = (Button)findViewById(R.id.btnSettings);
+        scaleLayout(fb1);
+        scaleButtons(record);
+        scaleButtons(help);
+        scaleButtons(settings);
     }
+   //scaling play, settings and help buttons
+    private void scaleButtons(Button b){
+    	ViewGroup.LayoutParams parms = b.getLayoutParams();
+    	parms.width = mDisplay.getWidth()/5;
+    	parms.height= mDisplay.getWidth()/5;
+    	b.setLayoutParams(parms);
+    }
+    //scaling filter buttons
+    private void scaleLayout(ToggleButton b){
+    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5, 1);
+    	LinearLayout rLGreen = ((LinearLayout) b.getParent());
+    	rLGreen.setLayoutParams(parms);
+    } 
     
     @Override
     public void onStart() {
@@ -276,6 +310,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	intent.putExtra(FILTERMAN_CLASS, filterman);
     	startActivityForResult(intent,1);
     }
+    public void startHelp(View view){
+    	Intent intent = new Intent(this, Help.class);
+    	startActivity(intent);
+    	
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == 1) {
@@ -291,8 +330,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}
     }
     
-    //0 is play background, 1 is pause 
-    private int buttonOn = 0;
     
     private void startAudio() {				
 		// Start playing!
@@ -424,7 +461,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     public void toggleRecord(View view) {
     	if (recording) {
     		if (!audioman.isStopped()) {
-    			toggleplayonoff(view);
+    			toggleplayonoff();
     		}
     		stopRecord();
     	} else {
@@ -432,18 +469,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}
     }
     
+   
     //for toggling play button to stop
-    public void toggleplayonoff(View view) {
-    	//add a a call to a function so that it plays and stops****
-    	Button buttonplay = (Button) findViewById(R.id.buttonplay); 
+    public void toggleplayonoff(){
     	
-    	if(buttonOn == 0 ) {
-    		buttonplay.setBackgroundResource(R.drawable.selector_pause);	
-    		buttonOn = 1;
-    	} else {
-    		buttonplay.setBackgroundResource(R.drawable.selector);
-    		buttonOn = 0;
-    	}  
+
     	
     	if (audioman.isStopped()) {	
     		startAudio();
@@ -452,26 +482,60 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		}
     }
     
+    /*
+     * functions that called when one of the
+     * filter buttons is pressed
+     */
+    
+    
+    public void filterTopLeft(View view){
+    	if(toggleChecked[0]){
+    		filterman.enableFilter(filterarray[0]);
+    	}else{
+    		filterman.disableFilter(filterarray[0]);    		
+    	}
+    	//filter1
+    	Log.i(TAG,"clicked 1");
+    }
+    public void filterTopRight(View view){
+    	if(toggleChecked[1]){
+    		filterman.enableFilter(filterarray[1]);
+    	}else{
+    		filterman.disableFilter(filterarray[1]);    		
+    	}
+    	//filter2
+    	Log.i(TAG,"clicked 2");
+    }
+    public void filterBottomLeft(View view){
+    	if(toggleChecked[2]){
+    		filterman.enableFilter(filterarray[2]);
+    	}else{
+    		filterman.disableFilter(filterarray[2]);    		
+    	}
+    	//filter3
+    	Log.i(TAG,"clicked 3");
+    }
+    public void filterBottomRight(View view){
+    	if(toggleChecked[3]){
+    		filterman.enableFilter(filterarray[3]);
+    	}else{
+    		filterman.disableFilter(filterarray[3]);    		
+    	}
+    	//filter4
+    	Log.i(TAG,"clicked 4");
+    }
     //*********************gesture code****************************
     
     public static final int gestureDelay = 500;
 	private GestureDetector gestureScanner;
-	private static final String[] gesturearray = new String[]{"Swipe Up","Swipe Left","Tap","Hold"};	
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static int[] filterarray = new int[]{0,0,0,0,0,0};
 	private static int[] sliderValues = new int[]{0,100};
 	private static int longpresson = 0;
+	private static int[] filterarray = new int[]{0,1,2,3,0,0};
 	
-	long lastGesture = System.currentTimeMillis();
-	
-	public static void addTogestureArray(CharSequence gesture,int gesturenum){
-		gesturearray[gesturenum] = (String) gesture;
-		Log.i(LogTag,"the gesture is " + gesturearray[0]);
-		Log.i(LogTag,"the gesture is " + gesturearray[1]);
-		Log.i(LogTag,"the gesture is " + gesturearray[2]);
-		Log.i(LogTag,"the gesture is " + gesturearray[3]);
-	}
+	long lastGesture = System.currentTimeMillis();	
+
 	
 	public static void addTofilterArray(int filter, int filternum){
 		filterarray[filternum] = filter;
@@ -485,23 +549,136 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	
 	public static void addSliderValues(int[] a){
 		sliderValues = a;
-		Log.d(TAG,"Left: " + sliderValues[0] + " Right: "+ sliderValues[1]);
+	}
+	//detects what button clicked and returns false if none
+	private boolean checkFilterButton(int n, float x, float y){
+		//TODO: get rid of bullshit factor
+		//int bullshitFactor = 100;
+		int location[] = new int [2];
+		//TODO: change all getX and Y to location
+		switch (n){
+		case 0:
+			fb1.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb1.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb1.getHeight())){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb1.setChecked(!toggleChecked[0]);
+			    	toggleChecked[0] = !toggleChecked[0];
+					filterTopLeft(fb1.getRootView());
+					lastButton = n;
+				}
+				return false;
+			}
+			break;
+		case 1:
+			fb2.getLocationInWindow(location);
+			Log.d(TAG, "Button X: " + location[0] + " Button Y: " + location[1]);
+			if ((x > location[0])&&(x < location[0] + fb2.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
+				Log.d(TAG, "past the conditions");
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb2.setChecked(!toggleChecked[1]);
+			    	toggleChecked[1] = !toggleChecked[1];
+					filterTopRight(fb2.getRootView());
+					lastButton = n;
+				}
+				return false;  	
+			}
+			break;
+		case 2:
+			fb3.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb3.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb3.getHeight())){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb3.setChecked(!toggleChecked[2]);
+			    	toggleChecked[2] = !toggleChecked[2];
+					filterBottomLeft(fb3.getRootView());
+	        		lastButton = n;
+				}
+	        	return false;
+			}
+			break;
+		case 3:
+			fb4.getLocationInWindow(location);
+			if ((x > location[0])&&(x < location[0] + fb4.getWidth())&&
+		        	(y > location[1])&&(y < location[1] + fb4.getHeight())){
+				if ((n != lastButton)||(leftButton == true)){
+			    	fb4.setChecked(!toggleChecked[3]);
+			    	toggleChecked[3] = !toggleChecked[3];
+					filterBottomRight(fb4.getRootView());
+	        		lastButton = n;
+				}
+	        	return false;
+			}
+			break;
+		default:
+			break;
+		}
+		return true;
+	}
+	
+	private boolean isInSpeaker(float x, float y){
+		int dispX = mDisplay.getWidth()/2;
+		int dispY = mDisplay.getHeight()/2 + 30;
+		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 50)){
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent me) {
+		float x = me.getRawX();
+    	float y = me.getRawY();
+    	//when finger is lifted off screen
+    	if (me.getAction() == MotionEvent.ACTION_UP){
+    		if (audioman.isPlaying() == true) toggleplayonoff();
+    		super.dispatchTouchEvent(me);
+    		return true;
+    	}
+    	//when finger touches the screen
+    	if (me.getAction() == MotionEvent.ACTION_DOWN){
+    		if (isInSpeaker(x,y)){
+    			leftButton = true;
+    			toggleplayonoff();
+    		}else{
+        		super.dispatchTouchEvent(me);
+    		}
+    		return true;
+    	}
+    	//if swipe
+    	if (!isInSpeaker(x,y)){
+    		Log.d(TAG,"hovering over button");
+    		int currentButton;
+    		if (x < mDisplay.getWidth()/2){
+    			//upper left
+    			if (y < mDisplay.getHeight()/2) currentButton = 0;
+    			//lower left
+    			else currentButton = 2;
+    		} else {
+    			//upper right
+    			if (y < mDisplay.getHeight()/2) currentButton = 1;
+    			//lower right
+    			else currentButton = 3;
+    		}
+    		leftButton = checkFilterButton(currentButton,x,y);
+    	} else {
+    		leftButton = true;
+    	}
+	    return true;
 	}
 	
     @Override
 	public boolean onTouchEvent(MotionEvent me)	{
-    	if (me.getAction() == MotionEvent.ACTION_UP && longpresson == 1 && settings[3]){
-    		filterman.disableFilter(filterarray[3]);		
-			gesture4 = false;
-			longpresson = 0;
-    		
-    	}
 		//return false;
 		return gestureScanner.onTouchEvent(me);
 	}
 
 	@Override
 	public boolean onDown(MotionEvent e) {
+		float x = e.getRawX();
+    	float y = e.getRawY();
+    	
 		if (settings[4]) v.vibrate(300);
 		Log.i(LogTag, "Down");		
 		return false;
@@ -509,123 +686,29 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		Log.i(LogTag, "Fling");
 		return false;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent e) {
 	
-			//change this depending on whether the toggles are on for this gesture
-				Toast toast = Toast.makeText(getApplicationContext(), "Hold", Toast.LENGTH_SHORT);
-				toast.show();
-				if(settings[3]){
-							
-					if(gesture4 == false){
-						filterman.enableFilter(filterarray[3]);	
-						longpresson = 1;
-						gesture4 = true;
-					}
-				}
-		
-		Log.i(LogTag, "Long Press");
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-	
-		if ((lastGesture + gestureDelay) < System.currentTimeMillis())
-		{
-			lastGesture = System.currentTimeMillis();
-			
-			if (distanceX < -10)
-			{
-						if (settings[4]) v.vibrate(300);
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Right", Toast.LENGTH_SHORT);
-						toast.show();
-						if(settings[1]){
-							filterman.disableFilter(filterarray[1]);	
-							gesture2 = false;
-						}
-						
-				Log.i(LogTag,"Swipe Right");
-			} else if (distanceX > 10)
-			{					
-						if (settings[4]) v.vibrate(300);
-						Toast toast = Toast.makeText(getApplicationContext(), "Swipe Left", Toast.LENGTH_SHORT);
-						toast.show();
-						if(settings[1]){
-							if(gesture2 == false){
-								filterman.enableFilter(filterarray[1]);							
-								gesture2 = true;
-							}				
-						}
-				
-				Log.i(LogTag,"Swipe Left");
-			}
-			if (distanceY < -10)
-			{
-				if (settings[4]) {
-					v.vibrate(300);
-				}
-				
-				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT);
-				toast.show();
-				
-				if(settings[0]){
-					filterman.disableFilter(filterarray[0]);							
-					gesture1 = false;
-				}
-					
-				Log.i(LogTag,"Swipe Down");
-			} else if (distanceY > 10)
-			{
-				
-				if (settings[4]) v.vibrate(300);
-				Toast toast = Toast.makeText(getApplicationContext(), "Swipe Up", Toast.LENGTH_SHORT);
-				toast.show();
-						
-				if(settings[0]){
-					if(gesture1 == false){
-						filterman.enableFilter(filterarray[0]);							
-						gesture1 = true;
-					}	
-				}
-			}
-			
-			Log.i(LogTag,"Swipe Up");
-		}
 		
 		return false;
 	}
 
 	@Override
 	public void onShowPress(MotionEvent e) {
-		//checking whether it is a real tap or accident
-		Log.i(LogTag, "Show press");	
+		//checking whether it is a real tap or accident	
 	}
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
+		return isNegative;
 		//if (settings[4]) v.vibrate(300);
-		
-		Toast toast = Toast.makeText(getApplicationContext(), "Tap", Toast.LENGTH_SHORT);
-		toast.show();
-		
-		if(settings[2]){
-		
-			if(gesture3 == false){
-				filterman.enableFilter(filterarray[2]);
-				
-				gesture3 = true;
-			}else{
-				filterman.disableFilter(filterarray[2]);		
-				gesture3 = false;
-			}
-		}
-				
-		Log.i(LogTag, "Single tap up");
-		return false;
 	}
 
 	@Override
@@ -814,7 +897,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    	
 	    	// Change the cutoff (shelf) frequency
             lpf.setCutoffFrequency(newCutoff);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	
 	    	// Change the volume
 	    	af.setAmplitude (newAmp);

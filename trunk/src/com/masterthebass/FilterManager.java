@@ -6,8 +6,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import android.util.Log;
+
+
 
 public class FilterManager implements Serializable {
+	public final static String TAG = "com.masterthebass.FILTERMANAGER";
 	private static final long serialVersionUID = 754321647758395857L;
 	
 	private Hashtable<Integer, Filter> FilterList;
@@ -86,14 +90,16 @@ public class FilterManager implements Serializable {
 	public void toggleFilter (int ID) {
 		getFilter(ID).toggle();
 	}
-
+	
 	// enable a filter given its ID
 	public void enableFilter (int ID) {
+		Log.i(TAG,"filter enabled");
 		getFilter(ID).enable();
 	}
 	
 	// disable a filter given its ID
 	public void disableFilter (int ID){
+		Log.i(TAG,"filter disabled");
 		getFilter(ID).disable();
 	}
 	
