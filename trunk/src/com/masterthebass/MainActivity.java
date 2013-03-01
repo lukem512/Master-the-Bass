@@ -199,7 +199,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     }
     //scaling filter buttons
     private void scaleLayout(ToggleButton b){
-    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5, 1);
+    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5 - 15, 1);
     	LinearLayout rLGreen = ((LinearLayout) b.getParent());
     	rLGreen.setLayoutParams(parms);
     } 

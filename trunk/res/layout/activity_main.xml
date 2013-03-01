@@ -39,8 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:paddingBottom="10dp"
-        android:paddingTop="2dp" >
+        android:paddingBottom="5dp" >
 
         <LinearLayout
            		android:layout_width="wrap_content"
