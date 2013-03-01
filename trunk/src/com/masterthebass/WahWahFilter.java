@@ -1,10 +1,10 @@
 package com.masterthebass;
 
-public class WahWah extends IIRFilter {
+public class WahWahFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private static final double twopi = 2 * Math.PI;
 	
-	public WahWah(int iD, String name) {
+	public WahWahFilter(int iD, String name) {
 		super(iD, name);
 	}
 
@@ -33,13 +33,13 @@ public class WahWah extends IIRFilter {
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
-		short[] xv = new short[3];
-		short[] yv = new short[3];
+		double[] xv = new double[3];
+		double[] yv = new double[3];
 		int count = rawPCM.length;
 		double[] ax = new double [3];
 		double[] by = new double[3];
 		
-		getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
+		getLPCoefficientsButterworth2Pole(getSampleRate(), getCutoffFrequency(), ax, by);
 		
 		for (int i = 0; i < 3; i++) {
 			xv[i] = 0;
@@ -48,11 +48,11 @@ public class WahWah extends IIRFilter {
 		
 		for (int i=0;i<count;i+=getCutoffFrequency()) {
 			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = rawPCM[i];
+		    xv[0] = shortToDouble(rawPCM[i]);
 		    yv[2] = yv[1]; 
 		    yv[1] = yv[0];
-		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] = yv[0];
+		    yv[0] =   (ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]);
+		    rawPCM[i] = doubleToShort(yv[0]);
 		}
 
 		return rawPCM;
