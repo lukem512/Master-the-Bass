@@ -24,8 +24,10 @@ public class IIRFilter extends Filter {
 	}
 	
 	public void setCutoffFrequency (double newCutoff) {
-		if (newCutoff > 0) {
-			this.cutoffFrequency = newCutoff;
+		if (newCutoff > minCutoffFrequency) {
+			if (newCutoff < maxCutoffFrequency) {
+				this.cutoffFrequency = newCutoff;
+			}
 		}
 	}
 	
