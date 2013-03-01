@@ -11,8 +11,8 @@ public class LowPassFilter extends IIRFilter {
 	private double[] filteredPCM;
 	private double alpha;
 	
-	public LowPassFilter(int iD, String name) {
-		super(iD, name);
+	public LowPassFilter(int ID, String name) {
+		super(ID, name);
 	}
 	
 	// this function returns a value between 0 and 1
