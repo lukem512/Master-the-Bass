@@ -22,21 +22,21 @@ public class IIRFilter extends Filter {
 	}
 	
 	public void setCutoffFrequency (double newCutoff) {
-		if (newCutoff > minCutoffFrequency) {
-			if (newCutoff < maxCutoffFrequency) {
+		if (newCutoff >= minCutoffFrequency) {
+			if (newCutoff <= maxCutoffFrequency) {
 				this.cutoffFrequency = newCutoff;
 			}
 		}
 	}
 	
 	public void setMaxCutoffFrequency (double maxCutoffFrequency) {
-		if (maxCutoffFrequency > 0) {
+		if (maxCutoffFrequency >= 0) {
 			this.maxCutoffFrequency = maxCutoffFrequency;
 		}
 	}
 	
 	public void setMinCutoffFrequency (double minCutoffFrequency) {
-		if (minCutoffFrequency > 0) {
+		if (minCutoffFrequency >= 0) {
 			this.minCutoffFrequency = minCutoffFrequency;
 		}
 	}
