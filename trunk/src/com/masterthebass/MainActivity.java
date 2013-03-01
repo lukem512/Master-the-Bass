@@ -184,7 +184,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C5;
+		noteFrequency = MidiNote.C3;
 		volume = 1.0;
 		noteDuration = 0.01;
 		maxAmplitude = 1.0;
@@ -729,13 +729,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			return;
     	}
 		
-		if( mSensor == null ) {
+		/*if( mSensor == null ) {
 			if (!mSensorErrorLogged) {
 				Log.w(LogTag, "No accelerometer found.");
 				mSensorErrorLogged = true;
 			}
 			return;
-		} 
+		}
 		
 		// Process!
 	    if (event.sensor.equals(mSensor))
@@ -788,7 +788,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			totalAccel = (float) Math.sqrt((deltaX - calx) * (deltaX - calx) +
 					  (deltaY - caly) * (deltaY - caly) +
 					  (deltaZ - calz) * (deltaZ - calz));			
-	    } else if (event.sensor.equals(oSensor)) {
+	    } else*/ if (event.sensor.equals(oSensor)) {
 	    	oLastX = oSensorX;
 	    	
 	    	switch (mDisplay.getRotation())
@@ -808,7 +808,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 	    }
 		
-	    if(oSensorX < 0) {
+	    /*if(oSensorX < 0) {
 	    	isNegative = true;
 		} else {
 	    	isNegative = false;
@@ -818,7 +818,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    	lIsNegative = true;
 	    } else {
 	    	lIsNegative = false;
-	    }
+	    }*/
+	    
+	    oSensorX = Math.abs(oSensorX);
+	    double level = oSensorX * 50;
+	    
+	    Log.i (LogTag, "oSensorX = "+oSensorX);
 	    
 	    if (useTimeA) {
 			timeA = System.currentTimeMillis() ;
@@ -898,11 +903,12 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			}
 	    	
 	    	// Change the cutoff (shelf) frequency
-            lpf.setCutoffFrequency(newCutoff);
-	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+            //lpf.setCutoffFrequency(newCutoff);
+	    	lpf.setCutoffFrequency(level);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + level);
 	    	
 	    	// Change the volume
-	    	af.setAmplitude (newAmp);
+	    	//af.setAmplitude (newAmp);
 	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
@@ -962,7 +968,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		                int[] filterIDs = filterman.getEnabledFiltersList();
 		                
 		                for (int id : filterIDs) {
-		                	Log.i (TAG, "Applying filter " + id + " - " + filterman.getFilterName(id));   
+		                	//Log.i (TAG, "Applying filter " + id + " - " + filterman.getFilterName(id));   
 		                	sampleData = filterman.applyFilter(id, sampleData);
 		                }
 			    		
