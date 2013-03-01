@@ -494,6 +494,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[0]);    		
     	}
+    	toggleChecked[0] = !toggleChecked[0];
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
@@ -503,6 +504,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[1]);    		
     	}
+    	toggleChecked[1] = !toggleChecked[1];
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
@@ -512,6 +514,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[2]);    		
     	}
+    	toggleChecked[2] = !toggleChecked[2];
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
@@ -521,6 +524,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[3]);    		
     	}
+    	toggleChecked[3] = !toggleChecked[3];
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
