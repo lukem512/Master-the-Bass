@@ -52,7 +52,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter1"
-                    android:onClick="filterTopLeft" />
+                    android:onClick="filterTopLeft"
+                    android:textOn=""
+                    android:textOff=""/>
 
                 <ToggleButton
                     android:layout_weight="1"
@@ -60,7 +62,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter3"
-                    android:onClick="filterBottomLeft" />
+                    android:onClick="filterBottomLeft" 
+                    android:textOn=""
+                    android:textOff=""/>
 
             </LinearLayout>
 
@@ -77,7 +81,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter2"
-                    android:onClick="filterTopRight" />
+                    android:onClick="filterTopRight" 
+                    android:textOn=""
+                    android:textOff=""/>
 
                 <ToggleButton
                     android:layout_weight="1"
@@ -85,7 +91,9 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter4"
-                    android:onClick="filterBottomRight" />
+                    android:onClick="filterBottomRight" 
+                    android:textOn=""
+                    android:textOff=""/>
 
             </LinearLayout>
 
