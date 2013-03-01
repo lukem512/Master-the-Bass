@@ -36,8 +36,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-// TODO - ensure audio is still smooth - it seems not to be.
-
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
 	// Manager instances
@@ -186,9 +184,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C3;
+		noteFrequency = MidiNote.C5;
 		volume = 1.0;
-		noteDuration = 0.05;
+		noteDuration = 0.01;
 		maxAmplitude = 1.0;
 		minAmplitude = 0.2;
 		maxCutoffFreq = 5000;
