@@ -3,9 +3,50 @@ package com.masterthebass;
 public class WahWahFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private static final double twopi = 2 * Math.PI;
+	private static int defaultWahLevel = 1;
+	private static int defaultMinWahLevel = 1;
+	private static int defaultMaxWahLevel = 100;
+	private int wahLevel;
+	private int maxWahLevel;
+	private int minWahLevel;
 	
 	public WahWahFilter(int iD, String name) {
 		super(iD, name);
+		setMaxWahLevel(defaultMaxWahLevel);
+		setMinWahLevel(defaultMinWahLevel);
+		setWahLevel(defaultWahLevel);
+	}
+
+	public void setWahLevel(int wahLevel) {
+		if (wahLevel >= getMinWahLevel()) {
+			if (wahLevel <= getMaxWahLevel()) {
+				this.wahLevel = wahLevel;
+			} else {
+				this.wahLevel = getMaxWahLevel();
+			}
+		} else {
+			this.wahLevel = getMinWahLevel();
+		}
+	}
+
+	public int getWahLevel () {
+		return wahLevel;
+	}
+	
+	public void setMaxWahLevel(int maxWahLevel) {
+		this.maxWahLevel = maxWahLevel;
+	}
+	
+	public int getMaxWahLevel () {
+		return maxWahLevel;
+	}
+	
+	public void setMinWahLevel(int minWahLevel) {
+		this.minWahLevel = minWahLevel;
+	}
+	
+	public int getMinWahLevel () {
+		return minWahLevel;
 	}
 
 	void getLPCoefficientsButterworth2Pole(int samplerate, double cutoff, double ax[], double by[]) {
@@ -46,7 +87,7 @@ public class WahWahFilter extends IIRFilter {
 			yv[i] = 0;
 		}
 		
-		for (int i=0;i<count;i+=getCutoffFrequency()) {
+		for (int i=0;i<count;i+=getWahLevel()) {
 			xv[2] = xv[1]; xv[1] = xv[0];
 		    xv[0] = shortToDouble(rawPCM[i]);
 		    yv[2] = yv[1]; 
