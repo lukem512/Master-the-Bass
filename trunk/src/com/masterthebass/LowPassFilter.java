@@ -5,23 +5,12 @@ import android.util.Log;
 // References:	http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
 // 				http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter
 
-public class LowPassFilter extends Filter {
+public class LowPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private static final String LogTag = "Low-Pass Filter";
 	private static final double twoPI = Math.PI * 2;
-	private double cutoffFrequency;
-	private double maxCutoffFrequency;
-	private double minCutoffFrequency;
 	private final static double amplitudeScalar = 4;
-	private final static double defaultCutoff = 5000;
-	private final static double defaultMaxCutoff = 5000;
-	private final static double defaultMinCutoff = 0;
-	
-	private double[] a, b;
-	double[] inLeft, outLeft;
 	double alpha;
-	
-	double[] filteredPCM;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
@@ -32,42 +21,6 @@ public class LowPassFilter extends Filter {
 		// set default bounds
 		maxCutoffFrequency = defaultMaxCutoff;
 		minCutoffFrequency = defaultMinCutoff;
-		
-		// initialise arrays
-		/*int memSize = (a.length >= b.length) ? a.length : b.length;
-	    inLeft = new double[memSize];
-	    outLeft = new double[memSize];*/
-	}
-	
-	public void setCutoffFrequency (double newCutoff) {
-		if (newCutoff > 0) {
-			this.cutoffFrequency = newCutoff;
-			//getCoeffs();
-		}
-	}
-	
-	public void setMaxCutoffFrequency (float maxCutoffFrequency) {
-		if (maxCutoffFrequency > 0) {
-			this.maxCutoffFrequency = maxCutoffFrequency;
-		}
-	}
-	
-	public void setMinCutoffFrequency (float minCutoffFrequency) {
-		if (minCutoffFrequency > 0) {
-			this.minCutoffFrequency = minCutoffFrequency;
-		}
-	}
-	
-	public double getCutoffFrequency () {
-		return cutoffFrequency;
-	}
-	
-	public double getMaxCutoffFrequency () {
-		return maxCutoffFrequency;
-	}
-	
-	public double getMinCutoffFrequency () {
-		return minCutoffFrequency;
 	}
 	
 	// TODO - this function should return a value between 0 and 1
@@ -84,31 +37,6 @@ public class LowPassFilter extends Filter {
 	    alpha = cutoffFrequency/(maxCutoffFrequency - minCutoffFrequency);
 
 	    return alpha;
-	}
-	
-	private double[] shortArrayToDoubleArray(short[] shortArray) {
-		double[] doubleArray = new double[shortArray.length];
-		int i = 0;
-		
-		for (short s : shortArray) {
-			doubleArray[i++] = ((s / ((double) Short.MAX_VALUE)) + 1.0 ) / 2.0;
-			//Log.i (LogTag, s+"->"+doubleArray[i-1]);
-		}
-		
-		return doubleArray;
-	}
-	
-	private short[] doubleArrayToShortArray(double[] doubleArray) {
-		short[] shortArray = new short[doubleArray.length];
-		int i = 0;
-		
-		for (double d : doubleArray) {			
-			shortArray[i++] = (short) (((2 * d) - 1) * Short.MAX_VALUE); // losing volume because of this? TODO
-			
-			//Log.i (LogTag, d+"->"+shortArray[i-1]);
-		}
-		
-		return shortArray;
 	}
 	
 	@Override
