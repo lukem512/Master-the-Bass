@@ -4,15 +4,13 @@ public class IIRFilter extends Filter {
 
 	private static final long serialVersionUID = 4637928974814745087L;
 	
-	protected final static double defaultCutoff = 5000;
-	protected final static double defaultMaxCutoff = 5000;
-	protected final static double defaultMinCutoff = 0;
+	private final static double defaultCutoff = 3000;
+	private final static double defaultMaxCutoff = 3000;
+	private final static double defaultMinCutoff = 0;
 	
-	protected double cutoffFrequency;
-	protected double maxCutoffFrequency;
-	protected double minCutoffFrequency;
-	
-	protected double[] filteredPCM;
+	private double cutoffFrequency;
+	private double maxCutoffFrequency;
+	private double minCutoffFrequency;
 
 	public IIRFilter(int ID, String name) {
 		super(ID, name);

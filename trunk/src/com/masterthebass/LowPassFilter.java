@@ -8,13 +8,14 @@ public class LowPassFilter extends IIRFilter {
 	private static final String LogTag = "Low-Pass Filter";
 	private static final double twoPI = Math.PI * 2;
 	private final static double amplitudeScalar = 4;
-	double alpha;
+	private double[] filteredPCM;
+	private double alpha;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
 	}
 	
-	// TODO - this function should return a value between 0 and 1
+	// this function returns a value between 0 and 1
 	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {
 		double T;
@@ -24,8 +25,8 @@ public class LowPassFilter extends IIRFilter {
 	    //tau = RC; // time constant for decay in seconds
 	    //fc = 1/(twoPI*tau); // cutoff frequency
 	    
-	    // TODO - hack
-	    alpha = cutoffFrequency/(maxCutoffFrequency - minCutoffFrequency);
+	    // TODO - hack, this could be nicer! and more mathematically correct
+	    alpha = getCutoffFrequency()/(getMaxCutoffFrequency() - getMinCutoffFrequency());
 
 	    return alpha;
 	}
