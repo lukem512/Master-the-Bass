@@ -1,40 +1,95 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:screenOrientation="portrait"
-    android:layout_height="match_parent" 
-    android:background="@drawable/main_background">
-
-    <Button
-        android:id="@+id/buttonplay"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/selector"        
-        android:onClick="toggleplayonoff" />
-
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignBottom="@+id/buttonplay"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="28dp"
-        android:layout_marginLeft="23dp"
-        android:onClick="startSettings"
-        android:background="@drawable/selector_settings" />
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:screenOrientation="portrait" >
 
     <Button
         android:id="@+id/buttonrecord"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignBaseline="@+id/btnSettings"
-        android:layout_alignBottom="@+id/btnSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/selector_record" />
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="13dp"
+        android:layout_toLeftOf="@+id/buttonplay"
+        android:background="@drawable/selector_settings"
+        android:onClick="startSettings" />
+
+    <Button
+        android:id="@+id/buttonplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="19dp"
-        android:background="@drawable/selector_record"
-        android:onClick="toggleRecord" />
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/selector_help" 
+        android:onClick = "startHelp"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <LinearLayout
+           		android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+            	android:layout_weight="1"  >
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selector_filter1"
+                    android:onClick="filterTopLeft" />
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selector_filter3"
+                    android:onClick="filterBottomLeft" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+        	    android:layout_weight="1" >
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selector_filter2"
+                    android:onClick="filterTopRight" />
+
+                <ToggleButton
+                    android:layout_weight="1"
+                    android:id="@+id/filter4"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selector_filter4"
+                    android:onClick="filterBottomRight" />
+
+            </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
+
