@@ -234,7 +234,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     }
     //scaling filter buttons
     private void scaleLayout(ToggleButton b){
-    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5, 1);
+    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5 - 15, 1);
     	LinearLayout rLGreen = ((LinearLayout) b.getParent());
     	rLGreen.setLayoutParams(parms);
     } 
@@ -492,7 +492,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[0]);    		
     	}
-    	toggleChecked[0] = !toggleChecked[0];
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
@@ -502,7 +501,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[1]);    		
     	}
-    	toggleChecked[1] = !toggleChecked[1];
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
@@ -512,7 +510,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[2]);    		
     	}
-    	toggleChecked[2] = !toggleChecked[2];
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
@@ -522,7 +519,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[3]);    		
     	}
-    	toggleChecked[3] = !toggleChecked[3];
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
@@ -564,6 +560,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			if ((x > location[0])&&(x < location[0] + fb1.getWidth())&&
 		        	(y > location[1])&&(y < location[1] + fb1.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
+					toggleChecked[0] = fb1.isChecked();
 			    	fb1.setChecked(!toggleChecked[0]);
 			    	toggleChecked[0] = !toggleChecked[0];
 					filterTopLeft(fb1.getRootView());
@@ -579,6 +576,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
 				Log.d(TAG, "past the conditions");
 				if ((n != lastButton)||(leftButton == true)){
+					toggleChecked[1] = fb1.isChecked();
 			    	fb2.setChecked(!toggleChecked[1]);
 			    	toggleChecked[1] = !toggleChecked[1];
 					filterTopRight(fb2.getRootView());
@@ -592,6 +590,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			if ((x > location[0])&&(x < location[0] + fb3.getWidth())&&
 		        	(y > location[1])&&(y < location[1] + fb3.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
+					toggleChecked[2] = fb1.isChecked();
 			    	fb3.setChecked(!toggleChecked[2]);
 			    	toggleChecked[2] = !toggleChecked[2];
 					filterBottomLeft(fb3.getRootView());
@@ -605,6 +604,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			if ((x > location[0])&&(x < location[0] + fb4.getWidth())&&
 		        	(y > location[1])&&(y < location[1] + fb4.getHeight())){
 				if ((n != lastButton)||(leftButton == true)){
+					toggleChecked[3] = fb1.isChecked();
 			    	fb4.setChecked(!toggleChecked[3]);
 			    	toggleChecked[3] = !toggleChecked[3];
 					filterBottomRight(fb4.getRootView());
