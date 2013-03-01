@@ -1,0 +1,29 @@
+Meeting Minutes
+01/03/2013
+---------------
+
+Jon absent.
+
+UI 	- Ricky to put PSDs onto github for UI elements
+	- Merged with trunk by the end of the day
+	- Ricky has made an icon and depressed record button
+	- Ricky has also made a settings menu image for setting filters
+	- Settings menu needs creating
+	- Help menu needs creating
+		- to be done using embedded font for ease of editting
+	- Tutorial needs creating
+	
+Audio generation	- Low-pass filter working, amplitude needs increasing
+
+Sensors	- Steve to play with code from 'ball demo' on fork
+		- For Monday
+	
+Record	- Record functionality complete and in trunk. There is one issue with prompting to save when buffer is filled.
+
+Presentation 	- Ricky to start presentation
+				- UI history
+				- Music utilising sounds that MTB can create
+				- Reactions from users
+				- Audio generation (+ issues)
+				- Ricky in fake moustache as random member of the public
+				- Get a musically able person to make sweet music with it!
