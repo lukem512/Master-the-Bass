@@ -463,6 +463,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		}
     		stopRecord();
     	} else {
+    		//record button on
+    		//buttonrecord
     		startRecord();
     	}
     }
