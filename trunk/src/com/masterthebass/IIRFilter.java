@@ -16,16 +16,20 @@ public class IIRFilter extends Filter {
 		super(ID, name);
 		
 		// set defaults
-		setCutoffFrequency(defaultCutoff);
 		setMaxCutoffFrequency(defaultMaxCutoff);
 		setMinCutoffFrequency(defaultMinCutoff);
+		setCutoffFrequency(defaultCutoff);
 	}
 	
 	public void setCutoffFrequency (double newCutoff) {
 		if (newCutoff >= minCutoffFrequency) {
 			if (newCutoff <= maxCutoffFrequency) {
 				this.cutoffFrequency = newCutoff;
+			} else {
+				this.cutoffFrequency = maxCutoffFrequency;
 			}
+		} else {
+			this.cutoffFrequency = minCutoffFrequency;
 		}
 	}
 	
