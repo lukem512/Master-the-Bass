@@ -1,7 +1,5 @@
 package com.masterthebass;
 
-import android.util.Log;
-
 // References:	http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
 // 				http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter
 
@@ -14,13 +12,6 @@ public class LowPassFilter extends IIRFilter {
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
-		
-		// set default cutoff to 5000Hz
-		setCutoffFrequency(defaultCutoff);
-		
-		// set default bounds
-		maxCutoffFrequency = defaultMaxCutoff;
-		minCutoffFrequency = defaultMinCutoff;
 	}
 	
 	// TODO - this function should return a value between 0 and 1
@@ -53,7 +44,6 @@ public class LowPassFilter extends IIRFilter {
 			for (int i=0;i<count;i++) {
 				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
 				filteredPCM[i] = sample;
-				//Log.i (LogTag, "filteredPCM["+i+"] is " + filteredPCM[i]);
 			}
 			
 			rawPCM = doubleArrayToShortArray(filteredPCM.clone());

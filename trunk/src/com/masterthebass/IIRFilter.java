@@ -16,6 +16,11 @@ public class IIRFilter extends Filter {
 
 	public IIRFilter(int ID, String name) {
 		super(ID, name);
+		
+		// set defaults
+		setCutoffFrequency(defaultCutoff);
+		setMaxCutoffFrequency(defaultMaxCutoff);
+		setMinCutoffFrequency(defaultMinCutoff);
 	}
 	
 	public void setCutoffFrequency (double newCutoff) {
@@ -24,13 +29,13 @@ public class IIRFilter extends Filter {
 		}
 	}
 	
-	public void setMaxCutoffFrequency (float maxCutoffFrequency) {
+	public void setMaxCutoffFrequency (double maxCutoffFrequency) {
 		if (maxCutoffFrequency > 0) {
 			this.maxCutoffFrequency = maxCutoffFrequency;
 		}
 	}
 	
-	public void setMinCutoffFrequency (float minCutoffFrequency) {
+	public void setMinCutoffFrequency (double minCutoffFrequency) {
 		if (minCutoffFrequency > 0) {
 			this.minCutoffFrequency = minCutoffFrequency;
 		}
