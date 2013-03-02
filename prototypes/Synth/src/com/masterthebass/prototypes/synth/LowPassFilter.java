@@ -11,6 +11,8 @@ public class LowPassFilter extends Filter {
 	private final static float defaultCutoff = 5000f;
 	private final static float defaultMaxCutoff = 5000f;
 	private final static float defaultMinCutoff = 0f;
+	double alpha;
+	double[] filteredPCM;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
@@ -58,78 +60,93 @@ public class LowPassFilter extends Filter {
 	private float map(double oscillation) {		
 		return (float) ((oscillation * (maxCutoffFrequency - minCutoffFrequency)) + minCutoffFrequency);
 	}
+	
+	// TODO - this function should return a value between 0 and 1
+	// smaller means more smoothing
+	private double getAlpha(int sampleLength) {
+		double T;
+		double tau;
+	    double alpha;
+	    
+	    //tau = RC; // time constant for decay in seconds
+	    //fc = 1/(twoPI*tau); // cutoff frequency
+	    
+	    // TODO - hack
+	    alpha = cutoffFrequency/(maxCutoffFrequency - minCutoffFrequency);
 
-	private void getLPCoefficientsButterworth2Pole(int samplerate, float cutoff, double ax[], double by[]) {
-	    double sqrt2 = Math.sqrt(2);
-	    double PI = Math.PI;
-
-	    double QcRaw  = (2 * PI * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
-	    double QcWarp = Math.tan(QcRaw); 				// Warp cutoff frequency
-	    double gain = 1 / (1+sqrt2/QcWarp + 2/(QcWarp*QcWarp));
-
-	    by[2] = (double) ((1 - sqrt2/QcWarp + 2/(QcWarp*QcWarp)) * gain);
-	    by[1] = (double) ((2 - 2 * 2/(QcWarp*QcWarp)) * gain);
-	    by[0] = 1;
-	    ax[0] = (double) (1 * gain);
-	    ax[1] = (double) (2 * gain);
-	    ax[2] = (double) (1 * gain);
+	    return alpha;
+	}
+	
+	private double[] shortArrayToDoubleArray(short[] shortArray) {
+		double[] doubleArray = new double[shortArray.length];
+		int i = 0;
+		
+		for (short s : shortArray) {
+			doubleArray[i++] = ((s / ((double) Short.MAX_VALUE)) + 1.0 ) / 2.0;
+			//Log.i (LogTag, s+"->"+doubleArray[i-1]);
+		}
+		
+		return doubleArray;
+	}
+	
+	private short[] doubleArrayToShortArray(double[] doubleArray) {
+		short[] shortArray = new short[doubleArray.length];
+		int i = 0;
+		
+		for (double d : doubleArray) {			
+			shortArray[i++] = (short) (((2 * d) - 1) * Short.MAX_VALUE); // losing volume because of this? TODO
+			
+			//Log.i (LogTag, d+"->"+shortArray[i-1]);
+		}
+		
+		return shortArray;
 	}
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
-		short[] xv = new short[3];
-		short[] yv = new short[3];
 		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
 		
-		getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
-		
-		for (int i = 0; i < 3; i++) {
-			xv[i] = 0;
-			yv[i] = 0;
+		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
+			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
+		} else {
+			double sample;
+			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
+			double alpha = getAlpha(count);
+			
+			for (int i=0;i<count;i++) {
+				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
+				filteredPCM[i] = sample;
+				//Log.i (LogTag, "filteredPCM["+i+"] is " + filteredPCM[i]);
+			}
+			
+			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
 		}
 		
-		for (int i=0;i<count;i++) {
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = rawPCM[i];
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    rawPCM[i] = (short) (yv[0] * amplitudeScalar);
-		}
-
 		return rawPCM;
 	}
 	
 	@Override
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
-		short[] xv = new short[3];
-		short[] yv = new short[3];
 		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
 		double[] LFOData = LFO.getSample(getDuration(rawPCM));
 		
-		for (int i = 0; i < count; i++) {
-			setCutoffFrequency (map (LFOData[i]));
+		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
+			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
+		} else {
+			double sample;
+			double alpha;
+			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
 			
-			getLPCoefficientsButterworth2Pole(getSampleRate(), cutoffFrequency, ax, by);
-			
-			for (int j = 0; j < 3; j++) {
-				xv[j] = 0;
-				yv[j] = 0;
+			for (int i=0;i<count;i++) {
+				setCutoffFrequency (map (LFOData[i]));
+				alpha = getAlpha(count);
+				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
+				filteredPCM[i] = sample;
 			}
 			
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = rawPCM[i];
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (short) ((ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]));
-		    
-		    rawPCM[i] = (short) (yv[0]*amplitudeScalar);
+			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
 		}
-
+		
 		return rawPCM;
 	}
 }
