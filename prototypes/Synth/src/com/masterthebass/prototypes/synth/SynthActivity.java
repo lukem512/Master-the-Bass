@@ -13,10 +13,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ToggleButton;
 
-// TODO	- ABILITY TO MIX NOTES
-//		- VOLUME IS REALLY LOW
+// TODO - VOLUME IS REALLY LOW
 //		- MORE WAVEFORMS
 //
+//		- UI responsiveness
 //		- rate modulation
 //		- maintain button results when activity is recreated
 //		- ability to change settings for oscillators (rate/depth)
@@ -25,7 +25,7 @@ import android.widget.ToggleButton;
 public class SynthActivity extends Activity {
 	
 	private AudioOutputManager am;
-	private SoundManager sm;
+	private SoundManager[] sms;
 	private FilterManager fm;
 	
 	private Oscillator LFO1;
@@ -60,8 +60,12 @@ public class SynthActivity extends Activity {
 		
 		// Instantiate managers
 		am = new AudioOutputManager();
-		sm = new SoundManager();	
 		fm = new FilterManager();
+		
+		sms = new SoundManager[7];
+		for (int i = NOTEA; i <= NOTEG; i++) {
+			sms[i] = new SoundManager();
+		}
 		
 		// Instantiate Oscillators
 		LFO1 = new Oscillator (am, new SineWave(), volume, 2);
@@ -163,7 +167,9 @@ public class SynthActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			WaveButton b = (WaveButton) findViewById(R.id.btnKeyboardWave);		
-			sm.setWave(b.getWave());
+			for (int i = NOTEA; i <= NOTEG; i++) {
+				sms[i].setWave(b.getWave());
+			}
 			Log.i (TAG, "Setting keyboard wave.");
 		}
 	}
@@ -284,7 +290,7 @@ public class SynthActivity extends Activity {
 
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
-			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
 			
 			int sampleRate = am.getSampleRate();
             boolean running = true;
@@ -292,7 +298,7 @@ public class SynthActivity extends Activity {
             short[] sampleData;
             
             // Generate silence to mix onto
-            short[] silence = sm.generateSilence(noteDuration, sampleRate);
+            short[] silence = SoundManager.generateSilence(noteDuration, sampleRate);
             
             Log.i(TAG+".generatorThread", "Started!");
             
@@ -302,14 +308,13 @@ public class SynthActivity extends Activity {
 	            	sampleData = silence;
 	            	
 		        	// Generate audio
-	            	// TODO - this audio mixing doesn't sound nice
 	            	for (int i = NOTEA; i <= NOTEG; i++) {
 	            		if (noteDown[i]) {
 	            			Log.i (TAG, "Mixing note " + i);
-	            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
+	            			short[] noteSampleData = sms[i].generateTone(noteDuration, noteFreq[i], volume, sampleRate);
 	            			
 	            			if (sampleModified) {
-	            				sampleData = sm.mixTones(sampleData, noteSampleData);
+	            				sampleData = SoundManager.mixTones(sampleData, noteSampleData);
 	            			} else {
 	            				sampleData = noteSampleData;
 	            			}
@@ -317,7 +322,7 @@ public class SynthActivity extends Activity {
 	            			sampleModified = true;
 	            			
 	            			// Commit the changes to sound manager
-	    	            	sm.commit();
+	    	            	sms[i].commit();
 	            		}
 	        		}
 	            	
