@@ -64,11 +64,11 @@ public class SynthActivity extends Activity {
 		fm = new FilterManager();
 		
 		// Instantiate Oscillators
-		LFO1 = new Oscillator (am, new SineWave(), volume, 5);
+		LFO1 = new Oscillator (am, new SineWave(), volume, 2);
 		LFO2 = new Oscillator (am, new SineWave(), volume, 3);
 		
 		// Attach to filters
-		//fm.attachOscillator(0, LFO1); // Low Pass Filter
+		fm.attachOscillator(0, LFO1); // Low Pass Filter
 		fm.attachOscillator(1, LFO2); // Amplitude Filter
 		
 		// Set up notes
@@ -307,7 +307,13 @@ public class SynthActivity extends Activity {
 	            		if (noteDown[i]) {
 	            			Log.i (TAG, "Mixing note " + i);
 	            			short[] noteSampleData = sm.generateTone(noteDuration, noteFreq[i], volume, sampleRate);
-	            			sampleData = sm.mixTones(sampleData, noteSampleData);
+	            			
+	            			if (sampleModified) {
+	            				sampleData = sm.mixTones(sampleData, noteSampleData);
+	            			} else {
+	            				sampleData = noteSampleData;
+	            			}
+	            			
 	            			sampleModified = true;
 	            			
 	            			// Commit the changes to sound manager
