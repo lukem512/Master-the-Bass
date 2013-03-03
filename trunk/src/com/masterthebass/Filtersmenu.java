@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -111,6 +112,11 @@ public class Filtersmenu extends Activity {
         
         addtofilters();
         Log.d(LogTag,"Added filters to list.");
+        
+        //using own font
+        Typeface tf = Typeface.createFromAsset(getAssets(),"NeoSans_Bold_Italic.ttf");
+        TextView tv = (TextView) findViewById(R.id.CustomFontText);
+        tv.setTypeface(tf);
 	}
 	
 	private void SetUpSlider() {

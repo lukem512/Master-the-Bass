@@ -24,6 +24,7 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,6 +34,7 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -222,8 +224,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         Button settings = (Button)findViewById(R.id.btnSettings);
         scaleLayout(fb1);
         scaleButtons(record);
-        scaleButtons(help);
+        scaleButtons(help);	
         scaleButtons(settings);
+       
     }
    //scaling play, settings and help buttons
     private void scaleButtons(Button b){
