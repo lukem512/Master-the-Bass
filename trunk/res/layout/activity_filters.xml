@@ -4,75 +4,97 @@
        android:layout_height="fill_parent"
        android:screenOrientation="portrait"        
     android:background="@drawable/settings_background">
-
-      
-          <com.masterthebass.SliderView android:id="@+id/slider"
+    
+          
+               <com.masterthebass.SliderView android:id="@+id/slider"
 			android:layout_width ="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="75dp"
+			android:layout_marginTop="110dp"
 			android:layout_marginLeft="15dp"
 			android:adjustViewBounds="true"/>
 			<TextView android:id="@+id/text_interval"
-			android:layout_marginTop="46dp"
-			android:layout_marginLeft="150dp"
+			android:layout_marginTop="95dp"
+			android:layout_marginLeft="140dp"
 			android:textColor="#FFFFFF"
 			android:text="inverval selected"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"/> 
-
-       <Spinner
-           android:id="@+id/spinner2"
-           android:layout_width="100dp"
-           android:layout_height="wrap_content"
-           android:layout_alignLeft = "@+id/spinner1"
-           android:layout_below="@+id/spinner1"
-           android:background="@drawable/dropdown_off" />
+			android:layout_gravity="center_horizontal"/>
 
        <Spinner
            android:id="@+id/spinner3"
-           android:layout_width="100dp"
-           android:layout_alignLeft="@+id/spinner2"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/spinner2"
-           android:background="@drawable/dropdown_off" />
+           android:layout_width="150dp"
+           android:layout_height="100dp"
+           android:layout_alignLeft="@+id/spinner1"
+           android:layout_below="@+id/spinner1"
+           android:background="@drawable/settings_filter3" />
 
        <Spinner
            android:id="@+id/spinner4"
-           android:layout_width="100dp"
-           android:layout_height="wrap_content"
-           android:layout_alignLeft="@+id/spinner3"
-           android:layout_below="@+id/spinner3"
-           android:background="@drawable/dropdown_off" />
-
-
-       <ToggleButton
-           android:id="@+id/toggleButton5"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
+           android:layout_width="150dp"
+           android:layout_height="100dp"
+           android:layout_alignLeft="@+id/spinner2"
            android:layout_below="@+id/spinner2"
-           android:layout_toLeftOf="@+id/spinner2"
-           android:background="@drawable/selector_toggle"
-           android:onClick="onVibrationClicked" />
-
-       <Spinner
-           android:id="@+id/spinner1"
-           android:layout_width="100dp"
-           android:layout_height="wrap_content"
-           android:layout_alignParentTop="true"
-           android:layout_centerHorizontal="true"
-           android:layout_marginTop="132dp"
-           android:background="@drawable/dropdown_off" />
+           android:background="@drawable/settings_filter4" />
 
        <TextView
            android:id="@+id/CustomFontText"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_alignParentLeft="true"
            android:layout_alignParentTop="true"
-           android:layout_marginLeft="47dp"
-           android:layout_marginTop="21dp"
-           android:text="Hello."
+           android:layout_centerHorizontal="true"
+           android:layout_marginTop="22dp"
+           android:text="Settings"
            android:textSize="30sp" />
+
+       <Spinner
+           android:id="@+id/spinner2"
+           android:layout_width="150dp"
+           android:layout_height="100dp"
+           android:layout_toRightOf="@+id/spinner1"
+           android:layout_alignTop="@+id/spinner1"
+           android:background="@drawable/settings_filter2" />
+
+       <TextView
+           android:id="@+id/minmaxfreq"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignLeft="@+id/toggleButton5"
+           android:layout_below="@+id/CustomFontText"
+           android:layout_marginTop="16dp"
+           android:text="min/max freq."
+           android:textSize="20sp" />
+
+       <TextView
+           android:id="@+id/vibration"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignRight="@+id/minmaxfreq"
+           android:layout_below="@+id/minmaxfreq"
+           android:layout_marginTop="92dp"
+           android:text="vibration"
+           android:textSize="20sp" />
+
+       <ToggleButton
+           android:id="@+id/toggleButton5"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/vibration"
+           android:layout_alignBottom="@+id/vibration"
+           android:layout_marginRight="30dp"
+           android:layout_toLeftOf="@+id/CustomFontText"
+           android:background="@drawable/selector_toggle"
+           android:onClick="onVibrationClicked"
+           android:textOn=""
+           android:textOff="" />
+
+       <Spinner
+           android:id="@+id/spinner1"
+           android:layout_width="150dp"
+           android:layout_height="100dp"
+           android:layout_alignRight="@+id/vibration"
+           android:layout_below="@+id/toggleButton5"
+           android:layout_marginTop="20dp"
+           android:background="@drawable/settings_filter1" />
 
    </RelativeLayout>

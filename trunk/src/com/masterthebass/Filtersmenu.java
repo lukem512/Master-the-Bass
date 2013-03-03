@@ -115,8 +115,12 @@ public class Filtersmenu extends Activity {
         
         //using own font
         Typeface tf = Typeface.createFromAsset(getAssets(),"NeoSans_Bold_Italic.ttf");
-        TextView tv = (TextView) findViewById(R.id.CustomFontText);
-        tv.setTypeface(tf);
+        TextView settings = (TextView) findViewById(R.id.CustomFontText);
+        settings.setTypeface(tf);
+        TextView minmaxfreq = (TextView) findViewById(R.id.minmaxfreq);
+        minmaxfreq.setTypeface(tf);
+        TextView vibration = (TextView) findViewById(R.id.vibration);
+        vibration.setTypeface(tf);
 	}
 	
 	private void SetUpSlider() {
