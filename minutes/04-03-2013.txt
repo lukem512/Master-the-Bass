@@ -1,0 +1,13 @@
+Meeting Minutes
+04/03/2013
+---------------
+
+UI 	- Icon has been created, as have waveform images.
+	- Help menu to be created
+		- This could be a series of images
+		- PSDs -> Git
+	- Ability to change waveform in Settings menu
+
+Sound generation - Jon has been working on tilt code which sounds okay, but is a little unresponsive (i.e. the sound can take a lot longer than the movement to change) and produces clicking 'artifacts' when movement occurs.
+
+Presentation - needs doing!
