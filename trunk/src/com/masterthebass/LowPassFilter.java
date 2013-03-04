@@ -13,6 +13,7 @@ public class LowPassFilter extends Filter {
 	private final static double defaultCutoff = 5000;
 	private final static double defaultMaxCutoff = 5000;
 	private final static double defaultMinCutoff = 0;
+	private double twoPi = 2 * Math.PI;
 	
 	public LowPassFilter(int iD, String name) {
 		super(iD, name);
@@ -63,9 +64,8 @@ public class LowPassFilter extends Filter {
 
 	private void getLPCoefficientsButterworth2Pole(int samplerate, double cutoff, double ax[], double by[]) {
 	    double sqrt2 = Math.sqrt(2);
-	    double PI = Math.PI;
 
-	    double QcRaw  = (2 * PI * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
+	    double QcRaw  = (twoPi * cutoff) / samplerate; // Find cutoff frequency in [0..PI]
 	    double QcWarp = Math.tan(QcRaw); 				// Warp cutoff frequency
 	    double gain = 1 / (1+sqrt2/QcWarp + 2/(QcWarp*QcWarp));
 
