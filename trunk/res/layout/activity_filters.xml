@@ -1,12 +1,11 @@
 
-   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
        android:layout_width="fill_parent"
        android:layout_height="fill_parent"
        android:screenOrientation="portrait"        
-    android:background="@drawable/settings_background">
+       android:background="@drawable/settings_background">
     
-          
-               <com.masterthebass.SliderView android:id="@+id/slider"
+       <com.masterthebass.SliderView android:id="@+id/slider"
 			android:layout_width ="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
@@ -20,23 +19,8 @@
 			android:text="inverval selected"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"/>
-
-       <Spinner
-           android:id="@+id/spinner3"
-           android:layout_width="150dp"
-           android:layout_height="100dp"
-           android:layout_alignLeft="@+id/spinner1"
-           android:layout_below="@+id/spinner1"
-           android:background="@drawable/settings_filter3" />
-
-       <Spinner
-           android:id="@+id/spinner4"
-           android:layout_width="150dp"
-           android:layout_height="100dp"
-           android:layout_alignLeft="@+id/spinner2"
-           android:layout_below="@+id/spinner2"
-           android:background="@drawable/settings_filter4" />
-
+ 	    
+ 	    
        <TextView
            android:id="@+id/CustomFontText"
            android:layout_width="wrap_content"
@@ -47,13 +31,6 @@
            android:text="Settings"
            android:textSize="30sp" />
 
-       <Spinner
-           android:id="@+id/spinner2"
-           android:layout_width="150dp"
-           android:layout_height="100dp"
-           android:layout_toRightOf="@+id/spinner1"
-           android:layout_alignTop="@+id/spinner1"
-           android:background="@drawable/settings_filter2" />
 
        <TextView
            android:id="@+id/minmaxfreq"
@@ -88,13 +65,54 @@
            android:textOn=""
            android:textOff="" />
 
-       <Spinner
-           android:id="@+id/spinner1"
-           android:layout_width="150dp"
-           android:layout_height="100dp"
-           android:layout_alignRight="@+id/vibration"
-           android:layout_below="@+id/toggleButton5"
-           android:layout_marginTop="20dp"
-           android:background="@drawable/settings_filter1" />
+       <LinearLayout
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerHorizontal="true"
+           android:layout_below="@+id/vibration"
+           android:layout_marginTop="30dp" >
+
+           <LinearLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:orientation="vertical" >
+
+               <Spinner
+                   android:id="@+id/spinner1"
+                   android:layout_width="150dp"
+                   android:layout_height="100dp"
+                   android:layout_weight="1"
+                   android:background="@drawable/settings_filter1" />
+
+               <Spinner
+                   android:id="@+id/spinner3"
+                   android:layout_width="150dp"
+                   android:layout_height="100dp"
+                   android:layout_weight="1"
+                   android:background="@drawable/settings_filter3" />
+           </LinearLayout>
+
+           <LinearLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:orientation="vertical" >
+
+               <Spinner
+                   android:id="@+id/spinner2"
+                   android:layout_width="150dp"
+                   android:layout_height="100dp"
+                   android:layout_weight="1"
+                   android:background="@drawable/settings_filter2" />
+
+               <Spinner
+                   android:id="@+id/spinner4"
+                   android:layout_width="150dp"
+                   android:layout_height="100dp"
+                   android:layout_weight="1"
+                   android:background="@drawable/settings_filter4" />
+           </LinearLayout>
+       </LinearLayout>
 
    </RelativeLayout>
