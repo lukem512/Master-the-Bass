@@ -11,3 +11,6 @@ UI 	- Icon has been created, as have waveform images.
 Sound generation - Jon has been working on tilt code which sounds okay, but is a little unresponsive (i.e. the sound can take a lot longer than the movement to change) and produces clicking 'artifacts' when movement occurs.
 
 Presentation - needs doing!
+
+Misc. - testing needs to happen ASAP, both to ensure the demo doesn't crash for the presentation and for documentation.
+	  - please use Git to track issues
