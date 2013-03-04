@@ -29,6 +29,7 @@
            android:layout_centerHorizontal="true"
            android:layout_marginTop="22dp"
            android:text="Settings"
+           android:textColor="#caebea"
            android:textSize="30sp" />
 
 
@@ -38,7 +39,8 @@
            android:layout_height="wrap_content"
            android:layout_alignLeft="@+id/toggleButton5"
            android:layout_below="@+id/CustomFontText"
-           android:layout_marginTop="16dp"
+           android:layout_marginTop="16dp"           
+           android:textColor="#caebea"
            android:text="min/max freq."
            android:textSize="20sp" />
 
@@ -49,6 +51,7 @@
            android:layout_alignRight="@+id/minmaxfreq"
            android:layout_below="@+id/minmaxfreq"
            android:layout_marginTop="92dp"
+           android:textColor="#caebea"
            android:text="vibration"
            android:textSize="20sp" />
 
@@ -82,7 +85,8 @@
                    android:id="@+id/spinner1"
                    android:layout_width="150dp"
                    android:layout_height="100dp"
-                   android:layout_weight="1"
+                   android:layout_weight="1"                   
+         		   android:textColor="#caebea"
                    android:background="@drawable/settings_filter1" />
 
                <Spinner
@@ -90,6 +94,7 @@
                    android:layout_width="150dp"
                    android:layout_height="100dp"
                    android:layout_weight="1"
+        		   android:textColor="#caebea"
                    android:background="@drawable/settings_filter3" />
            </LinearLayout>
 
@@ -104,6 +109,7 @@
                    android:layout_width="150dp"
                    android:layout_height="100dp"
                    android:layout_weight="1"
+           		   android:textColor="#caebea"
                    android:background="@drawable/settings_filter2" />
 
                <Spinner
@@ -111,6 +117,7 @@
                    android:layout_width="150dp"
                    android:layout_height="100dp"
                    android:layout_weight="1"
+          		   android:textColor="#caebea"
                    android:background="@drawable/settings_filter4" />
            </LinearLayout>
        </LinearLayout>
