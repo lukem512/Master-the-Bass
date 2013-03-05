@@ -1,5 +1,6 @@
 package com.masterthebass;
 
+import java.math.BigDecimal;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -106,6 +107,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private Thread generatorThread;
 	private Thread writerThread;
 	
+	private int maxFreq = 5000;
+	private int minFreq = 600;
+	
 	private LinkedList<short[]> sampleList;
 	private int sampleListMaxSize;
 	
@@ -121,8 +125,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private int maxCutoffFreq;
 	private int minCutoffFreq;
 
-	private float[] tiltDegree;
-	private float[] tiltval;
+	private float[] gyroTiltVal;
+	private float[] accTiltVal;
 	private float tiltCutoff;
 	
 
@@ -144,8 +148,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
-   		tilt        = new TiltCalc(this);
-   		tiltval     = new float[3];
+ 		tilt        = new TiltCalc(this);
+   		accTiltVal     = new float[3];
+   		gyroTiltVal = new float[3];
    	}
    	
    	private void initSensors () {
@@ -720,6 +725,15 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		// Auto-generated method stub
 	}
 
+
+	//Rounds a float to 'decimalPlace' decimal places
+	public static float Round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
+    }
+	
+	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		// Ensure we have sensors!
@@ -825,7 +839,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    oSensorX = Math.abs(oSensorX);
 	    double level = oSensorX * 50;
 	    
-	    Log.i (LogTag, "oSensorX = "+oSensorX);
+	  //  Log.i (LogTag, "oSensorX = "+oSensorX);
 	    
 	    if (useTimeA) {
 			timeA = System.currentTimeMillis() ;
@@ -859,7 +873,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
             // TODO - there should be a notion of gravity associated with the cutoff
             // i.e. it should be dependent upon the previous cutoff and the gradient
-	    	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
+	    /*	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 	    		double grad = 0;	
 				
 				for (int k = 0; k < movingAverageCount; k++) {
@@ -902,12 +916,20 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 					newCutoff = lpf.getCutoffFrequency();
 					newAmp = af.getAmplitude();
 				}
+			} */
+            tilt.getAccTilt(accTiltVal);			
+			tilt.getGyroTilt(gyroTiltVal);	
+			if ( Math.abs(gyroTiltVal[1]) > 0.05) {						//If phone is moving, update tilt value
+					tiltCutoff = Math.abs(Round(accTiltVal[1], 3));
 			}
+			
+			newCutoff =  (Math.pow(1.00170489031, (maxFreq - (maxFreq/1.52)*tiltCutoff))+200);
+			newAmp = (tiltCutoff*0.65789473684);
 	    	
 	    	// Change the cutoff (shelf) frequency
-            //lpf.setCutoffFrequency(newCutoff);
-	    	lpf.setCutoffFrequency(level);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + level);
+            lpf.setCutoffFrequency(newCutoff);
+	    	//lpf.setCutoffFrequency(level);
+	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 	    	
 	    	// Change the volume
 	    	//af.setAmplitude (newAmp);
