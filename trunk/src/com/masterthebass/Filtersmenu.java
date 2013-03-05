@@ -121,6 +121,8 @@ public class Filtersmenu extends Activity {
         minmaxfreq.setTypeface(tf);
         TextView vibration = (TextView) findViewById(R.id.vibration);
         vibration.setTypeface(tf);
+        TextView text_interval = (TextView) findViewById(R.id.text_interval);
+        text_interval.setTypeface(tf);
 	}
 	
 	private void SetUpSlider() {

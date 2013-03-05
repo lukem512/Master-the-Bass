@@ -14,10 +14,11 @@
 			android:adjustViewBounds="true"/>
 			<TextView android:id="@+id/text_interval"
 			android:layout_marginTop="95dp"
-			android:layout_marginLeft="140dp"
-			android:textColor="#FFFFFF"
+			android:layout_marginLeft="140dp"			
+            android:textColor="#caebea"
 			android:text="inverval selected"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_width="140dp" 
+			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"/>
  	    
  	    
