@@ -8,10 +8,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class SliderView extends View {
+	public final static String TAG = "com.masterthebass.FILTERS";
 	protected KnobValuesChangedListener knobValuesChangedListener;	
 	private Knob[] knobs = new Knob[2]; // array that holds the knobs
 	private int balID = 0; // variable to know what knob is being dragged  
@@ -52,11 +54,11 @@ public class SliderView extends View {
 		if(!initialisedSlider) {
 			initialisedSlider = true;
 	        Bitmap knobImage = BitmapFactory.decodeResource(getResources(), R.drawable.knob);
-			pointKnobStart.x = pos.x + ((int)sliderWidth/100)*startKnobValue;
+			pointKnobStart.x = pos.x + ((int)sliderWidth)*startKnobValue/10000;
 			pointKnobStart.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
-			pointKnobEnd.x = pos.x + ((int)sliderWidth/100)*endKnobValue - knobImage.getWidth();
+			pointKnobEnd.x = pos.x + ((int)sliderWidth)*endKnobValue/10000 - knobImage.getWidth();
 			pointKnobEnd.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
-		    
+
 			knobs[0] = new Knob(getContext(),R.drawable.knob, pointKnobStart);
 			knobs[1] = new Knob(getContext(),R.drawable.knob, pointKnobEnd);
 			knobs[0].setID(1);
@@ -107,7 +109,7 @@ public class SliderView extends View {
 	        	int delta_bound = right_bound - left_bound;
 	        	
 	        	// start and end value from the slider and the difference
-	        	int val_max = 100;
+	        	int val_max = 10000;
 	        	int val_min = 0;
 	        	int delta_val = val_max-val_min;
 	        	

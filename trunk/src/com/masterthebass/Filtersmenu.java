@@ -142,7 +142,6 @@ public class Filtersmenu extends Activity {
 					text_interval.setText(knobStart + " - " + knobEnd);
 					sliderValues[0] = knobStart;
 					sliderValues[1] = knobEnd;
-					com.masterthebass.MainActivity.addSliderValues(sliderValues);
 			}
 		});
 	}
@@ -242,7 +241,8 @@ public class Filtersmenu extends Activity {
         Intent a = new Intent(getApplicationContext(),MainActivity.class);
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
-        //a.putExtra(TAG, filterdropdown);
+        a.putExtra(TAG, sliderValues);
+        //com.masterthebass.MainActivity.addSliderValues(sliderValues);
         setResult(RESULT_OK,a);
         finish();
     }

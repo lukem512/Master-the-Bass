@@ -347,7 +347,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
-    		//	filterarray = data.getIntArrayExtra(TAG);
+    			sliderValues = data.getIntArrayExtra(TAG);
     		}
 
     		if (resultCode == RESULT_CANCELED) {
@@ -565,7 +565,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private GestureDetector gestureScanner;
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static int[] sliderValues = new int[]{0,100};
+	private static int[] sliderValues = new int[]{0,10000};
 	private static int longpresson = 0;
 	private static int[] filterarray = new int[]{6,3,4,5};
 	
