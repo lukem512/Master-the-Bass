@@ -485,7 +485,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	pw.dismiss();
     }
     
-    //for toggling record
+    // For toggling recording of audio
     public void toggleRecord(View view) {
     	
     	Button buttonrecord = (Button) findViewById(R.id.buttonrecord);
@@ -503,13 +503,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		startRecord();
     	}
     }
-    
    
-    //for toggling play button to stop
-    public void toggleplayonoff(){
-    	
-
-    	
+    // For toggling play button to start/stop audio
+    // TODO - ramp audio volume up/down
+    public void toggleplayonoff() {
     	if (audioman.isStopped()) {	
     		startAudio();
 		} else {			
@@ -521,7 +518,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
      * functions that called when one of the
      * filter buttons is pressed
      */
-    
     
     public void filterTopLeft(View view){
     	if(fb1.isChecked()){
