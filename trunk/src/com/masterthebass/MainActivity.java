@@ -215,8 +215,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		noteDuration = 0.01;
 		maxAmplitude = 1.0;
 		minAmplitude = 0.2;
-		maxCutoffFreq = 5000;
-		minCutoffFreq = 150;
+		
+		// TODO - these should be the slider values
+		maxCutoffFreq = 5000; // = sliderValues[1];
+		minCutoffFreq = 150; // = sliderValues[0];
 
 		// Set up low-pass filter
 		filterman.enableFilter(0);
