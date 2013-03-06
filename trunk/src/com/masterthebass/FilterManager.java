@@ -59,6 +59,20 @@ public class FilterManager implements Serializable {
 		return IDs;	
 	}
 	
+	// return array of filter names
+	public String[] getFilterNamesList () {		
+		int[] IDs = getFiltersList();
+		String[] names = new String[FilterList.size()];
+		int index = 0;
+		
+		for (int id : IDs) {
+			names[index] = getFilterName(id);
+			index++;
+		}
+		
+		return names;
+	}
+	
 	// return array of enabled filter IDs
 	public int[] getEnabledFiltersList () {
 		ArrayList<Integer> list = new ArrayList<Integer>();

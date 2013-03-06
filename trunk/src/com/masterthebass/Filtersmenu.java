@@ -29,7 +29,8 @@ public class Filtersmenu extends Activity {
 
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
-	public final static String FILTERMAN_CLASS = "com.masterthebass.FILTERMAN_CLASS";
+	public final static String FILTERMAN_FILTER_IDS = "com.masterthebass.FILTERMAN_FILTER_IDS";
+	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	
 	public final static String LogTag = "FiltersMenu";
 	
@@ -39,6 +40,7 @@ public class Filtersmenu extends Activity {
 	private Spinner spinner1, spinner2, spinner3, spinner4;
 	//getting the filter list ID's and adding the filter ID's to array
 	private int[] filterListID;	
+	private String[] filterListNames;	
 	private ArrayList<String> filters  = new ArrayList<String>();
 	/*  settings:
 	 *  0 - 3 are filter on/off buttons 
@@ -50,8 +52,6 @@ public class Filtersmenu extends Activity {
 	 */
 	int[] filterdropdown;
 	int[] sliderValues;
-	
-	private FilterManager filterman;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,23 +68,16 @@ public class Filtersmenu extends Activity {
 		// Get data from intent
 		Intent intent = getIntent();
 		
-		filterman = (FilterManager) intent.getSerializableExtra(FILTERMAN_CLASS);
-		Log.d(LogTag, "Got FilterManager instance");
-		
-		// get list of filters
-		filterListID = filterman.getFiltersList();
-		Log.d(LogTag, "Got list of filter IDs from FilterManager instance");
-		
-		for (int i = 0; i < filterListID.length; i++) {
-			Log.d (LogTag, "Received filter: "+ filterListID[i]);
-		}
+		filterListID = (int[]) intent.getSerializableExtra(FILTERMAN_FILTER_IDS);
+		filterListNames = (String[]) intent.getSerializableExtra(FILTERMAN_FILTER_NAMES);
+		//Log.d(LogTag, "Got list of filter IDs from FilterManager instance");
 		
         settings = intent.getBooleanArrayExtra(EXTRA_MESSAGE);
-        Log.d(LogTag, "Got settings from from FilterManager instance");
+        //Log.d(LogTag, "Got settings from from FilterManager instance");
         
-        for (int i = 0; i < settings.length; i++) {
-			Log.d (LogTag, "Received setting: "+settings[i]);
-		}
+        //for (int i = 0; i < settings.length; i++) {
+		//	Log.d (LogTag, "Received setting: "+settings[i]);
+		//}
         
         
         int [] set = intent.getIntArrayExtra(TAG);
@@ -92,26 +85,26 @@ public class Filtersmenu extends Activity {
         filterdropdown = new int[set.length - 2];
         System.arraycopy(set, 0, sliderValues, 0, 2);
         System.arraycopy(set, 2, filterdropdown, 0, set.length - 2);
-        Log.d(LogTag, "Got filter drop down from from FilterManager instance");
+        //Log.d(LogTag, "Got filter drop down from from FilterManager instance");
         
-        for (int i = 0; i < filterdropdown.length; i++) {
-			Log.d (LogTag, "Received filterdropdown: "+filterdropdown[i]);
-		}
+        //for (int i = 0; i < filterdropdown.length; i++) {
+		//	Log.d (LogTag, "Received filterdropdown: "+filterdropdown[i]);
+		//}
         
-        if ( btn4 == null) {
-        	Log.e(LogTag,"One or more of the toggle buttons are null!");
-        } else {
-        	Log.d(LogTag, "Toggle buttons aren't null");
-        }
+        //if ( btn4 == null) {
+        //	Log.e(LogTag,"One or more of the toggle buttons are null!");
+        //} else {
+        //	Log.d(LogTag, "Toggle buttons aren't null");
+        //}
         
       
         btn4.setChecked(settings[4]);
-        Log.d(LogTag,"the item in filterdropdown[0] = " + filterdropdown[0]);
+        //Log.d(LogTag,"the item in filterdropdown[0] = " + filterdropdown[0]);
         
         SetUpSlider();
         
         addtofilters();
-        Log.d(LogTag,"Added filters to list.");
+        //Log.d(LogTag,"Added filters to list.");
         
         //using own font
         Typeface tf = Typeface.createFromAsset(getAssets(),"NeoSans_Bold_Italic.ttf");
@@ -159,9 +152,9 @@ public class Filtersmenu extends Activity {
 	
 	public void addtofilters(){
 		//Adding the filter names to the filter list for the list on screen
-		for(int i=0;i<filterListID.length;i++){
-			filters.add(filterman.getFilterName(filterListID[i]));
-			Log.i(TAG,"the string added to the array " + filterman.getFilterName(filterListID[i]));
+		for(int i=0;i<filterListNames.length;i++){
+			filters.add(filterListNames[i]);
+			//Log.i(TAG,"the string added to the array " + filterListNames[i]);
 		}
 		
 		//adding the array to the spinner1

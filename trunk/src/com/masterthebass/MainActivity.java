@@ -58,7 +58,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
-	public final static String FILTERMAN_CLASS = "com.masterthebass.FILTERMAN_CLASS";
+	public final static String FILTERMAN_FILTER_IDS = "com.masterthebass.FILTERMAN_FILTER_IDS";
+	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	
 	// Sensor variables
 	private float totalAccel, prevTotalAccel;
@@ -147,9 +148,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
- 		tilt        = new TiltCalc(this);
-   		accTiltVal  = new float[3];
-   		gyroTiltVal = new float[3];
+ 		//tilt        = new TiltCalc(this);
+   		//accTiltVal  = new float[3];
+   		//gyroTiltVal = new float[3];
    			
    		handler		= new Handler() {
    			@Override
@@ -331,7 +332,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	Log.d(TAG, "sliderVal: " + sliderValues[0] + " set val: "+set[0]);
     	intent.putExtra(TAG, set);
     	Log.d(LogTag, "Sending FilterArray of size " + filterarray.length);
-    	intent.putExtra(FILTERMAN_CLASS, filterman);
+    	intent.putExtra(FILTERMAN_FILTER_IDS, filterman.getFiltersList());
+    	intent.putExtra(FILTERMAN_FILTER_NAMES, filterman.getFilterNamesList());
     	startActivityForResult(intent,1);
     }
     public void startHelp(View view){
@@ -859,7 +861,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	    oSensorX = Math.abs(oSensorX);
 	    double level = oSensorX * 50;
 	    
-	  //  Log.i (LogTag, "oSensorX = "+oSensorX);
+	    //Log.i (LogTag, "oSensorX = "+oSensorX);
 	    
 	    if (useTimeA) {
 			timeA = System.currentTimeMillis() ;
@@ -889,11 +891,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 			
 			// Get the low-pass filter
             LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
-            AmplitudeFilter af = (AmplitudeFilter) filterman.getFilter (1); 
 			
             // TODO - there should be a notion of gravity associated with the cutoff
             // i.e. it should be dependent upon the previous cutoff and the gradient
-	    /*	if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
+            /*if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
 	    		double grad = 0;	
 				
 				for (int k = 0; k < movingAverageCount; k++) {
@@ -936,24 +937,21 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 					newCutoff = lpf.getCutoffFrequency();
 					newAmp = af.getAmplitude();
 				}
-			} */
-            tilt.getAccTilt(accTiltVal);			
+			}
+			
+			tilt.getAccTilt(accTiltVal);			
 			tilt.getGyroTilt(gyroTiltVal);	
 			if ( Math.abs(gyroTiltVal[1]) > 0.05) {						//If phone is moving, update tilt value
 					tiltCutoff = Math.abs(Round(accTiltVal[1], 3));
 			}
 			
 			newCutoff =  (Math.pow(1.00170489031, (maxFreq - (maxFreq/1.52)*tiltCutoff))+200);
-			newAmp = (tiltCutoff*0.65789473684);
+			newAmp = (tiltCutoff*0.65789473684);*/
 	    	
 	    	// Change the cutoff (shelf) frequency
-            lpf.setCutoffFrequency(newCutoff);
-	    	//lpf.setCutoffFrequency(level);
+            //lpf.setCutoffFrequency(newCutoff);
+	    	lpf.setCutoffFrequency(level);
 	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
-	    	
-	    	// Change the volume
-	    	//af.setAmplitude (newAmp);
-	    	//Log.i(LogTag, "Setting amplitude to : " + newAmp);
 		}
 	    
 	    prevTotalAccel = totalAccel;
