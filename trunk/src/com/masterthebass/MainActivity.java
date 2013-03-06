@@ -529,6 +529,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[0]);    		
     	}
+    	if (settings[4]) v.vibrate(300);
     	//filter1
     	Log.i(TAG,"clicked 1");
     }
@@ -538,6 +539,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[1]);    		
     	}
+    	if (settings[4]) v.vibrate(300);
     	//filter2
     	Log.i(TAG,"clicked 2");
     }
@@ -547,6 +549,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[2]);    		
     	}
+    	if (settings[4]) v.vibrate(300);
     	//filter3
     	Log.i(TAG,"clicked 3");
     }
@@ -556,6 +559,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	}else{
     		filterman.disableFilter(filterarray[3]);    		
     	}
+    	if (settings[4]) v.vibrate(300);
     	//filter4
     	Log.i(TAG,"clicked 4");
     }
