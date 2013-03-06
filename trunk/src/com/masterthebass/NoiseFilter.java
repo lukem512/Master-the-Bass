@@ -56,4 +56,10 @@ public class NoiseFilter extends Filter  {
 
 		return rawPCM;
 	}
+	
+	@Override
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		// TODO - oscillate the amount of noise using the LFO
+		return rawPCM;
+	}
 }

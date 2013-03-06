@@ -20,7 +20,7 @@ public class Filter implements Serializable {
 	}
 	
 	protected float getDuration (short[] rawPCM) {
-		return (float) Math.ceil(rawPCM.length/sampleRate);
+		return (rawPCM.length/(float)sampleRate);
 	}
 	
 	public boolean getState (){
@@ -33,6 +33,10 @@ public class Filter implements Serializable {
 	
 	public int getID (){
 		return ID;
+	}
+	
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		return rawPCM;
 	}
 	
 	public short[] applyFilter (short[] rawPCM){

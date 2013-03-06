@@ -126,5 +126,26 @@ public class EchoFilter extends Filter {
 
 		return rawPCM;
 	}
+	
+	@Override
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO){		
+		
+		// TODO - set echoTime using LFO (or percentageRange)
+		
+		for (int i = 0; i < rawPCM.length; i++) {
+			if (echoQueue.offer(getPercentageOfSignal(rawPCM[i]))) {
+				try {
+					rawPCM[i] = SoundManager.mixSamples(rawPCM[i], echoQueue.take());
+				} catch (InterruptedException e) {
+					Log.w (LogTag, "Interruped whilst performing echo");
+					return rawPCM;
+				}
+			} else {
+				Log.w (LogTag, "Could not add sample to echo queue");
+			}
+		}
+
+		return rawPCM;
+	}
 
 }

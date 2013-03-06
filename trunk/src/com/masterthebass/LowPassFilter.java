@@ -15,6 +15,12 @@ public class LowPassFilter extends IIRFilter {
 		super(ID, name);
 	}
 	
+	// maps the current oscillation value
+	// to a cutoff frequency between the bounds
+	private float map(double oscillation) {		
+		return (float) ((oscillation * (getMaxCutoffFrequency() - getMinCutoffFrequency())) + getMinCutoffFrequency());
+	}
+	
 	// this function returns a value between 0 and 1
 	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {
@@ -43,6 +49,31 @@ public class LowPassFilter extends IIRFilter {
 			double alpha = getAlpha(count);
 			
 			for (int i=0;i<count;i++) {
+				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
+				filteredPCM[i] = sample;
+			}
+			
+			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
+		}
+		
+		return rawPCM;
+	}
+	
+	@Override
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		int count = rawPCM.length;
+		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		
+		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
+			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
+		} else {
+			double sample;
+			double alpha;
+			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
+			
+			for (int i=0;i<count;i++) {
+				setCutoffFrequency (map (LFOData[i]));
+				alpha = getAlpha(count);
 				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
 				filteredPCM[i] = sample;
 			}

@@ -45,4 +45,18 @@ public class AmplitudeFilter extends Filter {
 		
 		return rawPCM;
 	}
+	
+	@Override
+	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
+		int length = rawPCM.length;
+		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		double depth = LFO.getDepth();
+		
+		// multiply each sample by the oscillating amplitude
+		for (int i = 0; i < length; i++) {
+			rawPCM[i] = (short) (rawPCM[i] * (LFOData[i]+depth)/2);
+		}
+		
+		return rawPCM;
+	}
 }
