@@ -36,7 +36,7 @@ public class FilterManager implements Serializable {
 		
 		// create an instance of every filter and add to a list
 		FilterList.put(0, new LowPassFilter(0, "Low Pass Filter"));
-		FilterList.put(1, new AmplitudeFilter(1, "Amplitude Filter"));
+		FilterList.put(1, new AmplitudeFilter(1, "Amplitude Filter", 0.5));
 		FilterList.put(2, new NoiseFilter(2, "Noise Filter", 1028));
 		FilterList.put(3, new NoiseFilter(3, "Extra Noise Filter", 4086));
 		FilterList.put(4, new EchoFilter(4, "Echo Filter", 3));

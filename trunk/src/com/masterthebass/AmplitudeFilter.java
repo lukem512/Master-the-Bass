@@ -3,7 +3,7 @@ package com.masterthebass;
 public class AmplitudeFilter extends Filter {
 	private static final long serialVersionUID = -4543222800830811103L;
 	private double amplitude;
-	private final static double defaultAmplitude = 1.0f;
+	private final static double defaultAmplitude = 1.0;
 
 	public AmplitudeFilter(int ID, String name) {
 		super(ID, name);
@@ -12,7 +12,7 @@ public class AmplitudeFilter extends Filter {
 		setAmplitude (defaultAmplitude);
 	}
 	
-	public AmplitudeFilter(int ID, String name, float amplitude) {
+	public AmplitudeFilter(int ID, String name, double amplitude) {
 		super(ID, name);
 		
 		// set amplitude value
