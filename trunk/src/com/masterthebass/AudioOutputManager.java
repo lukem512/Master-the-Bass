@@ -20,9 +20,10 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	private int bufferSize;
 	private int minBufferSize;
 
+	private final static double rampUpLength = 0.5;
+	private boolean rampUpAmplitude;
+	
 	private int mode = AudioTrack.MODE_STREAM;
-
-	private final int maxRetries = 16;
 
 	private final String LogTag = "AudioOutputManager";
 
@@ -34,6 +35,9 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 		// Instantiate audio manager
 		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,/* 1.0,*/ mode);
+		
+		// Set volume ramp flag
+		rampUpAmplitude = false;
 		
 		Log.d(LogTag+".ctor", "AudioOutputManager object constructed.");
 	}
@@ -77,6 +81,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		audio.flush();
 		audio.stop();
 		Log.d(LogTag+".stopStreaming", "Paused, flushed and stopped audio.");
+		
 	}
 	
 	private int getMinimumBufferSizeInSamples(int channel, int format) {
@@ -87,6 +92,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	public void play() {
 		audio.play();
+		rampUpAmplitude = true;
 		Log.d(LogTag+".play", "Set audio to playing.");
 	}
 
@@ -121,15 +127,13 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	}
 	
 	public void buffer(short[] pcm) {
-		int length, pos, written, prev, retries;
+		int length, pos, written;
 
 		//Log.i(LogTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
 
 		pos = 0;
-		prev = 0;
-		retries = 0;
 		
-		while ((pos < pcm.length) /*&& (retries < maxRetries)*/) {			
+		while (pos < pcm.length) {			
 			//Log.i(LogTag+".buffer", "At position " + pos + ".");
 
 			// Ensure there are enough bytes left to copy		
@@ -137,6 +141,25 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 				length = pcm.length - pos;
 			} else {
 				length = bufferSize;
+			}
+			
+			// Volume need adjusting?
+			if (rampUpAmplitude) {
+				int samples = (int) (rampUpLength * nativeSampleRate);
+				
+				if (samples > length) {
+					samples = length;
+				}
+				
+				double volume = 0;
+				double volumeIncrement = (1.0/samples);
+				
+				for (int i = 0; i < samples; i++) {
+					pcm[pos+i] = (short) (pcm[pos+i] * volume);
+					volume += volumeIncrement;
+				}
+				
+				rampUpAmplitude = false;
 			}
 
 			try {
@@ -149,12 +172,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			}
 
 			pos += written;
-			
-			if (written == prev) {
-				retries++;
-			} else {
-				prev = written;
-			}
 
 			//Log.i(LogTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
 
