@@ -10,8 +10,6 @@ import java.util.Set;
 
 import android.util.Log;
 
-
-
 public class FilterManager implements Serializable {
 	public final static String TAG = "com.masterthebass.FILTERMANAGER";
 	private static final long serialVersionUID = 754321647758395857L;
