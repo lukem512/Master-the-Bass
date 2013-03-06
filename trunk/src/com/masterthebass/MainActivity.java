@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -16,16 +18,13 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Menu;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.text.Editable;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -34,9 +33,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -129,6 +125,9 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private float[] accTiltVal;
 	private float tiltCutoff;
 	
+	private static Handler handler;
+	private static final int HANDLER_MESSAGE_BUFFER_FULL = 0;
+	private static final int HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED = 1;
 
 	private ToggleButton fb1;
 	private ToggleButton fb2;
@@ -151,6 +150,26 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
  		tilt        = new TiltCalc(this);
    		accTiltVal  = new float[3];
    		gyroTiltVal = new float[3];
+   			
+   		handler		= new Handler() {
+   			@Override
+   			public void handleMessage(Message msg) {
+   				switch (msg.what) {
+   					case HANDLER_MESSAGE_BUFFER_FULL:
+   						toggleRecord(null);
+   						break;
+   					
+   					case HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED:
+   						Log.e(LogTag, "Could not instantiate Record Buffer");
+   						toggleRecord(null);
+   						break;
+   					
+   					default:
+   						Log.w(LogTag, "Unkown handler message received");
+   						break;
+   				}
+   			}
+   		};
    	}
    	
    	private void initSensors () {
@@ -425,11 +444,13 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     }
     
     private void stopRecord() {
-    	initiatePopupWindow();
-    	
-    	// TODO - auto-increment file names
-    	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);     	
-    	editFileName.setText(fileman.getPath() + "/audio.PCM");
+    	if (recordedData != null) {
+	    	initiatePopupWindow();
+	    	
+	    	// TODO - auto-increment file names
+	    	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);     	
+	    	editFileName.setText(fileman.getPath() + "/audio.PCM");
+    	}
     }
     
     public void btnSaveNoClick(View view) {
@@ -655,6 +676,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     	if (!isInSpeaker(x,y)){
     		Log.d(TAG,"hovering over button");
     		int currentButton;
+    		// TODO - can we use code that isn't deprecated please?
     		if (x < mDisplay.getWidth()/2){
     			//upper left
     			if (y < mDisplay.getHeight()/2) currentButton = 0;
@@ -972,9 +994,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
             boolean running = true;
             short[] sampleData;
             
-            // Generate silence to mix onto
-            short[] silence = soundman.generateSilence(noteDuration, sampleRate);
-            
             Log.i(TAG+".generatorThread", "Started!");
             
             while (running) {
@@ -1001,13 +1020,11 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 				            	if (recordedData.hasRemaining()) {
 				            		recordedData.put(sampleData);
 				            	} else {
-				            		// TODO - set recording to false and prompt user to save
-				            		// THIS CAN'T BE DONE BY CALLING stopRecord() DIRECTLY
-				            		// AS THE POPUP CAN'T BE SHOWN BY A THREAD OTHER THAN THE UI
+				            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_FULL);
 				            	}
 			            	} else {
 			            		Log.e (LogTag, "Recording was initiated before buffer was instantiated");
-			            		// TODO - stop recording
+			            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED);
 			            	}
 			            }
             		}
