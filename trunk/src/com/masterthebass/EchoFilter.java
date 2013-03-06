@@ -2,6 +2,8 @@ package com.masterthebass;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.util.Log;
+
 // Ref: http://audacity.sourceforge.net/manual-1.2/effects_delay.html
 //		http://www.interruptor.ch/scottmadigan.html
 
@@ -14,6 +16,7 @@ public class EchoFilter extends Filter {
 	private static final double defaultPercentageRange = 80;
 	private static final double maxPercentageRange = 100;
 	private static final double minPercentageRange = 0;
+	private static final String LogTag = "EchoFilter";
 	private double maxEchoTime;
 	private double minEchoTime;
 	private double echoTime;
@@ -80,7 +83,7 @@ public class EchoFilter extends Filter {
 		return echoTime;
 	}
 	
-	private void resetEchoBuffer() {
+	private void resetEchoBuffer() {		
 		int size = (int) Math.ceil(echoTime * getSampleRate());
 		echoQueue = new LinkedBlockingQueue<Short>(size);
 		short[] silence = SoundManager.generateSilence(echoTime, getSampleRate());
@@ -96,23 +99,28 @@ public class EchoFilter extends Filter {
 	
 	@Override
 	public void enable() {
-		resetEchoBuffer();
+		if (echoQueue == null) {
+			resetEchoBuffer();
+		}
 	}
 	
 	@Override
 	public void disable() {
-		echoQueue = null;
+		echoQueue.clear();
 	}		
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM){		
 		for (int i = 0; i < rawPCM.length; i++) {
-			echoQueue.add(getPercentageOfSignal(rawPCM[i]));
-			try {
-				rawPCM[i] = SoundManager.mixSamples(rawPCM[i], echoQueue.take());
-			} catch (InterruptedException e) {
-				// TODO
-				e.printStackTrace();
+			if (echoQueue.offer(getPercentageOfSignal(rawPCM[i]))) {
+				try {
+					rawPCM[i] = SoundManager.mixSamples(rawPCM[i], echoQueue.take());
+				} catch (InterruptedException e) {
+					Log.w (LogTag, "Interruped whilst performing echo");
+					return rawPCM;
+				}
+			} else {
+				Log.w (LogTag, "Could not add sample to echo queue");
 			}
 		}
 
