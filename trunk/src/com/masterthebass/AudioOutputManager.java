@@ -34,7 +34,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 		// Instantiate audio manager
 		audio = createAudioTrack(AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,/* 1.0,*/ mode);
-		audio.stop();
 		
 		Log.d(LogTag+".ctor", "AudioOutputManager object constructed.");
 	}
