@@ -567,7 +567,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] sliderValues = new int[]{0,100};
 	private static int longpresson = 0;
-	private static int[] filterarray = new int[]{2,3,4,5};
+	private static int[] filterarray = new int[]{6,3,4,5};
 	
 	long lastGesture = System.currentTimeMillis();	
 
