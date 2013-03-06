@@ -30,6 +30,10 @@ public class Oscillator {
 		construct (wave, 0.5f, 10f, defaultSampleRate);
 	}
 	
+	public Oscillator (Wave wave, double depth, double rate) {
+		construct (wave, depth, rate, defaultSampleRate);
+	}
+	
 	public Oscillator (Wave wave, double depth, double rate, int sampleRate) {
 		construct (wave, depth, rate, sampleRate);
 	}
