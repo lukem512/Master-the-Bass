@@ -39,7 +39,8 @@ public class FilterManager implements Serializable {
 		FilterList.put(1, new AmplitudeFilter(1, "Amplitude Filter"));
 		FilterList.put(2, new NoiseFilter(2, "Noise Filter", 1028));
 		FilterList.put(3, new NoiseFilter(3, "Extra Noise Filter", 4086));
-		FilterList.put(4, new WahWahFilter(4, "Wah Wah Filter"));
+		FilterList.put(4, new NoiseFilter(4, "Extra Extra Noise Filter", 8172));
+		FilterList.put(5, new WahWahFilter(5, "Wah Wah Filter"));
 	}
     
 	// return array of filter IDs

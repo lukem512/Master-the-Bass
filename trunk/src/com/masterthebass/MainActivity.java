@@ -149,7 +149,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
  		tilt        = new TiltCalc(this);
-   		accTiltVal     = new float[3];
+   		accTiltVal  = new float[3];
    		gyroTiltVal = new float[3];
    	}
    	
@@ -191,7 +191,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C3;
+		noteFrequency = MidiNote.C2;
 		volume = 1.0;
 		noteDuration = 0.01;
 		maxAmplitude = 1.0;
@@ -201,9 +201,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 
 		// Set up low-pass filter
 		filterman.enableFilter(0);
-		
-		// Set up amplitude filter
-		//filterman.enableFilter(1);
 		
 		// Run the audio threads
 		startAudioThreads();
@@ -545,7 +542,7 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] sliderValues = new int[]{0,100};
 	private static int longpresson = 0;
-	private static int[] filterarray = new int[]{0,1,2,3,0,0};
+	private static int[] filterarray = new int[]{2,3,4,5};
 	
 	long lastGesture = System.currentTimeMillis();	
 
@@ -556,7 +553,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 		Log.i(LogTag,"the action is " + filterarray[1]);
 		Log.i(LogTag,"the action is " + filterarray[2]);
 		Log.i(LogTag,"the action is " + filterarray[3]);
-		
 	}   
 	
 	
