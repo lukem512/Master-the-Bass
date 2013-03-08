@@ -283,14 +283,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     		initSensors();
     		initAudio();
     		
-    		// Print some debugging
-    		Log.d(LogTag+".onResume", "The filter IDs list is...");
-    		int[] IDs = filterman.getFiltersList();
-    		
-    		for (int i = 0; i < IDs.length; i++) {
-    			Log.d(LogTag+".onResume", i + ": " + filterman.getFilterName(IDs[i]) + " has ID #" + IDs[i]);
-    		}
-    		
     		// Set flag
     		resumeHasRun = true;
     	}
@@ -521,8 +513,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     		filterman.disableFilter(filterarray[0]);    		
     	}
     	if (settings[4]) v.vibrate(300);
-    	//filter1
-    	Log.i(TAG,"clicked 1");
     }
     public void filterTopRight(View view){
     	if(fb2.isChecked()){
@@ -531,8 +521,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     		filterman.disableFilter(filterarray[1]);    		
     	}
     	if (settings[4]) v.vibrate(300);
-    	//filter2
-    	Log.i(TAG,"clicked 2");
     }
     public void filterBottomLeft(View view){
     	if(fb3.isChecked()){
@@ -541,8 +529,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     		filterman.disableFilter(filterarray[2]);    		
     	}
     	if (settings[4]) v.vibrate(300);
-    	//filter3
-    	Log.i(TAG,"clicked 3");
     }
     public void filterBottomRight(View view){
     	if(fb4.isChecked()){
@@ -551,8 +537,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     		filterman.disableFilter(filterarray[3]);    		
     	}
     	if (settings[4]) v.vibrate(300);
-    	//filter4
-    	Log.i(TAG,"clicked 4");
     }
     //*********************gesture code****************************
     
@@ -563,10 +547,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	public static void addTofilterArray(int filter, int filternum){
 		filterarray[filternum] = filter;
-		Log.i(LogTag,"the action is " + filterarray[0]);
-		Log.i(LogTag,"the action is " + filterarray[1]);
-		Log.i(LogTag,"the action is " + filterarray[2]);
-		Log.i(LogTag,"the action is " + filterarray[3]);
 	}   
 	
 	
@@ -594,10 +574,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 			break;
 		case 1:
 			fb2.getLocationInWindow(location);
-			Log.d(TAG, "Button X: " + location[0] + " Button Y: " + location[1]);
 			if ((x > location[0])&&(x < location[0] + fb2.getWidth())&&
 		        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
-				Log.d(TAG, "past the conditions");
 				if ((n != lastButton)||(leftButton == true)){
 					fb2.setChecked(!fb2.isChecked());
 					filterTopRight(fb2.getRootView());
@@ -667,7 +645,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     	}
     	//if swipe
     	if (!isInSpeaker(x,y)){
-    		Log.d(TAG,"hovering over button");
     		int currentButton;
     		// TODO - can we use code that isn't deprecated please?
     		if (x < mDisplay.getWidth()/2){
@@ -910,25 +887,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 		public void run() {
 			boolean running = true;
 			short[] sampleData;
-			
-			Log.i(TAG+".writerThread", "Started!");
-			
+
 			while (running) {
 				try {
 					sampleData = sampleList.removeFirst();
 					audioman.buffer(sampleData);
 				}
 				catch (NoSuchElementException e) {
-					//Log.w (TAG+".writerThread", "Sample buffer is empty.");
+					// Do nothing
 				}
 				
 				if (Thread.interrupted()) {
-					Log.i(TAG+".writerThread", "Tone buffering thread interrupted.");
 					running = false;
 	            }
 			}
-			
-			Log.i(TAG+".writerThread", "Shutting down...");
 		}
 	};
 
@@ -940,8 +912,6 @@ public class MainActivity extends Activity implements SensorEventListener {
             boolean running = true;
             short[] sampleData;
             
-            Log.i(TAG+".generatorThread", "Started!");
-            
             while (running) {
             	if (playing) {
             		if (sampleList.size() < sampleListMaxSize) {
@@ -952,8 +922,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		            	// Apply filters
 		                int[] filterIDs = filterman.getEnabledFiltersList();
 		                
-		                for (int id : filterIDs) {
-		                	//Log.i (TAG, "Applying filter " + id + " - " + filterman.getFilterName(id));   
+		                for (int id : filterIDs) {  
 		                	sampleData = filterman.applyFilter(id, sampleData);
 		                }
 			    		
@@ -977,12 +946,9 @@ public class MainActivity extends Activity implements SensorEventListener {
             	}
             	
             	if (Thread.interrupted()) {
-					Log.i(TAG+".generatorThread", "Tone generator thread interrupted.");
 					running = false;
 	            }
             }
-            
-            Log.i(TAG+".generatorThread", "Shutting down...");
 		}
 	};
 }
