@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -92,6 +93,7 @@ public class Filtersmenu extends Activity {
         vibration.setTypeface(tf);
         TextView text_interval = (TextView) findViewById(R.id.text_interval);
         text_interval.setTypeface(tf);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
 	
 	private void SetUpSlider() {

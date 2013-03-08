@@ -15,7 +15,7 @@ import android.view.View;
 public class SliderView extends View {
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static int minVal = 0;
-	public final static int maxVal = 1000;
+	public final static int maxVal = 10000;
 	protected KnobValuesChangedListener knobValuesChangedListener;
 	private Knob[] knobs = new Knob[2]; // array that holds the knobs
 	private int balID = 0; // variable to know what knob is being dragged  
@@ -60,13 +60,11 @@ public class SliderView extends View {
 			pointKnobStart.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
 			pointKnobEnd.x = pos.x + ((int)sliderWidth)*endKnobValue/maxVal - knobImage.getWidth();
 			pointKnobEnd.y = (int)(sliderHeight/2.0) - knobImage.getHeight()/2;
-
+			Log.d(TAG,"End: " + endKnobValue + " pos x "+ pos.x + " max val "+maxVal);
 			knobs[0] = new Knob(getContext(),R.drawable.knob, pointKnobStart);
 			knobs[1] = new Knob(getContext(),R.drawable.knob, pointKnobEnd);
 			knobs[0].setID(1);
 			knobs[1].setID(2);
-			//setStartKnobValue(0);
-			//setEndKnobValue(100);
 			knobValuesChanged(true, true, getStartKnobValue(), getEndKnobValue());
 
 			paintText = new Paint();//the paint for the slider data(the values) 
