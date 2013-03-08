@@ -55,7 +55,7 @@ public class SoundManager{
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a short array of the sound in 16-bit WAV PCM format
 	public short[] generateTone(double duration, double frequency, double volume, int sampleRate) {		
-		int numSamples = getSampleLength(duration, sampleRate);
+		int numSamples = getSampleLength(duration, sampleRate, frequency);
 		short generatedSnd[];
 
 		// Sanity check volume
@@ -73,7 +73,7 @@ public class SoundManager{
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a double array of samples between -1.0 and 1.0
 	public double[] generateUnscaledTone(double duration, double frequency, double volume, int sampleRate) {		
-		int numSamples = getSampleLength(duration, sampleRate);
+		int numSamples = getSampleLength(duration, sampleRate, frequency);
 		double generatedSnd[];
 
 		// Sanity check volume
@@ -102,7 +102,7 @@ public class SoundManager{
 	
 	// 'Generates' silence in double format for given duration at given SR
 	public static double[] generateUnscaledSilence(double duration, int sampleRate) {
-		int numSamples = (int) Math.ceil(sampleRate * duration);
+		int numSamples = getSampleLength(duration, sampleRate);
 		double generatedSnd[] = new double[numSamples];
 		
 		for (int i = 0; i < numSamples; i++) {
@@ -152,8 +152,13 @@ public class SoundManager{
 		wave.commit();
 	}
 	
-	public static int getSampleLength (double length, int sampleRate) {
-		// TODO - this should be a multiple of the period
-		return (int) Math.ceil(length * sampleRate);
+	public static int getSampleLength (double duration, int sampleRate) {
+		return getSampleLength(duration, sampleRate, 1);
+	}
+	
+	public static int getSampleLength (double duration, int sampleRate, double frequency) {
+		int period = (int)((1.0/frequency) * sampleRate);
+		int sampleLength = (int) Math.ceil(duration * sampleRate);
+		return sampleLength + period - (sampleLength % period);
 	}
 }

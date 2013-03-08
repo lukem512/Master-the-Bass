@@ -119,9 +119,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private Thread generatorThread;
 	private Thread writerThread;
 	
-	private int maxFreq = 5000;
-	private int minFreq = 600;
-	
 	private LinkedList<short[]> sampleList;
 	private int sampleListMaxSize;
 	
@@ -132,8 +129,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private double volume;
 	private double noteFrequency;
 	
-	private int maxCutoffFreq;
-	private int minCutoffFreq;
+	private double maxCutoffFreq;
+	private double minCutoffFreq;
 
 	private float[] gyroTiltVal;
 	private float[] accTiltVal;
@@ -226,6 +223,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
    	}
    	
+	private void setLowPassFilterCutoffFrequencies() {
+   		minCutoffFreq = sliderValues[0];
+   		maxCutoffFreq = sliderValues[1];
+   		
+   		LowPassFilter lpf = (LowPassFilter) filterman.getFilter(0);
+   		lpf.setMinCutoffFrequency(minCutoffFreq);
+   		lpf.setMaxCutoffFrequency(maxCutoffFreq);
+   	}
+   	
+   	private void initLowPassFilter() {
+   		filterman.enableFilter(0);
+   		setLowPassFilterCutoffFrequencies();
+   	}
+   	
    	private void initAudio () {
    		// Set up default values
 		noteFrequency = MidiNote.C3;
@@ -234,12 +245,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		maxAmplitude = 1.0;
 		minAmplitude = 0.2;
 		
-		// TODO - these should be the slider values
-		maxCutoffFreq = 5000; // = sliderValues[1];
-		minCutoffFreq = 150; // = sliderValues[0];
-
 		// Set up low-pass filter
-		filterman.enableFilter(0);
+		initLowPassFilter();
 		
 		// Run the audio threads
 		startAudioThreads();
@@ -357,6 +364,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
+    			setLowPassFilterCutoffFrequencies();
     		}
 
     		if (resultCode == RESULT_CANCELED) {
@@ -556,7 +564,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
-	private static int[] sliderValues = new int[]{0,10000};
+    private static final int defaultMinSliderValue = 0;
+	private static final int defaultMaxSliderValue = 5000;
+	private static int[] sliderValues = new int[]{defaultMinSliderValue,defaultMaxSliderValue};
 	private static int[] filterarray = new int[]{1,3,4,5};
 	
 	public static void addTofilterArray(int filter, int filternum){
@@ -930,7 +940,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 					tiltCutoff = Math.abs(Round(accTiltVal[1], 3));
 			}
 			
-			newCutoff =  (Math.pow(1.00170489031, (maxFreq - (maxFreq/1.52)*tiltCutoff))+200);
+			newCutoff =  (Math.pow(1.00170489031, (maxCutoffFreq - (maxCutoffFreq/1.52)*tiltCutoff))+200);
 			newAmp = (tiltCutoff*0.65789473684);
 	    	
 	    	// Change the cutoff (shelf) frequency
