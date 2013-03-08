@@ -128,8 +128,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private ShortBuffer recordedData;
 	private int recordedDataMaxSize;
 	
-	private boolean playing = true;
-	
 	private double noteDuration;
 	private double volume;
 	private double noteFrequency;
@@ -372,9 +370,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		// Start playing!
 		audioman.play();
 		
-		// set flag
-		playing = true;
-		
 		// set sensor update to true
 		writing = true;
     }
@@ -403,9 +398,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     private void stopAudio() {
 		// stop audio
 		audioman.stop();
-		
-		// set flag
-		playing = false;
 		
 		// set sensor update to false
 		writing = false;
@@ -446,20 +438,25 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     }
     
-    private void startRecord() {
-    	recording = true;
-    	
+    private void startRecord() {    	
+    	// Set up buffer
     	if (recordedData == null) {
     		// set max size
     		recordedDataMaxSize = 60 * audioman.getSampleRate();
     		recordedData = ShortBuffer.allocate(recordedDataMaxSize);
     	}
-    	
     	recordedData.rewind();
+    	
+    	// Set flag to true
+    	recording = true;
     }
     
     private void stopRecord() {
     	if (recordedData != null) {
+    		// Set flag to false
+        	// This will stop generating silence!
+        	recording = false;
+    		
 	    	initiatePopupWindow();
 	    	
 	    	// TODO - auto-increment file names
@@ -468,14 +465,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     	}
     }
     
-    public void btnSaveNoClick(View view) {
+    public void btnSaveNoClick(View view) {    	
     	// Clear the buffer
     	recordedData.clear();
-    	recording = false;
     	pw.dismiss();
     }
     
-    public void btnSaveYesClick(View view) {
+    public void btnSaveYesClick(View view) {    	
     	// Get audio data
     	short[] data = new short[recordedData.position()];
     	recordedData.rewind();
@@ -492,7 +488,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     	
     	// Clear the buffer
     	recordedData.clear();
-    	recording = false;
     	pw.dismiss();
     }
     
@@ -502,11 +497,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     	Button buttonrecord = (Button) findViewById(R.id.buttonrecord);
     	
     	if (recording) {
-    		if (!audioman.isStopped()) {
-    			toggleplayonoff();
-    		}
     		buttonrecord.setBackgroundResource(R.drawable.rec_button_off);	
-    		
     		stopRecord();
     	} else {
     		//record button on
@@ -516,7 +507,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
    
     // For toggling play button to start/stop audio
-    // TODO - ramp audio volume up/down
     public void toggleplayonoff() {
     	if (audioman.isStopped()) {	
     		startAudio();
@@ -978,14 +968,18 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
-			//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); 
-			
 			int sampleRate = audioman.getSampleRate();
+			int sampleLength = (int) Math.ceil(noteDuration*sampleRate);
             boolean running = true;
             short[] sampleData;
             
             while (running) {
-            	if (playing) {
+            	// Set sample to silent
+            	sampleData = new short[1];
+    			sampleData[0] = 0;
+            	
+            	// Generate audio
+            	if (audioman.isPlaying()) {
             		if (sampleList.size() < sampleListMaxSize) {
             			// Generate the tone
             			sampleData = soundman.generateTone(noteDuration, noteFrequency, volume, sampleRate);
@@ -1000,22 +994,22 @@ public class MainActivity extends Activity implements SensorEventListener {
 			    		
 			    		// Send to audio buffer
 			            sampleList.add(sampleData);
-			            
-			            // Add to file buffer if required
-			            if (recording) {
-			            	if (recordedData != null) {
-				            	if (recordedData.hasRemaining()) {
-				            		recordedData.put(sampleData);
-				            	} else {
-				            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_FULL);
-				            	}
-			            	} else {
-			            		Log.e (LogTag, "Recording was initiated before buffer was instantiated");
-			            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED);
-			            	}
-			            }
             		}
             	}
+            	
+            	// Add to file buffer if required
+	            if (recording) {
+	            	if (recordedData != null) {
+		            	if ((recordedData.position() + sampleData.length) < recordedData.limit()) {
+		            		recordedData.put(sampleData);
+		            	} else {
+		            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_FULL);
+		            	}
+	            	} else {
+	            		Log.e (LogTag, "Recording was initiated before buffer was instantiated");
+	            		handler.sendEmptyMessage(HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED);
+	            	}
+	            }
             	
             	if (Thread.interrupted()) {
 					running = false;
