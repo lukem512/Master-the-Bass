@@ -36,12 +36,14 @@ public class IIRFilter extends Filter {
 	public void setMaxCutoffFrequency (double maxCutoffFrequency) {
 		if (maxCutoffFrequency >= 0) {
 			this.maxCutoffFrequency = maxCutoffFrequency;
+			setCutoffFrequency (cutoffFrequency);
 		}
 	}
 	
 	public void setMinCutoffFrequency (double minCutoffFrequency) {
 		if (minCutoffFrequency >= 0) {
 			this.minCutoffFrequency = minCutoffFrequency;
+			setCutoffFrequency (cutoffFrequency);
 		}
 	}
 	
