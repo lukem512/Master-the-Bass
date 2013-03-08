@@ -16,8 +16,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -57,7 +57,7 @@ public class Filtersmenu extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		settings = new boolean[5];
 		setContentView(R.layout.activity_filters);
 		
@@ -67,9 +67,7 @@ public class Filtersmenu extends Activity {
 		
 		
 		// Get data from intent
-		Intent intent = getIntent();
-		
-		Bundle bundle = intent.getExtras();
+		Bundle bundle = getIntent().getExtras();
 		settings = bundle.getBooleanArray("settings");
 		
 		sliderValues = bundle.getIntArray("sliderValues");
@@ -78,9 +76,9 @@ public class Filtersmenu extends Activity {
 		filterListNames = bundle.getStringArray("FILTERMAN_FILTER_NAMES");
       
         btn4.setChecked(settings[4]);
-        
+
         SetUpSlider();
-        
+
         addtofilters();
         
         //using own font
@@ -135,7 +133,7 @@ public class Filtersmenu extends Activity {
 		
 		//adding the array to the spinner1
 		Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
-		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,R.layout.custom_spinner, filters);
 		adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner1.setAdapter(adapter1);			
 		spinner1.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -152,7 +150,7 @@ public class Filtersmenu extends Activity {
 		
 		//adding the array to the spinner2
 		Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
-		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,R.layout.custom_spinner, filters);
 		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner2.setAdapter(adapter2);			
 		spinner2.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -169,7 +167,7 @@ public class Filtersmenu extends Activity {
 		
 		//adding the array to the spinner3
 		Spinner spinner3 = (Spinner) findViewById(R.id.spinner3);
-		ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,R.layout.custom_spinner, filters);
 		adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner3.setAdapter(adapter3);			
 		spinner3.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -187,7 +185,7 @@ public class Filtersmenu extends Activity {
 				
 		//adding the array to the spinner4
 		Spinner spinner4 = (Spinner) findViewById(R.id.spinner4);
-		ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, filters);
+		ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,R.layout.custom_spinner, filters);
 		adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner4.setAdapter(adapter4);			
 		spinner4.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -215,7 +213,6 @@ public class Filtersmenu extends Activity {
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
         a.putExtra(TAG, sliderValues);
-        //com.masterthebass.MainActivity.addSliderValues(sliderValues);
         setResult(RESULT_OK,a);
         finish();
     }
