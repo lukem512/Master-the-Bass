@@ -971,12 +971,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 			int sampleRate = audioman.getSampleRate();
 			int sampleLength = (int) Math.ceil(noteDuration*sampleRate);
             boolean running = true;
-            short[] sampleData;
+            short[] sampleData, silenceData;
+            
+            silenceData = new short[1];
+            silenceData[0] = 0;
             
             while (running) {
-            	// Set sample to silent
-            	sampleData = new short[1];
-    			sampleData[0] = 0;
+            	// Set sample to silence
+            	sampleData = silenceData;
             	
             	// Generate audio
             	if (audioman.isPlaying()) {
