@@ -1,0 +1,2 @@
+06-03-2013 - 3 hours - added oscillating filters
+08-03-2013 - 5 hours - bugfixes and code cleanup
