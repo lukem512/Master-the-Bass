@@ -84,7 +84,7 @@ public class EchoFilter extends Filter {
 	}
 	
 	private void resetEchoBuffer() {		
-		int size = (int) Math.ceil(echoTime * getSampleRate());
+		int size = SoundManager.getSampleLength(echoTime, getSampleRate());
 		echoQueue = new LinkedBlockingQueue<Short>(size);
 		short[] silence = SoundManager.generateSilence(echoTime, getSampleRate());
 		for (short s : silence) {
