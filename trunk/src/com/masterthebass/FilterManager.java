@@ -121,13 +121,11 @@ public class FilterManager implements Serializable {
 	
 	// Enable a filter given its ID
 	public void enableFilter (int ID) {
-		Log.i(TAG,"filter enabled");
 		getFilter(ID).enable();
 	}
 	
 	// Disable a filter given its ID
 	public void disableFilter (int ID){
-		Log.i(TAG,"filter disabled");
 		getFilter(ID).disable();
 	}
 	

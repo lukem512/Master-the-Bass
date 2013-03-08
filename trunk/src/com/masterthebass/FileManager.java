@@ -203,7 +203,6 @@ public class FileManager {
 			}
 			
 			try {
-				Log.d(logTag+".writeBinaryFile", "Attempting to write data of length " + data.length + " bytes to file at offset " + offset);
 				fs.write(data, offset, data.length);
 				fs.close();
 			} catch (IOException e) {
@@ -211,8 +210,6 @@ public class FileManager {
 				e.printStackTrace();
 				return false;
 			}
-			
-			Log.d(logTag+".writeBinaryFile", "Wrote " + data.length + " bytes to " + handle.getAbsolutePath());
 			
 			return true;
 		}
@@ -255,8 +252,6 @@ public class FileManager {
 				e.printStackTrace();
 				return false;
 			}
-			
-			Log.d(logTag+".appendBinaryFile", "Wrote " + data.length + " bytes to " + handle.getAbsolutePath());
 			
 			return true;
 		}

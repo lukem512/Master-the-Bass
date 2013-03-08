@@ -129,7 +129,6 @@ public class Filtersmenu extends Activity {
 		//Adding the filter names to the filter list for the list on screen
 		for(int i=0;i<filterListNames.length;i++){
 			filters.add(filterListNames[i]);
-			//Log.i(TAG,"the string added to the array " + filterListNames[i]);
 		}
 		
 		//adding the array to the spinner1
@@ -140,7 +139,6 @@ public class Filtersmenu extends Activity {
 		spinner1.setOnItemSelectedListener(new OnItemSelectedListener() {
 	    @Override
 	    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-	    	Log.i(TAG,"has been clicked");
 	    	com.masterthebass.MainActivity.addTofilterArray(position, 0);
 	        // your code here
 	    }
@@ -158,7 +156,6 @@ public class Filtersmenu extends Activity {
 		spinner2.setOnItemSelectedListener(new OnItemSelectedListener() {
 		@Override
 	    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-			Log.i(TAG,"has been clicked");
 			com.masterthebass.MainActivity.addTofilterArray(position, 1);
 	        // your code here
 		    }
@@ -176,7 +173,6 @@ public class Filtersmenu extends Activity {
 		spinner3.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 			    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					Log.i(TAG,"has been clicked");
 					com.masterthebass.MainActivity.addTofilterArray(position, 2);
 			        // your code here
 				    }
@@ -195,7 +191,6 @@ public class Filtersmenu extends Activity {
 		spinner4.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 			    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-					Log.i(TAG,"has been clicked");
 					com.masterthebass.MainActivity.addTofilterArray(position, 3);
 			        // your code here
 				    }
