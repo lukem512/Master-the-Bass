@@ -68,43 +68,19 @@ public class Filtersmenu extends Activity {
 		// Get data from intent
 		Intent intent = getIntent();
 		
-		filterListID = (int[]) intent.getSerializableExtra(FILTERMAN_FILTER_IDS);
-		filterListNames = (String[]) intent.getSerializableExtra(FILTERMAN_FILTER_NAMES);
-		//Log.d(LogTag, "Got list of filter IDs from FilterManager instance");
+		Bundle bundle = intent.getExtras();
+		settings = bundle.getBooleanArray("settings");
 		
-        settings = intent.getBooleanArrayExtra(EXTRA_MESSAGE);
-        //Log.d(LogTag, "Got settings from from FilterManager instance");
-        
-        //for (int i = 0; i < settings.length; i++) {
-		//	Log.d (LogTag, "Received setting: "+settings[i]);
-		//}
-        
-        
-        int [] set = intent.getIntArrayExtra(TAG);
-        sliderValues = new int[2];
-        filterdropdown = new int[set.length - 2];
-        System.arraycopy(set, 0, sliderValues, 0, 2);
-        System.arraycopy(set, 2, filterdropdown, 0, set.length - 2);
-        //Log.d(LogTag, "Got filter drop down from from FilterManager instance");
-        
-        //for (int i = 0; i < filterdropdown.length; i++) {
-		//	Log.d (LogTag, "Received filterdropdown: "+filterdropdown[i]);
-		//}
-        
-        //if ( btn4 == null) {
-        //	Log.e(LogTag,"One or more of the toggle buttons are null!");
-        //} else {
-        //	Log.d(LogTag, "Toggle buttons aren't null");
-        //}
-        
+		sliderValues = bundle.getIntArray("sliderValues");
+		filterdropdown = bundle.getIntArray("filters");
+		filterListID = bundle.getIntArray("FILTERMAN_FILTER_IDS");
+		filterListNames = bundle.getStringArray("FILTERMAN_FILTER_NAMES");
       
         btn4.setChecked(settings[4]);
-        //Log.d(LogTag,"the item in filterdropdown[0] = " + filterdropdown[0]);
         
         SetUpSlider();
         
         addtofilters();
-        //Log.d(LogTag,"Added filters to list.");
         
         //using own font
         Typeface tf = Typeface.createFromAsset(getAssets(),"NeoSans_Bold_Italic.ttf");

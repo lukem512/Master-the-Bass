@@ -322,16 +322,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     //start the settings activity
     public void startSettings(View view) {
     	Intent intent = new Intent(this, Filtersmenu.class);
-    	intent.putExtra(EXTRA_MESSAGE, settings);
-    	//put slider values and settings
-    	int[] set = new int[filterarray.length + 2];
-    	System.arraycopy(sliderValues, 0, set, 0, sliderValues.length);
-    	System.arraycopy(filterarray, 0, set, 2, filterarray.length);
-    	Log.d(TAG, "sliderVal: " + sliderValues[0] + " set val: "+set[0]);
-    	intent.putExtra(TAG, set);
-    	Log.d(LogTag, "Sending FilterArray of size " + filterarray.length);
-    	intent.putExtra(FILTERMAN_FILTER_IDS, filterman.getFiltersList());
-    	intent.putExtra(FILTERMAN_FILTER_NAMES, filterman.getFilterNamesList());
+    	Bundle bundle = new Bundle();
+    	bundle.putBooleanArray("settings", settings);
+    	bundle.putIntArray("sliderValues", sliderValues);
+    	bundle.putIntArray("filters", filterarray);
+    	bundle.putIntArray("FILTERMAN_FILTER_IDS", filterman.getFiltersList());
+    	bundle.putStringArray("FILTERMAN_FILTER_NAMES", filterman.getFilterNamesList());
+    	intent.putExtras(bundle);
     	startActivityForResult(intent,1);
     }
     public void startHelp(View view){
