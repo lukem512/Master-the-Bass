@@ -64,6 +64,25 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	private SensorEvent calibrate;
 	
+	//private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private Sensor mMagnetometer;
+
+    private float[] mLastAccelerometer = new float[3];
+    private float[] mLastMagnetometer = new float[3];
+    private boolean mLastAccelerometerSet = false;
+    private boolean mLastMagnetometerSet = false;
+    private boolean calibrating = false, calibrated = false;
+    private float con = 180/(float)Math.PI;
+    private int k,j;
+    private float det;
+
+    private float[] mR = new float[9];
+    private float[] mRCal = new float[9];
+    private float[] mRNew = new float[9];
+    private float[] mRInv = new float[9];
+    private float[] mOrientation = new float[3];
+	
 	private float mSensorX, mSensorY, mSensorZ, oSensorX; 
 	private float mLastX, mLastY, mLastZ, oLastX;
 	
@@ -169,7 +188,12 @@ public class MainActivity extends Activity implements SensorEventListener {
    	}
    	
    	private void initSensors () {
-   		mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
+   		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
+   		/*mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
    		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
 		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
@@ -180,7 +204,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		
 		oSensorErrorLogged = false;
-		mSensorErrorLogged = false;
+		mSensorErrorLogged = false;*/
 		
 		writing = false;
 		
@@ -681,8 +705,58 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor == mAccelerometer) {
+            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
+            mLastAccelerometerSet = true;
+        } else if (event.sensor == mMagnetometer) {
+            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
+            mLastMagnetometerSet = true;
+        }
+        if (mLastAccelerometerSet && mLastMagnetometerSet) {
+        	if( calibrating )
+        	{
+    			SensorManager.getRotationMatrix(mRCal, null, mLastAccelerometer, mLastMagnetometer);
+    			//SensorManager.getOrientation(mR, mOrientation);
+        		SensorManager.getOrientation(mRCal, mOrientation);
+        		//Log.i(",", ","+ Math.abs(mOrientation[1]*con));
+        		det = 	 (mRCal[0]*(mRCal[4]*mRCal[8]-mRCal[5]*mRCal[7]))
+        				-(mRCal[3]*(mRCal[1]*mRCal[8]-mRCal[2]*mRCal[7]))
+        				+(mRCal[6]*(mRCal[1]*mRCal[5]-mRCal[2]*mRCal[4]));
+        		mRInv[0] = (1/det)*(mRCal[4]*mRCal[8]-mRCal[7]*mRCal[5]); 	 mRInv[1] = (-1)*(1/det)*(mRCal[1]*mRCal[8]-mRCal[7]*mRCal[2]); mRInv[2] = (1/det)*(mRCal[1]*mRCal[5]-mRCal[4]*mRCal[2]);
+        		mRInv[3] = (-1)*(1/det)*(mRCal[3]*mRCal[8]-mRCal[6]*mRCal[5]); mRInv[4] = (1/det)*(mRCal[0]*mRCal[8]-mRCal[6]*mRCal[2]); 	  mRInv[5] = (-1)*(1/det)*(mRCal[0]*mRCal[5]-mRCal[3]*mRCal[2]);
+        		mRInv[6] = (1/det)*(mRCal[3]*mRCal[7]-mRCal[6]*mRCal[4]); 	 mRInv[7] = (-1)*(1/det)*(mRCal[0]*mRCal[7]-mRCal[6]*mRCal[1]); mRInv[8] = (1/det)*(mRCal[0]*mRCal[4]-mRCal[3]*mRCal[1]);
+        		calibrating = false;
+        		calibrated = true;
+        	}
+        	else
+        	{
+        		if(calibrated)
+        		{
+        		SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
+        		mRNew[0] = mRInv[0]*mR[0]+mRInv[1]*mR[3]+mRInv[2]*mR[6]; mRNew[1] = mRInv[0]*mR[1]+mRInv[1]*mR[4]+mRInv[2]*mR[7]; mRNew[2] = mRInv[0]*mR[2]+mRInv[1]*mR[5]+mRInv[2]*mR[8];
+        		mRNew[3] = mRInv[3]*mR[0]+mRInv[4]*mR[3]+mRInv[5]*mR[6]; mRNew[4] = mRInv[3]*mR[1]+mRInv[4]*mR[4]+mRInv[5]*mR[7]; mRNew[5] = mRInv[3]*mR[2]+mRInv[4]*mR[5]+mRInv[5]*mR[8];
+        		mRNew[6] = mRInv[6]*mR[0]+mRInv[7]*mR[3]+mRInv[8]*mR[6]; mRNew[7] = mRInv[6]*mR[1]+mRInv[7]*mR[4]+mRInv[8]*mR[7]; mRNew[8] = mRInv[6]*mR[2]+mRInv[7]*mR[5]+mRInv[8]*mR[8];
+	            SensorManager.getOrientation(mRNew, mOrientation);
+        		}
+        		else
+        		{
+        			SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
+		            SensorManager.getOrientation(mR, mOrientation);
+        		}
+	            /*Log.i("OrientationTestActivity", String.format("Orientation: %f, %f, %f",
+                                                           mOrientation[0]*con, mOrientation[1]*con, mOrientation[2]*con));*/
+	            //Log.i(",", ","+ Math.abs(mOrientation[1]*con));
+    			//Log.i("OrientationTestActivity", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
+    					//mRNew[0], mRNew[1], mRNew[2], mRNew[3], mRNew[4], mRNew[5], mRNew[6], mRNew[7], mRNew[8]));
+	           // Log.i("det", String.format("Orientation: %f", det));
+    			//Log.i("Cal orig", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
+    					//mRCal[0], mRCal[1], mRCal[2], mRCal[3], mRCal[4], mRCal[5], mRCal[6], mRCal[7], mRCal[8]));
+    			//Log.i("Cal inv", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
+    					//mRInv[0], mRInv[1], mRInv[2], mRInv[3], mRInv[4], mRInv[5], mRInv[6], mRInv[7], mRInv[8]));
+        	}
+        }
 		// Ensure we have sensors!
-		if( oSensor == null ) {
+		/*if( oSensor == null ) {
 			if (!oSensorErrorLogged) {
 				Log.w(LogTag, "No orientation sensor.");
 				mSensorErrorLogged = true;
@@ -749,7 +823,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			totalAccel = (float) Math.sqrt((deltaX - calx) * (deltaX - calx) +
 					  (deltaY - caly) * (deltaY - caly) +
 					  (deltaZ - calz) * (deltaZ - calz));			
-	    } else*/ if (event.sensor.equals(oSensor)) {
+	    } else*/ /*if (event.sensor.equals(oSensor)) {
 	    	oLastX = oSensorX;
 	    	
 	    	switch (mDisplay.getRotation())
@@ -781,10 +855,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    	lIsNegative = false;
 	    }*/
 	    
-	    oSensorX = Math.abs(oSensorX);
-	    double level = oSensorX * 50;
-	    
-	    //Log.i (LogTag, "oSensorX = "+oSensorX);
+	    //oSensorX = Math.abs(oSensorX);
+	    double level = Math.abs(mOrientation[1]*con) * 50;
 	    
 	    if (useTimeA) {
 			timeA = System.currentTimeMillis() ;
