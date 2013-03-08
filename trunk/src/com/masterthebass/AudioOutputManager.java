@@ -38,15 +38,12 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		
 		// Set volume ramp flag
 		rampUpAmplitude = false;
-		
-		Log.d(LogTag+".ctor", "AudioOutputManager object constructed.");
 	}
 
 	/* Private methods */
 
 	private void getSampleRateFromHardware() {
 		nativeSampleRate = AudioTrack.getNativeOutputSampleRate(mode);
-		Log.d(LogTag+".getSampleRateFromHardware", "Native sample rate is " + nativeSampleRate + " Hz.");
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, double bufDuration, int mode) {
@@ -55,23 +52,19 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 
 	private AudioTrack createAudioTrack(int channel, int format, int mode) {
 		minBufferSize = getMinimumBufferSizeInSamples (channel, format);
-		
 		bufferSize = minBufferSize;
-		Log.d(LogTag+".createAudioTrack", "Setting buffer size to " + minBufferSize + " bytes.");
 		
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, minBufferSize, mode);
 	}
 
 	private AudioTrack createAudioTrack(int channel, int format, int bufSize, int mode) {
 		minBufferSize = getMinimumBufferSizeInSamples (channel, format);
-		Log.w(LogTag+".createAudioTrack", "Minimum buffer size is " + minBufferSize + " samples.");
 
 		if (bufSize < minBufferSize) {
 			bufSize = minBufferSize;
 		}
 
 		bufferSize = bufSize;
-		Log.d(LogTag+".createAudioTrack", "Setting buffer size to " + bufferSize + " samples.");
 
 		return new AudioTrack (AudioManager.STREAM_MUSIC, nativeSampleRate, channel, format, bufSize, mode);
 	}
@@ -79,9 +72,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	private void stopStreaming() {
 		pause();
 		audio.flush();
-		audio.stop();
-		Log.d(LogTag+".stopStreaming", "Paused, flushed and stopped audio.");
-		
+		audio.stop();	
 	}
 	
 	private int getMinimumBufferSizeInSamples(int channel, int format) {
@@ -93,7 +84,6 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	public void play() {
 		audio.play();
 		rampUpAmplitude = true;
-		Log.d(LogTag+".play", "Set audio to playing.");
 	}
 
 	public void stop() {
@@ -102,12 +92,10 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		} else {
 			audio.stop();
 		}
-		Log.d(LogTag+".stop", "Set audio to stopped.");
 	}
 
 	public void pause() {
 		audio.pause();
-		Log.d(LogTag+".pause", "Set audio to paused.");
 	}
 
 	public boolean isPaused() {
@@ -128,14 +116,9 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 	
 	public void buffer(short[] pcm) {
 		int length, pos, written;
-
-		//Log.i(LogTag+".buffer", "Writing " + pcm.length + " into audio buffer of size " + bufferSize + ".");
-
 		pos = 0;
 		
 		while (pos < pcm.length) {			
-			//Log.i(LogTag+".buffer", "At position " + pos + ".");
-
 			// Ensure there are enough bytes left to copy		
 			if (pcm.length < (pos + bufferSize)) {
 				length = pcm.length - pos;
@@ -172,16 +155,11 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 			}
 
 			pos += written;
-
-			//Log.i(LogTag+".buffer", "Wrote " + written + " bytes successfully, " + (pcm.length - pos) + " remaining.");
-
+			
 			if (Thread.interrupted()) {
-				Log.i(LogTag+".buffer", "Thread was interrupted.");
 				return;
 			}
 		}
-
-		//Log.i(LogTag+".buffer", "Exiting...");
 	}
 
 	/* AudioTrack.OnPlaybackPositionUpdateListener methods */
