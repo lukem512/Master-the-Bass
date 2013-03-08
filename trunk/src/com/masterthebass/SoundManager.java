@@ -5,6 +5,8 @@ public class SoundManager{
 	/* Members */
 	
 	private Wave wave;
+	
+	public final static short SILENCE = 0;
 
 	@SuppressWarnings("unused")
 	private final static String LogTag = "SoundManager";
@@ -53,7 +55,7 @@ public class SoundManager{
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a short array of the sound in 16-bit WAV PCM format
 	public short[] generateTone(double duration, double frequency, double volume, int sampleRate) {		
-		int numSamples = (int) Math.ceil(sampleRate * duration);
+		int numSamples = getSampleLength(duration, sampleRate);
 		short generatedSnd[];
 
 		// Sanity check volume
@@ -71,7 +73,7 @@ public class SoundManager{
 	// Generate a tone at a given frequency, for a given duration
 	// Returns a double array of samples between -1.0 and 1.0
 	public double[] generateUnscaledTone(double duration, double frequency, double volume, int sampleRate) {		
-		int numSamples = (int) Math.ceil(sampleRate * duration);
+		int numSamples = getSampleLength(duration, sampleRate);
 		double generatedSnd[];
 
 		// Sanity check volume
@@ -88,11 +90,11 @@ public class SoundManager{
 	
 	// 'Generates' silence in 16-bit signed PCM for given duration at given SR
 	public static short[] generateSilence(double duration, int sampleRate) {
-		int numSamples = (int) Math.ceil(sampleRate * duration);
+		int numSamples = getSampleLength(duration, sampleRate);
 		short generatedSnd[] = new short[numSamples];
 		
 		for (int i = 0; i < numSamples; i++) {
-			generatedSnd[i] = 0;
+			generatedSnd[i] = SILENCE;
 		}
 		
 		return generatedSnd;
@@ -104,7 +106,7 @@ public class SoundManager{
 		double generatedSnd[] = new double[numSamples];
 		
 		for (int i = 0; i < numSamples; i++) {
-			generatedSnd[i] = 0;
+			generatedSnd[i] = SILENCE;
 		}
 		
 		return generatedSnd;
@@ -148,5 +150,10 @@ public class SoundManager{
 	
 	public void commit () {
 		wave.commit();
+	}
+	
+	public static int getSampleLength (double length, int sampleRate) {
+		// TODO - this should be a multiple of the period
+		return (int) Math.ceil(length * sampleRate);
 	}
 }

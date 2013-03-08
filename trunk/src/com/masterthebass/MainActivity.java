@@ -969,12 +969,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 	Runnable generatorThreadObj = new Runnable() {
 		public void run() {
 			int sampleRate = audioman.getSampleRate();
-			int sampleLength = (int) Math.ceil(noteDuration*sampleRate);
             boolean running = true;
             short[] sampleData, silenceData;
             
             silenceData = new short[1];
-            silenceData[0] = 0;
+            silenceData[0] = SoundManager.SILENCE;
             
             while (running) {
             	// Set sample to silence
