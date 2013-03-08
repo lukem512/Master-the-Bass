@@ -21,8 +21,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -36,7 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainActivity extends Activity implements OnGestureListener, SensorEventListener {
+public class MainActivity extends Activity implements SensorEventListener {
 	// Manager instances
 	private AudioOutputManager audioman;
 	private SoundManager soundman;
@@ -51,8 +49,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	 *  0 - 3 are filter on/off buttons 
 	 *  4 vibration button
 	 */
-	//"Swipe Up","Swipe Left","Tap","Hold"
-	// filter1     filter2    filter3 filter4
 	
 	Vibrator v;
 
@@ -134,7 +130,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
 	private ToggleButton fb2;
 	private ToggleButton fb3;
 	private ToggleButton fb4;
-	private boolean toggleChecked[] = {false,false,false,false};
 	private int lastButton = 5;
 	private boolean leftButton = true;
 	
@@ -234,12 +229,15 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        gestureScanner = new GestureDetector(this,this);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         settings = new boolean[5];
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
-        fb1 = (ToggleButton)findViewById(R.id.filter1);
+        initiateLayout();   
+    }
+    //scaling layout for different displays
+    private void initiateLayout(){
+    	fb1 = (ToggleButton)findViewById(R.id.filter1);
         fb2 = (ToggleButton)findViewById(R.id.filter2);
         fb3 = (ToggleButton)findViewById(R.id.filter3);
         fb4 = (ToggleButton)findViewById(R.id.filter4);
@@ -250,8 +248,8 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
         scaleButtons(record);
         scaleButtons(help);	
         scaleButtons(settings);
-       
     }
+    
    //scaling play, settings and help buttons
     private void scaleButtons(Button b){
     	ViewGroup.LayoutParams parms = b.getLayoutParams();
@@ -561,16 +559,10 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     }
     //*********************gesture code****************************
     
-    public static final int gestureDelay = 500;
-	private GestureDetector gestureScanner;
 	// amount of 0's for the amount of filter names, NEED TO CHANGE
 	// TODO - change these to a value not being used by FilterMan
 	private static int[] sliderValues = new int[]{0,10000};
-	private static int longpresson = 0;
 	private static int[] filterarray = new int[]{1,3,4,5};
-	
-	long lastGesture = System.currentTimeMillis();	
-
 	
 	public static void addTofilterArray(int filter, int filternum){
 		filterarray[filternum] = filter;
@@ -697,49 +689,6 @@ public class MainActivity extends Activity implements OnGestureListener, SensorE
     		leftButton = true;
     	}
 	    return true;
-	}
-	
-    @Override
-	public boolean onTouchEvent(MotionEvent me)	{
-		//return false;
-		return gestureScanner.onTouchEvent(me);
-	}
-
-	@Override
-	public boolean onDown(MotionEvent e) {
-		float x = e.getRawX();
-    	float y = e.getRawY();
-    	
-		if (settings[4]) v.vibrate(300);
-		Log.i(LogTag, "Down");		
-		return false;
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		return false;
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e) {
-	
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		
-		return false;
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		//checking whether it is a real tap or accident	
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		return isNegative;
-		//if (settings[4]) v.vibrate(300);
 	}
 
 	@Override
