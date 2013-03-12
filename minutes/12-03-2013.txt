@@ -1,0 +1,26 @@
+Meeting minutes 12/03/2013
+--------------------------
+
+Must haves for demo:
+    
+    * React to movement and create audio (STEVE, JON)
+    * UI to not crash/have any bugs (PETRO)
+    * Double-slider to effect Low-Pass Filter
+    * Oscillating filter needs fixing
+    * Filters that do something AND SOUND NICE!
+    * Help menu to have text
+
+Presentation:
+
+15 minutes long
+
+    * Ricky has made a start
+    * Should have lots of pictures
+
+Introduction - where the idea came from, why it is a good idea, gap in market
+Description of app- Look at Project Proposal
+History/Development - UI, screenshots, issues
+Current state of app - at this point demonstrate app, hand it to someone to use
+Future prospects - what needs to be fixed, future versions
+
+RICKY and GUY to work on Presentation.
