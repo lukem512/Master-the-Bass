@@ -2,6 +2,7 @@ package com.masterthebass;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -12,10 +13,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -54,6 +59,7 @@ public class Filtersmenu extends Activity {
 	int[] filterdropdown;
 	int[] sliderValues;
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,6 +98,17 @@ public class Filtersmenu extends Activity {
         TextView text_interval = (TextView) findViewById(R.id.text_interval);
         text_interval.setTypeface(tf);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        
+        //setting centre for filter buttons
+        RelativeLayout.LayoutParams fparms = (RelativeLayout.LayoutParams)findViewById(R.id.filterbuttons).getLayoutParams();
+        Button bcentre = (Button)findViewById(R.id.midbutton);
+        LayoutParams sp = (LayoutParams)findViewById(R.id.spinner1).getLayoutParams();
+        RelativeLayout.LayoutParams centreparms = (RelativeLayout.LayoutParams)bcentre.getLayoutParams();
+        Log.i(TAG, "TOP: " + findViewById(R.id.spinner1).getLayoutParams().width);
+        centreparms.width = sp.width/2 + 10;
+        centreparms.height = centreparms.width;
+        centreparms.topMargin = fparms.topMargin + sp.height - centreparms.height/2;
+        bcentre.setLayoutParams(centreparms);
 	}
 	
 	private void SetUpSlider() {

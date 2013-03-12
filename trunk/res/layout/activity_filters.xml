@@ -69,8 +69,9 @@
            android:onClick="onVibrationClicked"
            android:textOn=""
            android:textOff="" />
-
+       
        <LinearLayout
+           android:id="@+id/filterbuttons"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_centerHorizontal="true"
@@ -127,5 +128,14 @@
                    android:background="@drawable/settings_filter4" />
            </LinearLayout>
        </LinearLayout>
+       
+       <Button
+        android:id="@+id/midbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/settings_filters_centre"
+        android:layout_below="@+id/vibration"
+        android:layout_marginTop="30dp" />
 
    </RelativeLayout>
