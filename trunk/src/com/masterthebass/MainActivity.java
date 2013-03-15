@@ -189,18 +189,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
-   		/*mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Linear Acceleration sensor
-   		//mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);	
-		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);							// TODO - I had to change this to get it to work with the galaxy tab
-		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
-		
-		oSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);						//Manages Orientation sensor 
-		oSensor = oSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);									// TODO - this is DEPRECATED, use instead (https://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation(float[], float[]))
-		oSensorManager.registerListener(this, oSensor, SensorManager.SENSOR_DELAY_FASTEST);					//
-		
-		
-		oSensorErrorLogged = false;
-		mSensorErrorLogged = false;*/
 		
 		writing = false;
 		
@@ -493,6 +481,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     	recordedData.get(data);
     	
     	// Write it to the file specified
+    	// TODO - trying to change the name causes all sorts of problems
+    	// http://stackoverflow.com/questions/14698264/span-exclusive-exclusive-spans-cannot-have-a-zero-length-error-whenever-an-editt
     	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);
     	String filename = editFileName.getText().toString();
     	fileman.openFile(fileman.getPath(),filename);
@@ -569,8 +559,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
     //*********************gesture code****************************
     
-	// amount of 0's for the amount of filter names, NEED TO CHANGE
-	// TODO - change these to a value not being used by FilterMan
     private static final int defaultMinSliderValue = 0;
 	private static final int defaultMaxSliderValue = 5000;
 	private static int[] sliderValues = new int[]{defaultMinSliderValue,defaultMaxSliderValue};
@@ -580,67 +568,64 @@ public class MainActivity extends Activity implements SensorEventListener {
 		filterarray[filternum] = filter;
 	}   
 	
-	
 	public static void addSliderValues(int[] a){
 		sliderValues = a;
 	}
 	//detects what button clicked and returns false if none
 	private boolean checkFilterButton(int n, float x, float y){
-		//TODO: get rid of bullshit factor
-		//int bullshitFactor = 100;
 		int location[] = new int [2];
-		//TODO: change all getX and Y to location
+		
 		switch (n){
-		case 0:
-			fb1.getLocationInWindow(location);
-			if ((x > location[0])&&(x < location[0] + fb1.getWidth())&&
-		        	(y > location[1])&&(y < location[1] + fb1.getHeight())){
-				if ((n != lastButton)||(leftButton == true)){
-					fb1.setChecked(!fb1.isChecked());
-					filterTopLeft(fb1.getRootView());
-					lastButton = n;
+			case 0:
+				fb1.getLocationInWindow(location);
+				if ((x > location[0])&&(x < location[0] + fb1.getWidth())&&
+			        	(y > location[1])&&(y < location[1] + fb1.getHeight())){
+					if ((n != lastButton)||(leftButton == true)){
+						fb1.setChecked(!fb1.isChecked());
+						filterTopLeft(fb1.getRootView());
+						lastButton = n;
+					}
+					return false;
 				}
-				return false;
-			}
-			break;
-		case 1:
-			fb2.getLocationInWindow(location);
-			if ((x > location[0])&&(x < location[0] + fb2.getWidth())&&
-		        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
-				if ((n != lastButton)||(leftButton == true)){
-					fb2.setChecked(!fb2.isChecked());
-					filterTopRight(fb2.getRootView());
-					lastButton = n;
+				break;
+			case 1:
+				fb2.getLocationInWindow(location);
+				if ((x > location[0])&&(x < location[0] + fb2.getWidth())&&
+			        	(y > location[1])&&(y < location[1] + fb2.getHeight())){
+					if ((n != lastButton)||(leftButton == true)){
+						fb2.setChecked(!fb2.isChecked());
+						filterTopRight(fb2.getRootView());
+						lastButton = n;
+					}
+					return false;  	
 				}
-				return false;  	
-			}
-			break;
-		case 2:
-			fb3.getLocationInWindow(location);
-			if ((x > location[0])&&(x < location[0] + fb3.getWidth())&&
-		        	(y > location[1])&&(y < location[1] + fb3.getHeight())){
-				if ((n != lastButton)||(leftButton == true)){
-					fb3.setChecked(!fb3.isChecked());
-					filterBottomLeft(fb3.getRootView());
-	        		lastButton = n;
+				break;
+			case 2:
+				fb3.getLocationInWindow(location);
+				if ((x > location[0])&&(x < location[0] + fb3.getWidth())&&
+			        	(y > location[1])&&(y < location[1] + fb3.getHeight())){
+					if ((n != lastButton)||(leftButton == true)){
+						fb3.setChecked(!fb3.isChecked());
+						filterBottomLeft(fb3.getRootView());
+		        		lastButton = n;
+					}
+		        	return false;
 				}
-	        	return false;
-			}
-			break;
-		case 3:
-			fb4.getLocationInWindow(location);
-			if ((x > location[0])&&(x < location[0] + fb4.getWidth())&&
-		        	(y > location[1])&&(y < location[1] + fb4.getHeight())){
-				if ((n != lastButton)||(leftButton == true)){
-					fb4.setChecked(!fb4.isChecked());
-					filterBottomRight(fb4.getRootView());
-	        		lastButton = n;
+				break;
+			case 3:
+				fb4.getLocationInWindow(location);
+				if ((x > location[0])&&(x < location[0] + fb4.getWidth())&&
+			        	(y > location[1])&&(y < location[1] + fb4.getHeight())){
+					if ((n != lastButton)||(leftButton == true)){
+						fb4.setChecked(!fb4.isChecked());
+						filterBottomRight(fb4.getRootView());
+		        		lastButton = n;
+					}
+		        	return false;
 				}
-	        	return false;
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 		return true;
 	}
@@ -799,6 +784,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		public void run() {
 			int sampleRate = audioman.getSampleRate();
             boolean running = true;
+            boolean skipRecord;
             short[] sampleData, silenceData;
             
             silenceData = new short[1];
@@ -807,6 +793,9 @@ public class MainActivity extends Activity implements SensorEventListener {
             while (running) {
             	// Set sample to silence
             	sampleData = silenceData;
+            	
+            	// Set skip record flag
+            	skipRecord = false;
             	
             	// Generate audio
             	if (audioman.isPlaying()) {
@@ -824,11 +813,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 			    		
 			    		// Send to audio buffer
 			            sampleList.add(sampleData);
+            		} else {
+            			// Don't add silence
+            			skipRecord = true;
             		}
             	}
             	
             	// Add to file buffer if required
-	            if (recording) {
+	            if (recording && !skipRecord) {
 	            	if (recordedData != null) {
 		            	if ((recordedData.position() + sampleData.length) < recordedData.limit()) {
 		            		recordedData.put(sampleData);
