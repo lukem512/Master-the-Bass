@@ -705,252 +705,56 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		if (event.sensor == mAccelerometer) {
-            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
-            mLastAccelerometerSet = true;
-        } else if (event.sensor == mMagnetometer) {
-            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
-            mLastMagnetometerSet = true;
-        }
-        if (mLastAccelerometerSet && mLastMagnetometerSet) {
-        	if( calibrating )
-        	{
-    			SensorManager.getRotationMatrix(mRCal, null, mLastAccelerometer, mLastMagnetometer);
-    			//SensorManager.getOrientation(mR, mOrientation);
-        		SensorManager.getOrientation(mRCal, mOrientation);
-        		//Log.i(",", ","+ Math.abs(mOrientation[1]*con));
-        		det = 	 (mRCal[0]*(mRCal[4]*mRCal[8]-mRCal[5]*mRCal[7]))
-        				-(mRCal[3]*(mRCal[1]*mRCal[8]-mRCal[2]*mRCal[7]))
-        				+(mRCal[6]*(mRCal[1]*mRCal[5]-mRCal[2]*mRCal[4]));
-        		mRInv[0] = (1/det)*(mRCal[4]*mRCal[8]-mRCal[7]*mRCal[5]); 	 mRInv[1] = (-1)*(1/det)*(mRCal[1]*mRCal[8]-mRCal[7]*mRCal[2]); mRInv[2] = (1/det)*(mRCal[1]*mRCal[5]-mRCal[4]*mRCal[2]);
-        		mRInv[3] = (-1)*(1/det)*(mRCal[3]*mRCal[8]-mRCal[6]*mRCal[5]); mRInv[4] = (1/det)*(mRCal[0]*mRCal[8]-mRCal[6]*mRCal[2]); 	  mRInv[5] = (-1)*(1/det)*(mRCal[0]*mRCal[5]-mRCal[3]*mRCal[2]);
-        		mRInv[6] = (1/det)*(mRCal[3]*mRCal[7]-mRCal[6]*mRCal[4]); 	 mRInv[7] = (-1)*(1/det)*(mRCal[0]*mRCal[7]-mRCal[6]*mRCal[1]); mRInv[8] = (1/det)*(mRCal[0]*mRCal[4]-mRCal[3]*mRCal[1]);
-        		calibrating = false;
-        		calibrated = true;
-        	}
-        	else
-        	{
-        		if(calibrated)
-        		{
-        		SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
-        		mRNew[0] = mRInv[0]*mR[0]+mRInv[1]*mR[3]+mRInv[2]*mR[6]; mRNew[1] = mRInv[0]*mR[1]+mRInv[1]*mR[4]+mRInv[2]*mR[7]; mRNew[2] = mRInv[0]*mR[2]+mRInv[1]*mR[5]+mRInv[2]*mR[8];
-        		mRNew[3] = mRInv[3]*mR[0]+mRInv[4]*mR[3]+mRInv[5]*mR[6]; mRNew[4] = mRInv[3]*mR[1]+mRInv[4]*mR[4]+mRInv[5]*mR[7]; mRNew[5] = mRInv[3]*mR[2]+mRInv[4]*mR[5]+mRInv[5]*mR[8];
-        		mRNew[6] = mRInv[6]*mR[0]+mRInv[7]*mR[3]+mRInv[8]*mR[6]; mRNew[7] = mRInv[6]*mR[1]+mRInv[7]*mR[4]+mRInv[8]*mR[7]; mRNew[8] = mRInv[6]*mR[2]+mRInv[7]*mR[5]+mRInv[8]*mR[8];
-	            SensorManager.getOrientation(mRNew, mOrientation);
-        		}
-        		else
-        		{
-        			SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
-		            SensorManager.getOrientation(mR, mOrientation);
-        		}
-	            /*Log.i("OrientationTestActivity", String.format("Orientation: %f, %f, %f",
-                                                           mOrientation[0]*con, mOrientation[1]*con, mOrientation[2]*con));*/
-	            //Log.i(",", ","+ Math.abs(mOrientation[1]*con));
-    			//Log.i("OrientationTestActivity", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
-    					//mRNew[0], mRNew[1], mRNew[2], mRNew[3], mRNew[4], mRNew[5], mRNew[6], mRNew[7], mRNew[8]));
-	           // Log.i("det", String.format("Orientation: %f", det));
-    			//Log.i("Cal orig", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
-    					//mRCal[0], mRCal[1], mRCal[2], mRCal[3], mRCal[4], mRCal[5], mRCal[6], mRCal[7], mRCal[8]));
-    			//Log.i("Cal inv", String.format("Orientation: %f, %f, %f, %f, %f, %f, %f, %f, %f",
-    					//mRInv[0], mRInv[1], mRInv[2], mRInv[3], mRInv[4], mRInv[5], mRInv[6], mRInv[7], mRInv[8]));
-        	}
-        }
-		// Ensure we have sensors!
-		/*if( oSensor == null ) {
-			if (!oSensorErrorLogged) {
-				Log.w(LogTag, "No orientation sensor.");
-				mSensorErrorLogged = true;
-			}
-			return;
-    	}
-		
-		/*if( mSensor == null ) {
-			if (!mSensorErrorLogged) {
-				Log.w(LogTag, "No accelerometer found.");
-				mSensorErrorLogged = true;
-			}
-			return;
-		}
-		
-		// Process!
-	    if (event.sensor.equals(mSensor))
-	    {
-			Sensor source = event.sensor;
-			calibrate = event;
-			final float NOISE = (float) 1.0;
-			
-			switch (mDisplay.getRotation())
-			{
-		        case Surface.ROTATION_0:
-		            mSensorX = -event.values[0];
-		            mSensorY = -event.values[1];
-		            mSensorZ = -event.values[2];
-		            break;
-		        case Surface.ROTATION_90:
-		            mSensorX = event.values[1];
-		            mSensorY = -event.values[0];
-		            mSensorZ = event.values[2];
-		            break;
-		        case Surface.ROTATION_180:
-		            mSensorX = event.values[0];
-		            mSensorY = event.values[1];
-		            mSensorZ = event.values[2];
-		            break;
-		        case Surface.ROTATION_270:
-		            mSensorX = -event.values[1];
-		            mSensorY = event.values[0];
-		            mSensorZ = -event.values[2];
-		            break;
-			}
-			
-			float deltaX = Math.abs(mLastX - mSensorX);
-			float deltaY = Math.abs(mLastY - mSensorY);
-			float deltaZ = Math.abs(mLastZ - mSensorZ);
-			
-			if (deltaX < NOISE)
-				deltaX = mLastX;
-			else
-				deltaX = mSensorX;
-			if (deltaY < NOISE)
-				deltaY = mLastY;
-			else
-				deltaY = mSensorY;
-			if (deltaZ < NOISE)
-				deltaZ = mLastZ;
-			else
-				deltaY = mSensorZ;
-			
-			totalAccel = (float) Math.sqrt((deltaX - calx) * (deltaX - calx) +
-					  (deltaY - caly) * (deltaY - caly) +
-					  (deltaZ - calz) * (deltaZ - calz));			
-	    } else*/ /*if (event.sensor.equals(oSensor)) {
-	    	oLastX = oSensorX;
-	    	
-	    	switch (mDisplay.getRotation())
-			{
-			    case Surface.ROTATION_0:
-		            oSensorX = -event.values[0];
-		            break;
-		        case Surface.ROTATION_90:
-		            oSensorX = event.values[1];
-		            break;
-		        case Surface.ROTATION_180:
-		            oSensorX = event.values[0];
-		            break;
-		        case Surface.ROTATION_270:
-		            oSensorX = -event.values[1];
-		            break;
-			}
-	    }
-		
-	    /*if(oSensorX < 0) {
-	    	isNegative = true;
-		} else {
-	    	isNegative = false;
-	    }
-	    
-	    if(oLastX < 0) {
-	    	lIsNegative = true;
-	    } else {
-	    	lIsNegative = false;
-	    }*/
-	    
-	    //oSensorX = Math.abs(oSensorX);
-	    double level = Math.abs(mOrientation[1]*con) * 50;
-	    
-	    if (useTimeA) {
-			timeA = System.currentTimeMillis() ;
-		} else {
-			timeB = System.currentTimeMillis() ;
-		}
-	    
-	    if(writing)
+		if(writing)
 		{
-	    	long dTime;
-	    	double newCutoff = maxCutoffFreq;
-	    	double newAmp = minAmplitude;
-			
-			if (useTimeA) {
-				dTime = (timeA - timeB);
-			} else {
-				dTime = (timeB - timeA);
-			}
-			
-			if (dTime < 1) {
-				dTime = 1;
-			}
-			
-			// Add to moving average
-			gradMovingAverage[i % movingAverageCount] = (totalAccel - prevTotalAccel)/(dTime);
-			i++;
+	    	if (event.sensor == mAccelerometer) {
+	            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
+	            mLastAccelerometerSet = true;
+	        } else if (event.sensor == mMagnetometer) {
+	            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
+	            mLastMagnetometerSet = true;
+	        }
+	        if (mLastAccelerometerSet && mLastMagnetometerSet) {
+	        	if( calibrating )
+	        	{
+	    			SensorManager.getRotationMatrix(mRCal, null, mLastAccelerometer, mLastMagnetometer);
+	        		SensorManager.getOrientation(mRCal, mOrientation);
+	        		det = 	 (mRCal[0]*(mRCal[4]*mRCal[8]-mRCal[5]*mRCal[7]))
+	        				-(mRCal[3]*(mRCal[1]*mRCal[8]-mRCal[2]*mRCal[7]))
+	        				+(mRCal[6]*(mRCal[1]*mRCal[5]-mRCal[2]*mRCal[4]));
+	        		mRInv[0] = (1/det)*(mRCal[4]*mRCal[8]-mRCal[7]*mRCal[5]); 	 mRInv[1] = (-1)*(1/det)*(mRCal[1]*mRCal[8]-mRCal[7]*mRCal[2]); mRInv[2] = (1/det)*(mRCal[1]*mRCal[5]-mRCal[4]*mRCal[2]);
+	        		mRInv[3] = (-1)*(1/det)*(mRCal[3]*mRCal[8]-mRCal[6]*mRCal[5]); mRInv[4] = (1/det)*(mRCal[0]*mRCal[8]-mRCal[6]*mRCal[2]); 	  mRInv[5] = (-1)*(1/det)*(mRCal[0]*mRCal[5]-mRCal[3]*mRCal[2]);
+	        		mRInv[6] = (1/det)*(mRCal[3]*mRCal[7]-mRCal[6]*mRCal[4]); 	 mRInv[7] = (-1)*(1/det)*(mRCal[0]*mRCal[7]-mRCal[6]*mRCal[1]); mRInv[8] = (1/det)*(mRCal[0]*mRCal[4]-mRCal[3]*mRCal[1]);
+	        		calibrating = false;
+	        		calibrated = true;
+	        	}
+	        	else
+	        	{
+	        		if(calibrated)
+	        		{
+	        		SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
+	        		mRNew[0] = mRInv[0]*mR[0]+mRInv[1]*mR[3]+mRInv[2]*mR[6]; mRNew[1] = mRInv[0]*mR[1]+mRInv[1]*mR[4]+mRInv[2]*mR[7]; mRNew[2] = mRInv[0]*mR[2]+mRInv[1]*mR[5]+mRInv[2]*mR[8];
+	        		mRNew[3] = mRInv[3]*mR[0]+mRInv[4]*mR[3]+mRInv[5]*mR[6]; mRNew[4] = mRInv[3]*mR[1]+mRInv[4]*mR[4]+mRInv[5]*mR[7]; mRNew[5] = mRInv[3]*mR[2]+mRInv[4]*mR[5]+mRInv[5]*mR[8];
+	        		mRNew[6] = mRInv[6]*mR[0]+mRInv[7]*mR[3]+mRInv[8]*mR[6]; mRNew[7] = mRInv[6]*mR[1]+mRInv[7]*mR[4]+mRInv[8]*mR[7]; mRNew[8] = mRInv[6]*mR[2]+mRInv[7]*mR[5]+mRInv[8]*mR[8];
+		            SensorManager.getOrientation(mRNew, mOrientation);
+	        		}
+	        		else
+	        		{
+	        			SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
+			            SensorManager.getOrientation(mR, mOrientation);
+	        		}
+	        	}
+	        }
+	    	
+	    	double level = Math.abs(mOrientation[1]*con) * 50;
 			
 			// Get the low-pass filter
             LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
-			
-            // TODO - there should be a notion of gravity associated with the cutoff
-            // i.e. it should be dependent upon the previous cutoff and the gradient
-            /*if (Math.abs(prevTotalAccel - totalAccel) > accelThreshold){	
-	    		double grad = 0;	
-				
-				for (int k = 0; k < movingAverageCount; k++) {
-					grad += gradMovingAverage[k];
-				}
-				
-				grad /= movingAverageCount;
-				
-				if (grad > maxGrad) {
-					grad = maxGrad;
-				}
-	            
-				// Calculate new cutoff frequency
-				newCutoff = (((Math.abs(grad)*-(maxCutoffFreq/maxGrad)))+maxCutoffFreq+minCutoffFreq);
-				
-				// Calculate the new amplitude
-				double gradAmp = (grad/maxGrad);
-				
-				if (gradAmp > minAmplitude) {
-					if (gradAmp < maxAmplitude) {
-						newAmp = Math.abs(gradAmp);
-					} else {
-						newAmp = maxAmplitude;
-					}
-				} else {
-					newAmp = minAmplitude;
-				}
-				
-				if (newCutoff < minCutoffFreq) {
-					newCutoff = minCutoffFreq;
-				}
-			} else {
-				resetCounter++;
-				
-				if (resetCounter == resetThreshold) {
-					newCutoff = maxCutoffFreq;
-					newAmp = minAmplitude;
-					resetCounter = 0;
-				} else {
-					newCutoff = lpf.getCutoffFrequency();
-					newAmp = af.getAmplitude();
-				}
-			}*/
-			
-			tilt.getAccTilt(accTiltVal);			
-			tilt.getGyroTilt(gyroTiltVal);	
-			if ( Math.abs(gyroTiltVal[1]) > 0.07) {						//If phone is moving, update tilt value
-					tiltCutoff = Math.abs(Round(accTiltVal[1], 3));
-			}
-			
-			newCutoff =  (Math.pow(1.00170489031, (maxCutoffFreq - (maxCutoffFreq/1.52)*tiltCutoff))+200);
-			newAmp = (tiltCutoff*0.65789473684);
 	    	
 	    	// Change the cutoff (shelf) frequency
-            lpf.setCutoffFrequency(newCutoff);
-	    	//lpf.setCutoffFrequency(level);
-	    	Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
+	    	lpf.setCutoffFrequency(level);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + level);
 		}
-	    
-	    prevTotalAccel = totalAccel;
-	    useTimeA = !useTimeA;
 	}
 	
 	/** Audio threads **/

@@ -9,7 +9,7 @@ public class LowPassFilter extends IIRFilter {
 	private static final double twoPI = Math.PI * 2;
 	private final static double amplitudeScalar = 4;
 	private double[] filteredPCM;
-	private double alpha;
+	private double prevAlpha;
 	
 	public LowPassFilter(int ID, String name) {
 		super(ID, name);
@@ -44,16 +44,34 @@ public class LowPassFilter extends IIRFilter {
 		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
 			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
 		} else {
+			int ramp = 0;
+			final int rampNum = 900;
 			double sample;
+			double delta;
 			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
 			double alpha = getAlpha(count);
 			
+			if (prevAlpha == alpha) {
+				ramp = rampNum+1;
+				delta = 0;
+			}
+			else {
+				// decrease
+				delta = (alpha - prevAlpha)/rampNum;
+				alpha = prevAlpha;
+			}
+			
 			for (int i=0;i<count;i++) {
+				if (ramp <= rampNum) {
+					alpha += delta;
+					ramp++;
+				}
 				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
 				filteredPCM[i] = sample;
 			}
 			
 			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
+			prevAlpha = alpha;
 		}
 		
 		return rawPCM;

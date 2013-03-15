@@ -5,11 +5,12 @@ public class SoundManager{
 	/* Members */
 	
 	private Wave wave;
-	
-	public final static short SILENCE = 0;
 
 	@SuppressWarnings("unused")
 	private final static String LogTag = "SoundManager";
+		
+	public final static short SILENCE = 0;
+
 
 	/* Constructor */
 
@@ -157,8 +158,9 @@ public class SoundManager{
 	}
 	
 	public static int getSampleLength (double duration, int sampleRate, double frequency) {
-		int period = (int)((1.0/frequency) * sampleRate);
+		/*int period = (int)((1.0/frequency) * sampleRate);
 		int sampleLength = (int) Math.ceil(duration * sampleRate);
-		return sampleLength + period - (sampleLength % period);
+		return sampleLength + period - (sampleLength % period);*/
+		return (int) Math.ceil(sampleRate * duration);
 	}
 }
