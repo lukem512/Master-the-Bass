@@ -1,1 +1,4 @@
 13-03-2013 - 5 hours - worked with Steve (mainly) and Jon to get sound working with Tilt sensor. This will not integrate with the trunk currently.
+14-03-2013 - 4 hours 	- Integrated audio code with main trunk - 5958d166b16a2b8a6abe690cf912351ca136a4b2
+			- Fixed bug in record where silence was buffered if the playback queue was full - 458e2098ada905f80ab4220ac9b2130be202631d
+			- Removed warnings - bcb11baf4187ec66e4561c381d91f424d2528d9c 
