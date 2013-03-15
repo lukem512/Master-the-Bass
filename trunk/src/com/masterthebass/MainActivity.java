@@ -476,7 +476,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    	
 	    	// TODO - auto-increment file names
 	    	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);     	
-	    	editFileName.setText(fileman.getPath() + "/audio.PCM");
+	    	editFileName.setText("audio.PCM");
     	}
     }
     
@@ -495,7 +495,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     	// Write it to the file specified
     	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);
     	String filename = editFileName.getText().toString();
-    	fileman.openFile(filename);
+    	fileman.openFile(fileman.getPath() + filename);
     	fileman.writeBinaryFile(data);
     	
     	// Close the file
