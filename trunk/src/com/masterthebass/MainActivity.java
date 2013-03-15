@@ -9,13 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -58,11 +58,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public final static String FILTERMAN_FILTER_IDS = "com.masterthebass.FILTERMAN_FILTER_IDS";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	
-	// Sensor variables
-	private float totalAccel, prevTotalAccel;
-	private long timeA, timeB;
-	private boolean useTimeA = true;
-	
+	// Sensor variables	
 	private SensorEvent calibrate;
 	
 	//private SensorManager mSensorManager;
@@ -75,7 +71,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     private boolean mLastMagnetometerSet = false;
     private boolean calibrating = false, calibrated = false;
     private float con = 180/(float)Math.PI;
-    private int k,j;
     private float det;
 
     private float[] mR = new float[9];
@@ -84,15 +79,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float[] mRInv = new float[9];
     private float[] mOrientation = new float[3];
 	
-	private float mSensorX, mSensorY, mSensorZ, oSensorX; 
-	private float mLastX, mLastY, mLastZ, oLastX;
-	
 	private float calx;
 	private float caly;
 	private float calz;
 	
-	private boolean isNegative, lIsNegative;
-	private boolean oSensorErrorLogged, mSensorErrorLogged;
 	private boolean writing;
 	private boolean recording;
 	
@@ -102,18 +92,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private Point screenQuadrantBoundary;
 	
 	private SensorManager mSensorManager;
-	private Sensor mSensor;
-	private SensorManager oSensorManager;
-	private Sensor oSensor;
-	
-	private TiltCalc tilt;
-	
-	private int i, resetThreshold, resetCounter;
-	private double accelThreshold;
-	private double maxGrad;
-	
-	private double maxAmplitude;
-	private double minAmplitude;
 	
 	private int movingAverageCount;
 	private double[] gradMovingAverage;
@@ -135,10 +113,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private double maxCutoffFreq;
 	private double minCutoffFreq;
 
-	private float[] gyroTiltVal;
-	private float[] accTiltVal;
-	private float tiltCutoff;
-	
 	private static Handler handler;
 	private static final int HANDLER_MESSAGE_BUFFER_FULL = 0;
 	private static final int HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED = 1;
@@ -156,14 +130,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	/** Private helper methods */
 	   
-   	private void instantiate() {
+   	@SuppressLint("HandlerLeak")
+	private void instantiate() {
    		audioman 	= new AudioOutputManager();
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
- 		tilt        = new TiltCalc(this);
-   		accTiltVal  = new float[3];
-   		gyroTiltVal = new float[3];
    		soundman.setWave(new HarmonicSquareWave());
    		handler		= new Handler() {
    			@Override
@@ -195,17 +167,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		writing = false;
 		
-		i = 0;
-		resetThreshold = 10;
-		resetCounter = 0;
-		accelThreshold = 0.001f;
-		maxGrad = 3f;
-		
 		calx = 0;
 		caly = 0;
 		calz = 0;
-		
-		prevTotalAccel = 0;
 		
 		movingAverageCount = 10;
 		gradMovingAverage = new double[movingAverageCount];
@@ -234,8 +198,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		noteFrequency = MidiNote.C2;
 		volume = 1.0;
 		noteDuration = 0.01;
-		maxAmplitude = 1.0;
-		minAmplitude = 0.2;
 		
 		// Set up low-pass filter
 		initLowPassFilter();
@@ -246,6 +208,8 @@ public class MainActivity extends Activity implements SensorEventListener {
    	
    	/** Activity lifecycle/UI methods */
 	
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -259,9 +223,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         screenQuadrantBoundary = new Point();
         
         // TODO - use non-deprecated code
-        //mDisplay.getSize(screenSize);
-        screenSize.x = mDisplay.getWidth();
-        screenSize.y = mDisplay.getHeight();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        	mDisplay.getSize(screenSize);
+        } else {
+        	screenSize.x = mDisplay.getWidth();
+    	  	screenSize.y = mDisplay.getHeight();
+        }
         screenQuadrantBoundary.x = screenSize.x/2;
         screenQuadrantBoundary.y = screenSize.y/2;
         
@@ -286,18 +253,18 @@ public class MainActivity extends Activity implements SensorEventListener {
    //scaling play, settings and help buttons
     private void scaleButtons(Button b){
     	ViewGroup.LayoutParams parms = b.getLayoutParams();
-    	parms.width = mDisplay.getWidth()/5;
-    	parms.height= mDisplay.getWidth()/5;
+    	parms.width = screenSize.x/5;
+    	parms.height= screenSize.x/5;
     	b.setLayoutParams(parms);
     }
     //scaling filter buttons and speaker
     private void scaleLayout(ToggleButton b){
-    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*mDisplay.getHeight()/5 - 15, 1);
+    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*screenSize.y/5 - 15, 1);
     	LinearLayout rLGreen = ((LinearLayout) b.getParent());
     	rLGreen.setLayoutParams(parms);
     	//scaling speaker
     	ViewGroup.LayoutParams parm = speaker.getLayoutParams();
-    	parm.width = (int)(mDisplay.getWidth()/1.5);
+    	parm.width = (int)(screenSize.x/1.5);
     	parm.height = parm.width;
     	speaker.setLayoutParams(parm);
     } 
