@@ -1,7 +1,6 @@
 package com.masterthebass;
 
 import java.util.ArrayList;
-import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -19,12 +17,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -35,7 +30,6 @@ public class Filtersmenu extends Activity {
 
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
-	public final static String FILTERMAN_FILTER_IDS = "com.masterthebass.FILTERMAN_FILTER_IDS";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	
 	public final static String LogTag = "FiltersMenu";
@@ -43,9 +37,6 @@ public class Filtersmenu extends Activity {
 	private SliderView slider;
 	private TextView text_interval;
 	
-	private Spinner spinner1, spinner2, spinner3, spinner4;
-	//getting the filter list ID's and adding the filter ID's to array
-	private int[] filterListID;	
 	private String[] filterListNames;	
 	private ArrayList<String> filters  = new ArrayList<String>();
 	/*  settings:
@@ -78,7 +69,6 @@ public class Filtersmenu extends Activity {
 		
 		sliderValues = bundle.getIntArray("sliderValues");
 		filterdropdown = bundle.getIntArray("filters");
-		filterListID = bundle.getIntArray("FILTERMAN_FILTER_IDS");
 		filterListNames = bundle.getStringArray("FILTERMAN_FILTER_NAMES");
       
         btn4.setChecked(settings[4]);

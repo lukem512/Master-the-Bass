@@ -55,7 +55,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
-	public final static String FILTERMAN_FILTER_IDS = "com.masterthebass.FILTERMAN_FILTER_IDS";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	
 	// Sensor variables	
@@ -323,7 +322,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     	bundle.putBooleanArray("settings", settings);
     	bundle.putIntArray("sliderValues", sliderValues);
     	bundle.putIntArray("filters", filterarray);
-    	bundle.putIntArray("FILTERMAN_FILTER_IDS", filterman.getFiltersList());
     	bundle.putStringArray("FILTERMAN_FILTER_NAMES", filterman.getFilterNamesList());
     	intent.putExtras(bundle);
     	startActivityForResult(intent,1);
