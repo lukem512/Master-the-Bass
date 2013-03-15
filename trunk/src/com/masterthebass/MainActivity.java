@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -33,7 +34,7 @@ import android.widget.PopupWindow;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class MainActivity extends Activity implements SensorEventListener {
 	// Manager instances
 	private AudioOutputManager audioman;
@@ -97,6 +98,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	private WindowManager mWindowManager;
 	private Display mDisplay;
+	private Point screenSize;
+	private Point screenQuadrantBoundary;
 	
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
@@ -243,7 +246,7 @@ public class MainActivity extends Activity implements SensorEventListener {
    	
    	/** Activity lifecycle/UI methods */
 	
-    @Override
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -251,6 +254,17 @@ public class MainActivity extends Activity implements SensorEventListener {
         settings = new boolean[5];
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
+        
+        screenSize = new Point();
+        screenQuadrantBoundary = new Point();
+        
+        // TODO - use non-deprecated code
+        //mDisplay.getSize(screenSize);
+        screenSize.x = mDisplay.getWidth();
+        screenSize.y = mDisplay.getHeight();
+        screenQuadrantBoundary.x = screenSize.x/2;
+        screenQuadrantBoundary.y = screenSize.y/2;
+        
         initiateLayout();   
     }
     //scaling layout for different displays
@@ -631,8 +645,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	}
 	
 	private boolean isInSpeaker(float x, float y){
-		int dispX = mDisplay.getWidth()/2;
-		int dispY = mDisplay.getHeight()/2;
+		int dispX = screenQuadrantBoundary.x;
+		int dispY = screenQuadrantBoundary.y;
 		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (speaker.getLayoutParams().width/2)){
 			return false;
 		}
@@ -662,15 +676,14 @@ public class MainActivity extends Activity implements SensorEventListener {
     	//if swipe
     	if (!isInSpeaker(x,y)){
     		int currentButton;
-    		// TODO - can we use code that isn't deprecated please?
-    		if (x < mDisplay.getWidth()/2){
+    		if (x < screenQuadrantBoundary.x){
     			//upper left
-    			if (y < mDisplay.getHeight()/2) currentButton = 0;
+    			if (y < screenQuadrantBoundary.y) currentButton = 0;
     			//lower left
     			else currentButton = 2;
     		} else {
     			//upper right
-    			if (y < mDisplay.getHeight()/2) currentButton = 1;
+    			if (y < screenQuadrantBoundary.y) currentButton = 1;
     			//lower right
     			else currentButton = 3;
     		}
