@@ -8,6 +8,7 @@ public class IIRFilter extends Filter {
 	private final static double defaultMaxCutoff = 3000;
 	private final static double defaultMinCutoff = 0;
 
+	@SuppressWarnings("unused")
 	private static final String LogTag = "Infinite Response Filter";
 	
 	private double cutoffFrequency;
