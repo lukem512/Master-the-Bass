@@ -240,7 +240,7 @@ public class MainActivity extends Activity implements SensorEventListener {
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C3;
+		noteFrequency = MidiNote.C2;
 		volume = 1.0;
 		noteDuration = 0.01;
 		maxAmplitude = 1.0;
@@ -753,14 +753,22 @@ public class MainActivity extends Activity implements SensorEventListener {
 	        	}
 	        }
 	    	
-	    	double level = Math.abs(mOrientation[1]*con) * 50;
+	        // Compute the new cutoff frequency
+	        // The sensor returns a value between 0 and 90
+	    	double newCutoff = minCutoffFreq + Math.abs(mOrientation[1]*con) * ((maxCutoffFreq - minCutoffFreq)/90);
+	    	
+	    	// Get the left-right orientation
+	    	// This is a value between -180 and 180
+	    	// TODO - change frequency based upon this value?
+	    	double setFreq = (mOrientation[2]*con);
+	    	//Log.i(LogTag, "Setting frequency to : " + setFreq); 
 			
 			// Get the low-pass filter
             LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
 	    	
 	    	// Change the cutoff (shelf) frequency
-	    	lpf.setCutoffFrequency(level);
-	    	//Log.i(LogTag, "Setting cutoff frequency to : " + level);
+	    	lpf.setCutoffFrequency(newCutoff);
+	    	//Log.i(LogTag, "Setting cutoff frequency to : " + newCutoff);
 		}
 	}
 	

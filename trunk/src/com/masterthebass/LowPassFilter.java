@@ -1,5 +1,7 @@
 package com.masterthebass;
 
+import android.util.Log;
+
 // References:	http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
 // 				http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter
 
@@ -15,26 +17,26 @@ public class LowPassFilter extends IIRFilter {
 		super(ID, name);
 	}
 	
-	// maps the current oscillation value
+	// Maps the current oscillation value
 	// to a cutoff frequency between the bounds
 	private float map(double oscillation) {		
 		return (float) ((oscillation * (getMaxCutoffFrequency() - getMinCutoffFrequency())) + getMinCutoffFrequency());
 	}
 	
-	// this function returns a value between 0 and 1
+	// This function returns a value between 0 and 1
 	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {
-		double T;
-		double tau;
-	    double alpha;
-	    
-	    //tau = RC; // time constant for decay in seconds
-	    //fc = 1/(twoPI*tau); // cutoff frequency
-	    
-	    // TODO - hack, this could be nicer! and more mathematically correct
-	    alpha = getCutoffFrequency()/(getMaxCutoffFrequency() - getMinCutoffFrequency());
-
-	    return alpha;
+	    return cutoffFrequencyToAlpha(getCutoffFrequency(), getSampleRate());
+	}
+	
+	// Returns the -3dB cutoff frequency in Hz
+	private static double alphaToCutoffFrequency(double alpha, int sampleRate) {
+		return -1 * (Math.log(1-alpha)*(sampleRate/twoPI));
+	}
+	
+	// Returns the alpha value for a given cutoff frequency
+	private static double cutoffFrequencyToAlpha(double cutoffFrequency, int sampleRate) {
+		return 1 - Math.exp((-1 * cutoffFrequency)/(sampleRate/twoPI));
 	}
 	
 	@Override
