@@ -14,5 +14,6 @@
     <string name="btnRecordSave_text">Save</string>
     <string name="btnRecordCancel_text">Cancel</string>
     <string name="recording_save_text_text">Where do you want to save this recording?</string>
+    <string name="calibration">Calibration</string>
 
 </resources>

@@ -109,6 +109,11 @@ public class Filtersmenu extends Activity {
         centreparms.height = centreparms.width;
         centreparms.topMargin = fparms.topMargin + sp.height - centreparms.height/2;
         bcentre.setLayoutParams(centreparms);
+        
+        Button calib = (Button)findViewById(R.id.buttoncalib);
+        ViewGroup.LayoutParams parms = calib.getLayoutParams();
+        parms.height = (int)(centreparms.height/1.5);
+        calib.setLayoutParams(parms);
 	}
 	
 	private void SetUpSlider() {
@@ -233,6 +238,12 @@ public class Filtersmenu extends Activity {
         setResult(RESULT_OK,a);
         finish();
     }
+	
+	
+	//if calibration button pressed
+	public void calibrate(View view){
+		//do calibration
+	}
 	
     public void onBtn0Clicked(View view) {
         boolean on = ((ToggleButton) view).isChecked();

@@ -4,15 +4,16 @@
        android:layout_height="fill_parent"
        android:screenOrientation="portrait"        
        android:background="@drawable/settings_background">
-    
-       <com.masterthebass.SliderView android:id="@+id/slider"
+
+ 	    <com.masterthebass.SliderView android:id="@+id/slider"
 			android:layout_width ="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
 			android:layout_marginTop="110dp"
 			android:layout_marginLeft="15dp"
 			android:adjustViewBounds="true"/>
-       
+ 	    
+ 	    
 	   <TextView android:id="@+id/text_interval"
 			android:layout_marginTop="95dp"
 			android:layout_marginLeft="140dp"			
@@ -137,5 +138,19 @@
         android:background="@drawable/settings_filters_centre"
         android:layout_below="@+id/vibration"
         android:layout_marginTop="30dp" />
+
+       <Button
+           android:id="@+id/buttoncalib"
+           style="?android:attr/buttonStyleSmall"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBaseline="@+id/vibration"
+           android:layout_toRightOf="@+id/vibration"
+           android:layout_marginLeft="20dp"
+           android:layout_alignRight="@+id/filterbuttons"
+           android:background="@drawable/selector_calib"
+           android:text="@string/calibration"
+           android:textColor="#caebea"
+           android:onClick="calibrate" />
 
    </RelativeLayout>
