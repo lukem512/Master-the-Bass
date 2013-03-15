@@ -1,15 +1,13 @@
 package com.masterthebass;
 
-import android.util.Log;
-
 // References:	http://stackoverflow.com/questions/13243399/implementing-a-low-pass-filter-in-android-application-how-to-determine-the-val
 // 				http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter
 
 public class LowPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
+	@SuppressWarnings("unused")
 	private static final String LogTag = "Low-Pass Filter";
 	private static final double twoPI = Math.PI * 2;
-	private final static double amplitudeScalar = 4;
 	private double[] filteredPCM;
 	private double prevAlpha;
 	
@@ -30,6 +28,7 @@ public class LowPassFilter extends IIRFilter {
 	}
 	
 	// Returns the -3dB cutoff frequency in Hz
+	@SuppressWarnings("unused")
 	private static double alphaToCutoffFrequency(double alpha, int sampleRate) {
 		return -1 * (Math.log(1-alpha)*(sampleRate/twoPI));
 	}

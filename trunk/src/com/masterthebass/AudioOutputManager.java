@@ -46,6 +46,7 @@ public class AudioOutputManager implements AudioTrack.OnPlaybackPositionUpdateLi
 		nativeSampleRate = AudioTrack.getNativeOutputSampleRate(mode);
 	}
 
+	@SuppressWarnings("unused")
 	private AudioTrack createAudioTrack(int channel, int format, double bufDuration, int mode) {
 		return createAudioTrack (channel, format, (int) (bufDuration * nativeSampleRate), mode);
 	}
