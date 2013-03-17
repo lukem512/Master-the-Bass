@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.content.Context;
@@ -402,17 +403,21 @@ public class MainActivity extends Activity implements SensorEventListener {
     
     private void initiatePopupWindow() {
         try {
-            //We need to get the instance of the LayoutInflater, use the context of this activity
+            // We need to get the instance of the LayoutInflater, use the context of this activity
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             
-            //Inflate the view from a predefined XML layout
+            // Inflate the view from a predefined XML layout
             pwView = inflater.inflate(R.layout.save_popup,
                     (ViewGroup) findViewById(R.id.save_popup));
             
-            // create a 300px width and 470px height PopupWindow
+            // Hack to stop the app crashing when text is deleted
+            EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);
+            editFileName.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+            
+            // Create a 300px width and 470px height PopupWindow
             pw = new PopupWindow(pwView, 300, 470, true);
             
-            // display the popup in the center
+            // Display the popup in the center
             pw.showAtLocation(pwView, Gravity.CENTER, 0, 0);
      
         } catch (Exception e) {
@@ -460,8 +465,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     	recordedData.get(data);
     	
     	// Write it to the file specified
-    	// TODO - trying to change the name causes all sorts of problems
-    	// http://stackoverflow.com/questions/14698264/span-exclusive-exclusive-spans-cannot-have-a-zero-length-error-whenever-an-editt
     	EditText editFileName = (EditText) pwView.findViewById(R.id.editFileName);
     	String filename = editFileName.getText().toString();
     	fileman.openFile(fileman.getPath(),filename);
