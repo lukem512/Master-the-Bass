@@ -1,5 +1,7 @@
 package com.masterthebass;
 
+//https://code.google.com/p/audacity/source/browse/audacity-src/trunk/src/effects/Wahwah.cpp?r=11204
+
 public class WahWahFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	private static final double twopi = 2 * Math.PI;
