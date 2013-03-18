@@ -119,7 +119,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private ToggleButton fb4;
 	private int lastButton = 5;
 	private boolean leftButton = true;
-	private Button speaker;
 	
 	// Log output tag
 	private final static String LogTag = "Main";
@@ -232,7 +231,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         fb2 = (ToggleButton)findViewById(R.id.filter2);
         fb3 = (ToggleButton)findViewById(R.id.filter3);
         fb4 = (ToggleButton)findViewById(R.id.filter4);
-        speaker = (Button)findViewById(R.id.buttonspeaker);
         Button record = (Button)findViewById(R.id.buttonrecord);
         Button help = (Button)findViewById(R.id.buttonplay);
         Button settings = (Button)findViewById(R.id.btnSettings);
@@ -254,11 +252,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*screenSize.y/5 - 15, 1);
     	LinearLayout rLGreen = ((LinearLayout) b.getParent());
     	rLGreen.setLayoutParams(parms);
-    	//scaling speaker
-    	ViewGroup.LayoutParams parm = speaker.getLayoutParams();
-    	parm.width = (int)(screenSize.x/1.5);
-    	parm.height = parm.width;
-    	speaker.setLayoutParams(parm);
     } 
     
     @Override
@@ -612,7 +605,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private boolean isInSpeaker(float x, float y){
 		int dispX = screenQuadrantBoundary.x;
 		int dispY = screenQuadrantBoundary.y;
-		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (speaker.getLayoutParams().width/2)){
+		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 50)){
 			return false;
 		}
 		return true;
