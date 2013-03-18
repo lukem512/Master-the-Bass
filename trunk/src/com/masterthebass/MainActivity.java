@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
@@ -50,6 +51,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	/*  settings:
 	 *  0 - 3 are filter on/off buttons 
 	 *  4 vibration button
+	 *  5 calibration
 	 */
 	
 	Vibrator v;
@@ -57,11 +59,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
-	
-	// Sensor variables	
-	private SensorEvent calibrate;
-	
-	//private SensorManager mSensorManager;
+	public final static int NUM_SETTINGS = 6;
+
+	// Sensor variables
     private Sensor mAccelerometer;
     private Sensor mMagnetometer;
 
@@ -78,10 +78,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float[] mRNew = new float[9];
     private float[] mRInv = new float[9];
     private float[] mOrientation = new float[3];
-	
-	private float calx;
-	private float caly;
-	private float calz;
 	
 	private boolean writing;
 	private boolean recording;
@@ -167,10 +163,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		writing = false;
 		
-		calx = 0;
-		caly = 0;
-		calz = 0;
-		
 		movingAverageCount = 10;
 		gradMovingAverage = new double[movingAverageCount];
 		
@@ -215,7 +207,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        settings = new boolean[5];
+        settings = new boolean[NUM_SETTINGS];
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mDisplay = mWindowManager.getDefaultDisplay();
         
@@ -340,6 +332,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
     			setLowPassFilterCutoffFrequencies();
+    			// TODO - clean this up.
+    			if (settings[5] == true) {
+    				calibrating = true;
+    			}
     		}
 
     		if (resultCode == RESULT_CANCELED) {
@@ -553,6 +549,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public static void addSliderValues(int[] a){
 		sliderValues = a;
 	}
+	
 	//detects what button clicked and returns false if none
 	private boolean checkFilterButton(int n, float x, float y){
 		int location[] = new int [2];
@@ -698,8 +695,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 	        		mRInv[0] = (1/det)*(mRCal[4]*mRCal[8]-mRCal[7]*mRCal[5]); 	 mRInv[1] = (-1)*(1/det)*(mRCal[1]*mRCal[8]-mRCal[7]*mRCal[2]); mRInv[2] = (1/det)*(mRCal[1]*mRCal[5]-mRCal[4]*mRCal[2]);
 	        		mRInv[3] = (-1)*(1/det)*(mRCal[3]*mRCal[8]-mRCal[6]*mRCal[5]); mRInv[4] = (1/det)*(mRCal[0]*mRCal[8]-mRCal[6]*mRCal[2]); 	  mRInv[5] = (-1)*(1/det)*(mRCal[0]*mRCal[5]-mRCal[3]*mRCal[2]);
 	        		mRInv[6] = (1/det)*(mRCal[3]*mRCal[7]-mRCal[6]*mRCal[4]); 	 mRInv[7] = (-1)*(1/det)*(mRCal[0]*mRCal[7]-mRCal[6]*mRCal[1]); mRInv[8] = (1/det)*(mRCal[0]*mRCal[4]-mRCal[3]*mRCal[1]);
+	        		
+	        		// Set flags
 	        		calibrating = false;
 	        		calibrated = true;
+	        		
+	        		// Indicate calibration complete!
+	        		Toast toast = Toast.makeText(getApplicationContext(), "Calibration successful!", Toast.LENGTH_SHORT);
+	        		toast.show();
 	        	}
 	        	else
 	        	{

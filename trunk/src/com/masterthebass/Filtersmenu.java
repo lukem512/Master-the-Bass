@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -31,6 +32,7 @@ public class Filtersmenu extends Activity {
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
+	public final static int NUM_SETTINGS = 6;
 	
 	public final static String LogTag = "FiltersMenu";
 	
@@ -55,7 +57,7 @@ public class Filtersmenu extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		settings = new boolean[5];
+		settings = new boolean[NUM_SETTINGS];
 		setContentView(R.layout.activity_filters);
 		
 		// Initiate switches
@@ -227,13 +229,7 @@ public class Filtersmenu extends Activity {
         a.putExtra(TAG, sliderValues);
         setResult(RESULT_OK,a);
         finish();
-    }
-	
-	
-	//if calibration button pressed
-	public void calibrate(View view){
-		//do calibration
-	}
+    }	
 	
     public void onBtn0Clicked(View view) {
         boolean on = ((ToggleButton) view).isChecked();
@@ -259,5 +255,16 @@ public class Filtersmenu extends Activity {
         boolean on = ((ToggleButton) view).isChecked();
         settings[4] = on;
     }
+
+	public void calibrate(View view){
+		settings[5] = true;
+		
+		// Display instructions
+		Toast toast = Toast.makeText(getApplicationContext(), "Hold your phone in the desired orientation and tap speaker graphic", Toast.LENGTH_LONG);
+		toast.show();
+		
+		// Navigate back to main screen
+		onBackPressed();
+	}
     
 }
