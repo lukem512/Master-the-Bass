@@ -5,10 +5,10 @@
     tools:context=".Help" >
 
     <TextView
+        android:id="@+id/texthelp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="HELP MENU" />
+        android:textColor="#caebea"
+        android:scrollbars = "vertical"/>
 
 </RelativeLayout>
