@@ -1,0 +1,25 @@
+11/02/13
+Initital design of the main screen 12 hours
+Fixing double slider 1 hour
+Adding filter buttons functionality 3 hours
+
+18/02/2013
+Fixing UI layouts 8 hours
+Adding sound-on-touch functionality 4 hours
+
+25/02/2013
+getting correct touch values 4 hours
+Making main screen resizable 15 hours
+Filter button fixes 1 hour
+
+04/02/13
+Setting menu redesign 6 hours
+Vibration functionality and slider improvements 2 hours
+Cleaning up of unused code 0.5 hours
+General speed up 4 hours
+
+11/02/13
+Various fixes of text display 2 hours
+Improved settings menu layout 2 hours
+Added text to help menu 1 hour
+
