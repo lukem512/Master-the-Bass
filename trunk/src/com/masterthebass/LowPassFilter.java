@@ -11,13 +11,14 @@ public class LowPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	@SuppressWarnings("unused")
 	private static final String LogTag = "Low-Pass Filter";
-	private static final double twoPI = Math.PI * 2;
 	private double[] filteredPCM;
 	private double prevAlpha;
 	
-	// Use the default contstructor
+	// Use the default constructor
 	public LowPassFilter(int ID, String name) {
 		super(ID, name);
+		this.setMaxCutoffFrequency(10000);
+		this.setMinCutoffFrequency(3000);
 	}
 	
 	// Maps the current oscillation value
@@ -54,7 +55,6 @@ public class LowPassFilter extends IIRFilter {
 		} else {
 			int ramp = 0;
 			final int rampNum = 900;
-			double sample;
 			double delta;
 			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
 			double alpha = getAlpha(count);
@@ -80,8 +80,7 @@ public class LowPassFilter extends IIRFilter {
 					alpha += delta;
 					ramp++;
 				}
-				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
-				filteredPCM[i] = sample;
+				filteredPCM[i] = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
 			}
 			
 			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
@@ -101,7 +100,6 @@ public class LowPassFilter extends IIRFilter {
 		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
 			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
 		} else {
-			double sample;
 			double alpha;
 			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
 			
@@ -111,8 +109,7 @@ public class LowPassFilter extends IIRFilter {
 			for (int i=0;i<count;i++) {
 				setCutoffFrequency (map (LFOData[i]));
 				alpha = getAlpha(count);
-				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
-				filteredPCM[i] = sample;
+				filteredPCM[i] = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
 			}
 			
 			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
