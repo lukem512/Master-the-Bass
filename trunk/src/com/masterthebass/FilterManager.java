@@ -40,15 +40,19 @@ public class FilterManager implements Serializable {
 		OscillatorList = new Hashtable<Integer, Oscillator>();
 		
 		// Create an instance of every filter and add to a list
-		FilterList.put(0, new LowPassFilter(0, "Low Pass Filter"));
-		FilterList.put(1, new AmplitudeFilter(1, "Oscillating Amplitude Filter", 1.0));
-		FilterList.put(2, new NoiseFilter(2, "Noise Filter", 1028));
-		FilterList.put(3, new NoiseFilter(3, "Extra Noise Filter", 4086));
-		FilterList.put(4, new EchoFilter(4, "Echo Filter", 3));
-		FilterList.put(5, new WahWahFilter(5, "Wah Wah Filter"));
+		FilterList.put(0, new LowPassFilter(0, "Low Pass"));
+		FilterList.put(1, new AmplitudeFilter(1, "Tremolo", 1.0));
+		FilterList.put(2, new NoiseFilter(2, "Noise", 1028));
+		FilterList.put(3, new NoiseFilter(3, "Extra Noise", 4086));
+		FilterList.put(4, new EchoFilter(4, "Echo", 3));
+		FilterList.put(5, new HighPassFilter(5, "High Pass"));
+		FilterList.put(6, new WahWahFilter(6, "Wah Wah"));
 		
 		// Add oscillators to the relevant filters
 		attachOscillator(1, new Oscillator(new SineWave(), 1.0, 3.0));
+		attachOscillator(6, new Oscillator(new SineWave(), 1.0, 3.0));
+		
+		
 		
 		// Set the sample rate
 		setSampleRate(defaultSampleRate);
