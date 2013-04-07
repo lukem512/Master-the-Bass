@@ -4,8 +4,8 @@ public class IIRFilter extends Filter {
 
 	private static final long serialVersionUID = 4637928974814745087L;
 	
-	private final static double defaultCutoff = 3000;
-	private final static double defaultMaxCutoff = 3000;
+	private final static double defaultCutoff = 50;
+	private final static double defaultMaxCutoff = 100;
 	private final static double defaultMinCutoff = 0;
 	
 	protected static final double twoPI = Math.PI * 2;
