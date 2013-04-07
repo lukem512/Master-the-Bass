@@ -38,14 +38,15 @@ public class NoiseFilter extends Filter  {
 	    Random generator = new Random();
 		int count = rawPCM.length;
 		int newValue;
+		int randomValue;
 		
 		for (int i=0; i<count; i++)
 		{
-			int randomIndex = (generator.nextInt(range) - (range/2));
-			newValue = rawPCM[i] + randomIndex;
+			randomValue = (generator.nextInt(range) - (range/2));
+			newValue = rawPCM[i] + randomValue;
 			if (newValue < Short.MAX_VALUE) {
 				if (newValue > Short.MIN_VALUE) {
-					rawPCM[i] = (short) (rawPCM[i] + randomIndex);
+					rawPCM[i] = (short) (rawPCM[i] + randomValue);
 				} else {
 					rawPCM[i] = Short.MIN_VALUE;
 				}
@@ -60,6 +61,6 @@ public class NoiseFilter extends Filter  {
 	@Override
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
 		// TODO - oscillate the amount of noise using the LFO
-		return rawPCM;
+		return applyFilter(rawPCM);
 	}
 }
