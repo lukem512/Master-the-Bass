@@ -50,7 +50,7 @@ public class LowPassFilter extends IIRFilter {
 	public short[] applyFilter (short[] rawPCM) {
 		int count = rawPCM.length;
 		int ramp = 0;
-		final int rampNum = 900;
+		final int rampNum = 900; // TODO - this shouldn't be a magic number!
 		double delta;
 		double[] filteredPCM = shortArrayToDoubleArray(rawPCM);
 		double alpha = getAlpha(count);

@@ -50,7 +50,7 @@ public class FilterManager implements Serializable {
 		
 		// Add oscillators to the relevant filters
 		attachOscillator(1, new Oscillator(new SineWave(), 1.0, 3.0));
-		attachOscillator(6, new Oscillator(new SineWave(), 1.0, 3.0));
+		attachOscillator(5, new Oscillator(new SineWave(), 1.0, 3.0));
 		
 		
 		

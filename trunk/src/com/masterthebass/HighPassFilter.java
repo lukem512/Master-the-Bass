@@ -9,6 +9,8 @@ public class HighPassFilter extends IIRFilter {
 	private static final String LogTag = "High-Pass Filter";
 	private double[] filteredPCM;
 	private double prevAlpha;
+	private boolean lastSampleSet;
+	private double lastSample;
 	
 	// Use the default constructor
 	public HighPassFilter(int ID, String name) {
@@ -41,43 +43,50 @@ public class HighPassFilter extends IIRFilter {
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
 		int count = rawPCM.length;
+		int ramp = 0;
+		final int rampNum = 900; // TODO - this shouldn't be a magic number!
+		double delta;
+		double[] inputPCM = shortArrayToDoubleArray(rawPCM);
+		double[] filteredPCM = inputPCM.clone();
+		double alpha = getAlpha(count);
 		
-		// Initially, store the array so that we can use it
-		// as a positive feedback for the filter.
-		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
-			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
-		} else {
-			int ramp = 0;
-			final int rampNum = 900;
-			double delta;
-			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
-			double alpha = getAlpha(count);
-			
-			// Ramp up the alpha value of the filter
-			// This ensures when the cutoff frequency
-			// is dramatically changed, the waveform stays
-			// roughly continuous and artifacts are not heard.
-			if (prevAlpha == alpha) {
-				ramp = rampNum+1;
-				delta = 0;
-			}
-			else {
-				delta = (alpha - prevAlpha)/rampNum;
-				alpha = prevAlpha;
-			}
-			
-			// Apply the simple high-pass filter to each sample.
-			for (int i=0;i<count-1;i++) {
-				if (ramp <= rampNum) {
-					alpha += delta;
-					ramp++;
-				}
-				filteredPCM[i] = alpha * (filteredPCM[i] + inputPCM[i+1] - inputPCM[i]);
-			}
-			
-			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
-			prevAlpha = alpha;
+		// Ramp up the alpha value of the filter
+		// This ensures when the cutoff frequency
+		// is dramatically changed, the waveform stays
+		// roughly continuous and artifacts are not heard.
+		if (prevAlpha == alpha) {
+			ramp = rampNum+1;
+			delta = 0;
 		}
+		else {
+			delta = (alpha - prevAlpha)/rampNum;
+			alpha = prevAlpha;
+		}
+		
+		// If possible, set the first sample to be
+		// the previous sample from the last data.
+		// If a stream of data is the input, as multiple
+		// samples, this should ensure continuous filtering.
+		if (lastSampleSet) {
+			filteredPCM[0] = lastSample;
+		} else {
+			lastSampleSet = true;
+		}
+		
+		// Apply the simple high-pass filter to each sample.
+		for (int i=1;i<count-1;i++) {
+			if (ramp <= rampNum) {
+				alpha += delta;
+				ramp++;
+			}
+			filteredPCM[i] = alpha * (filteredPCM[i-1] + inputPCM[i] - inputPCM[i-1]);
+		}
+		
+		// Set the last sample variable
+		lastSample = filteredPCM[count-1];
+		
+		rawPCM = doubleArrayToShortArray(filteredPCM);
+		prevAlpha = alpha;
 		
 		return rawPCM;
 	}
@@ -86,24 +95,18 @@ public class HighPassFilter extends IIRFilter {
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
 		int count = rawPCM.length;
 		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		double alpha;
+		double[] inputPCM = shortArrayToDoubleArray(rawPCM);
+		double[] filteredPCM = inputPCM.clone();
 		
-		// Initially, store the array so that we can use it
-		// as a positive feedback for the filter.
-		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
-			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
-		} else {
-			double alpha;
-			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
-			
-			// Apply the simple high-pass filter to each sample.
-			for (int i=0;i<count-1;i++) {
-				setCutoffFrequency (map (LFOData[i]));
-				alpha = getAlpha(count);
-				filteredPCM[i] = alpha * (filteredPCM[i] + inputPCM[i+1] - inputPCM[i]);
-			}
-			
-			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
+		// Apply the simple high-pass filter to each sample.
+		for (int i=0;i<count-1;i++) {
+			setCutoffFrequency (map (LFOData[i]));
+			alpha = getAlpha(count);
+			filteredPCM[i] = alpha * (filteredPCM[i] + inputPCM[i+1] - inputPCM[i]);
 		}
+		
+		rawPCM = doubleArrayToShortArray(filteredPCM);
 		
 		return rawPCM;
 	}
