@@ -7,7 +7,6 @@ public class HighPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 6062462755632521195L;
 	@SuppressWarnings("unused")
 	private static final String LogTag = "High-Pass Filter";
-	private double[] filteredPCM;
 	private double prevAlpha;
 	private boolean lastSampleSet;
 	private double lastSample;

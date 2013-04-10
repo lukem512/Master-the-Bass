@@ -12,8 +12,6 @@ public class WahWahFilter extends IIRFilter {
 	private int maxWahLevel;
 	private int minWahLevel;
 	private double res;
-	private int skipcount;
-	private double[] filteredPCM;
 	
 	public WahWahFilter(int ID, String name) {
 		super(ID, name);
@@ -21,7 +19,6 @@ public class WahWahFilter extends IIRFilter {
 		setMinWahLevel(defaultMinWahLevel);
 		setWahLevel(defaultWahLevel);
 		setResonance(2.5);
-		skipcount = 0;
 	}
 	
 	public void setResonance(double res) {

@@ -89,9 +89,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	private SensorManager mSensorManager;
 	
-	private int movingAverageCount;
-	private double[] gradMovingAverage;
-	
 	// Audio generation variables
 	private Thread generatorThread;
 	private Thread writerThread;
@@ -131,7 +128,7 @@ public class MainActivity extends Activity implements SensorEventListener {
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
    		filterman 	= new FilterManager();
-   		soundman.setWave(new HarmonicSquareWave());
+   		soundman.setWave(new SineWave());
    		handler		= new Handler() {
    			@Override
    			public void handleMessage(Message msg) {
@@ -161,13 +158,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
 		
 		writing = false;
-		
-		movingAverageCount = 10;
-		gradMovingAverage = new double[movingAverageCount];
-		
-		for (int k = 0; k < movingAverageCount; k++) {
-			gradMovingAverage[k] = 0;
-		}
    	}
    	
 	private void setLowPassFilterCutoffFrequencies() {
@@ -213,7 +203,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         screenSize = new Point();
         screenQuadrantBoundary = new Point();
         
-        // TODO - use non-deprecated code
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
         	mDisplay.getSize(screenSize);
         } else {
@@ -303,7 +292,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     
     //start the settings activity
     public void startSettings(View view) {
-    	Intent intent = new Intent(this, Filtersmenu.class);
+    	Intent intent = new Intent(this, FiltersMenu.class);
     	Bundle bundle = new Bundle();
     	bundle.putBooleanArray("settings", settings);
     	bundle.putIntArray("sliderValues", sliderValues);
@@ -322,10 +311,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     	if (requestCode == 1) {
 
     		if(resultCode == RESULT_OK){
-    			settings = data.getBooleanArrayExtra(Filtersmenu.EXTRA_MESSAGE);
+    			settings = data.getBooleanArrayExtra(FiltersMenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
     			setLowPassFilterCutoffFrequencies();
-    			// TODO - clean this up.
     			if (settings[5] == true) {
     				calibrating = true;
     			}
