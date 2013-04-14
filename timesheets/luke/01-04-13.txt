@@ -1,0 +1,3 @@
+01-04-2013 - 1 hour - Tidied up code for sample code section of group report - 5ecff06c8270d1b071a71db0fa72f59475fec62f
+07-04-2013 - 3 hours - Fixed a bug in Low-pass filter so it actually works as an LPF now. - 9aec90b3d67f1328763ac7b3fd699636b3567d2f
+	   - 2 hours - Added a new High-pass filter class - ad89fd7a3ba968d4451ae99983fb4930888ebbd8
