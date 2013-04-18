@@ -2,51 +2,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_background"
     android:screenOrientation="portrait" >
-
+       
     <Button
-        android:id="@+id/buttonrecord"
+        android:id="@+id/speaker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:background="@drawable/speaker"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="14dp"
-        android:background="@drawable/selector_record"
-        android:onClick="toggleRecord" />
-
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="13dp"
-        android:layout_toLeftOf="@+id/buttonplay"
-        android:background="@drawable/selector_settings"
-        android:onClick="startSettings" />
-
-    <Button
-        android:id="@+id/buttonplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="13dp"
-        android:background="@drawable/selector_help" 
-        android:onClick = "startHelp"/>
-
-    <LinearLayout
+        android:layout_centerVertical="true" />
+    
+	<LinearLayout
+        android:id="@+id/filters"
+	    android:baselineAligned="false"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:paddingBottom="5dp" >
+        android:layout_centerVertical="true" >
 
         <LinearLayout
-           		android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-            	android:layout_weight="1"  >
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1" >
 
                 <ToggleButton
                     android:layout_weight="1"
@@ -64,7 +42,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter3"
-                    android:onClick="filterBottomLeft" 
+                    android:onClick="filterBottomLeft"
                     android:textOn=""
                     android:textOff=""/>
 
@@ -75,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-        	    android:layout_weight="1" >
+                android:layout_weight="1" >
 
                 <ToggleButton
                     android:layout_weight="1"
@@ -83,7 +61,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter2"
-                    android:onClick="filterTopRight" 
+                    android:onClick="filterTopRight"
                     android:textOn=""
                     android:textOff=""/>
 
@@ -93,13 +71,80 @@
                     android:layout_width="fill_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/selector_filter4"
-                    android:onClick="filterBottomRight" 
+                    android:onClick="filterBottomRight"
                     android:textOn=""
                     android:textOff=""/>
 
             </LinearLayout>
 
     </LinearLayout>
+    
+	<Button
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/filters"
+        android:background="@drawable/top_bar" />
+     
+    <Button
+        android:id="@+id/bottombar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/filters"
+        android:background="@drawable/bottom_bar" />
 
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_settings"
+        android:onClick="startSettings" />
+
+    <Button
+        android:id="@+id/buttonplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_help" 
+        android:layout_alignTop="@id/btnSettings"
+        android:layout_toRightOf="@id/btnSettings"
+        android:onClick = "startHelp"/>
+    
+    <Button
+        android:id="@+id/buttonrecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/btnSettings"
+        android:background="@drawable/selector_record"
+        android:onClick="toggleRecord" />
+    
+    <Button
+        android:id="@+id/octavedown"
+        android:layout_below="@id/filters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_down"
+        android:onClick="octaveDown" />
+    
+    <Button
+        android:id="@+id/octaveup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/octavedown"
+        android:background="@drawable/selector_up"
+        android:onClick="octaveUp" />
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_below="@id/filters"
+        android:layout_toRightOf="@id/octavedown"
+        android:layout_toLeftOf="@id/octaveup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/knob"
+        android:thumbOffset="-5dp"
+        android:background="@drawable/bar"
+        android:progressDrawable="@android:color/transparent"/>
+    
 </RelativeLayout>
 

@@ -33,11 +33,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends Activity implements SensorEventListener,OnSeekBarChangeListener {
 	// Manager instances
 	private AudioOutputManager audioman;
 	private SoundManager soundman;
@@ -222,6 +225,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
         screenQuadrantBoundary.x = screenSize.x/2;
         screenQuadrantBoundary.y = screenSize.y/2;
+        SeekBar bar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
+        bar.setOnSeekBarChangeListener(this); // set seekbar listener.
         
         initiateLayout();   
     }
@@ -234,10 +239,55 @@ public class MainActivity extends Activity implements SensorEventListener {
         Button record = (Button)findViewById(R.id.buttonrecord);
         Button help = (Button)findViewById(R.id.buttonplay);
         Button settings = (Button)findViewById(R.id.btnSettings);
-        scaleLayout(fb1);
-        scaleButtons(record);
-        scaleButtons(help);	
+        Button speaker = (Button)findViewById(R.id.speaker);
+        Button octaveup = (Button)findViewById(R.id.octaveup);
+        Button octavedown = (Button)findViewById(R.id.octavedown);
+        SeekBar seek = (SeekBar)findViewById(R.id.seekBar1);
+        
+
+        RelativeLayout.LayoutParams parms,lparms,bparms;
+        
+        //filters
+        LinearLayout l = (LinearLayout)findViewById(R.id.filters);
+        lparms = (RelativeLayout.LayoutParams)l.getLayoutParams();
+    	double coefficient = 0.9177; //real image height/width
+    	lparms.width = screenSize.x;
+    	lparms.height = (int)(coefficient*screenSize.x);
+        l.setLayoutParams(lparms);
+        
+        //speaker
+        parms = (RelativeLayout.LayoutParams)speaker.getLayoutParams();
+        parms.height = 7*screenSize.x/10;
+        parms.width = parms.height;
+        speaker.setLayoutParams(parms);
+        
+        //buttons
         scaleButtons(settings);
+        scaleButtons(help);
+        scaleButtons(record);
+        scaleButtons(octaveup);
+        scaleButtons(octavedown);
+        parms = (RelativeLayout.LayoutParams)settings.getLayoutParams();
+        //this is horrible, but works
+        parms.topMargin = (screenSize.y/2 - lparms.height/2)/2 - parms.height/2;
+        parms.leftMargin = screenSize.x/2 - parms.width/2;
+        settings.setLayoutParams(parms);
+        
+        bparms = (RelativeLayout.LayoutParams)help.getLayoutParams();
+        bparms.leftMargin = (screenSize.x/2 - bparms.width/2)/2 - bparms.width/2;
+        help.setLayoutParams(bparms);
+        
+        parms = (RelativeLayout.LayoutParams)record.getLayoutParams();
+        parms.leftMargin = (screenSize.x/2 - parms.width/2)/2 - parms.width/2;
+        record.setLayoutParams(parms);
+        
+        parms = (RelativeLayout.LayoutParams)octavedown.getLayoutParams();
+        parms.topMargin = (screenSize.y/2-lparms.height/2)/2 - parms.height/2;
+        octavedown.setLayoutParams(parms);
+        
+        parms = (RelativeLayout.LayoutParams)seek.getLayoutParams();
+        parms.topMargin = (screenSize.y/2-lparms.height/2)/2 - 20;
+        seek.setLayoutParams(parms);
     }
     
    //scaling play, settings and help buttons
@@ -248,10 +298,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     	b.setLayoutParams(parms);
     }
     //scaling filter buttons and speaker
-    private void scaleLayout(ToggleButton b){
-    	LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 3*screenSize.y/5 - 15, 1);
-    	LinearLayout rLGreen = ((LinearLayout) b.getParent());
-    	rLGreen.setLayoutParams(parms);
+    private void scaleFilters(RelativeLayout.LayoutParams parms){
+    	double coefficient = 0.9177; //real image height/width
+    	parms.width = screenSize.x;
+    	parms.height = (int)(coefficient*screenSize.x);
     } 
     
     @Override
@@ -528,6 +578,35 @@ public class MainActivity extends Activity implements SensorEventListener {
     	}
     	if (settings[4]) v.vibrate(300);
     }
+    
+    //when octave up button is pressed
+    public void octaveUp(View view){
+    	//do stuff
+    }
+    //when octave down button is pressed
+    public void octaveDown(View view){
+    	//do stuff
+    }
+    //methods for main slider
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		// TODO Auto-generated method stub
+		
+	}
+    
     //*********************gesture code****************************
     
     private static final int defaultMinSliderValue = 0;
@@ -615,6 +694,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public boolean dispatchTouchEvent(MotionEvent me) {
 		float x = me.getRawX();
     	float y = me.getRawY();
+    	//if outside of speaker and filters area
+    	if (y > (screenSize.y/2 + screenSize.x/2)){
+    		super.dispatchTouchEvent(me);
+    		return true;
+    	}
     	//when finger is lifted off screen
     	if (me.getAction() == MotionEvent.ACTION_UP){
     		if (audioman.isPlaying() == true) toggleplayonoff();
