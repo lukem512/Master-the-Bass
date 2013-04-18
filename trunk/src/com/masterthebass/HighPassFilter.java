@@ -16,12 +16,6 @@ public class HighPassFilter extends IIRFilter {
 		super(ID, name);
 	}
 	
-	// Maps the current oscillation value
-	// to a cutoff frequency between the bounds
-	private float map(double oscillation) {		
-		return (float) ((oscillation * (getMaxCutoffFrequency() - getMinCutoffFrequency())) + getMinCutoffFrequency());
-	}
-	
 	// This function returns a value between 0 and 1
 	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {

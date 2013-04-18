@@ -33,26 +33,36 @@ public class NoiseFilter extends Filter  {
 		return range;
 	}
 	
+	// maps a floating point value to a range between
+	// 0 and Short.MAX_VALUE
+	private int map(double d) {
+		return (int) (d*Short.MAX_VALUE);
+	}
+	
+	// filter an individual sample
+	// removed to share common code
+	private short processSample (short s, Random generator) {
+		int randomValue = (generator.nextInt(range) - (range/2));
+		int newValue = s + randomValue;
+		
+		if (newValue < Short.MAX_VALUE) {
+			if (newValue > Short.MIN_VALUE) {
+				return (short) newValue;
+			} else {
+				return Short.MIN_VALUE;
+			}
+		} else {
+			return Short.MAX_VALUE;
+		}
+	}
+	
 	@Override
 	public short[] applyFilter (short[] rawPCM){
 	    Random generator = new Random();
 		int count = rawPCM.length;
-		int newValue;
-		int randomValue;
 		
-		for (int i=0; i<count; i++)
-		{
-			randomValue = (generator.nextInt(range) - (range/2));
-			newValue = rawPCM[i] + randomValue;
-			if (newValue < Short.MAX_VALUE) {
-				if (newValue > Short.MIN_VALUE) {
-					rawPCM[i] = (short) (rawPCM[i] + randomValue);
-				} else {
-					rawPCM[i] = Short.MIN_VALUE;
-				}
-			} else {
-				rawPCM[i] = Short.MAX_VALUE;
-			}
+		for (int i=0; i<count; i++) {
+			processSample(rawPCM[i], generator);
 		}
 
 		return rawPCM;
@@ -60,7 +70,15 @@ public class NoiseFilter extends Filter  {
 	
 	@Override
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
-		// TODO - oscillate the amount of noise using the LFO
-		return applyFilter(rawPCM);
+		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		int count = rawPCM.length;
+		Random generator = new Random();
+		
+		for (int i=0;i<count;i++) {
+			setRange (map (LFOData[i]));
+			processSample(rawPCM[i], generator);
+		}
+
+		return rawPCM;
 	}
 }
