@@ -1,0 +1,3 @@
+10-04-2013 - 2 hours - Ported rising and falling saw-tooth waves - 5eb3c9fb155e00caee18d666eec117335a61af36
+           - 1 hour - Ported triangle wave - 6a7821df7229424f55a7e4473fbcde2fdb1288c8
+	   - 1 hour - General clean up of code, removed unused code, commented and fixed warnings - dcd7bdb6394db79b4e10e00ebe80b4c54a89d8c1

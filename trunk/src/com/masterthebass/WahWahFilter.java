@@ -122,30 +122,18 @@ public class WahWahFilter extends IIRFilter {
 	
 	@Override
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
-		double[] xv = new double[3];
-		double[] yv = new double[3];
 		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
+		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		double[] filteredPCM = shortArrayToDoubleArray(rawPCM);
 		
-		// TODO - set wahlevel using LFO
-		
-		getLPCoefficientsButterworth2Pole(getSampleRate(), getCutoffFrequency(), ax, by);
-		
-		for (int i = 0; i < 3; i++) {
-			xv[i] = 0;
-			yv[i] = 0;
+		// Apply the simple band-pass filter to each sample.
+		for (int i=0;i<count;i++) {
+			setCutoffFrequency (map (LFOData[i]));
+			// TODO - band-pass filtering
 		}
 		
-		for (int i=0;i<count;i+=getWahLevel()) {
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = shortToDouble(rawPCM[i]);
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]);
-		    rawPCM[i] = doubleToShort(yv[0]);
-		}
-
+		rawPCM = doubleArrayToShortArray(filteredPCM);
+		
 		return rawPCM;
 	}
 }
