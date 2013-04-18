@@ -11,12 +11,19 @@ public class WahWahFilter extends IIRFilter {
 	private int wahLevel;
 	private int maxWahLevel;
 	private int minWahLevel;
+	private double res;
 	
-	public WahWahFilter(int iD, String name) {
-		super(iD, name);
+	public WahWahFilter(int ID, String name) {
+		super(ID, name);
 		setMaxWahLevel(defaultMaxWahLevel);
 		setMinWahLevel(defaultMinWahLevel);
 		setWahLevel(defaultWahLevel);
+		setResonance(2.5);
+	}
+	
+	public void setResonance(double res) {
+		// TODO - bounds testing
+		this.res = res;
 	}
 
 	public void setWahLevel(int wahLevel) {
@@ -76,29 +83,41 @@ public class WahWahFilter extends IIRFilter {
 	
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
-		double[] xv = new double[3];
-		double[] yv = new double[3];
-		int count = rawPCM.length;
-		double[] ax = new double [3];
-		double[] by = new double[3];
-		
-		getLPCoefficientsButterworth2Pole(getSampleRate(), getCutoffFrequency(), ax, by);
-		
-		for (int i = 0; i < 3; i++) {
-			xv[i] = 0;
-			yv[i] = 0;
-		}
-		
-		for (int i=0;i<count;i+=getWahLevel()) {
-			xv[2] = xv[1]; xv[1] = xv[0];
-		    xv[0] = shortToDouble(rawPCM[i]);
-		    yv[2] = yv[1]; 
-		    yv[1] = yv[0];
-		    yv[0] =   (ax[0] * xv[0]) + (ax[1] * xv[1]) + (ax[2] * xv[2]) - (by[1] * yv[0])- (by[2] * yv[1]);
-		    rawPCM[i] = doubleToShort(yv[0]);
-		}
+		   double omega, sn, cs, alpha;
+		   double in, out;
+		   
+		   int lfoskipsamples = 30;
+		   int skipcount = 0;
 
-		return rawPCM;
+		   /*if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
+				filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
+		   } else {
+			   for (int i = 0; i < rawPCM.length; i++) {
+			      in = rawPCM[i];
+			      
+			      if ((skipcount++) % lfoskipsamples == 0) {
+			         omega = Math.PI * getCutoffFrequency();
+			         sn = Math.sin(omega);
+			         cs = Math.cos(omega);
+			         alpha = sn / (2 * res);
+			         b0 = (1 - cs) / 2;
+			         b1 = 1 - cs;
+			         b2 = (1 - cs) / 2;
+			         a0 = 1 + alpha;
+			         a1 = -2 * cs;
+			         a2 = 1 - alpha;
+			      };
+			      out = (b0 * in + b1 * xn1 + b2 * xn2 - a1 * yn1 - a2 * yn2) / a0;
+			      xn2 = xn1;
+			      xn1 = in;
+			      yn2 = yn1;
+			      yn1 = out;
+			   }
+			   
+			   rawPCM = doubleArrayToShortArray(filteredPCM.clone());
+		   }*/
+		   
+		   return rawPCM;
 	}
 	
 	@Override

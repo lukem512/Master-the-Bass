@@ -27,7 +27,7 @@ import android.widget.ToggleButton;
 import com.masterthebass.SliderView;
 import com.masterthebass.SliderView.KnobValuesChangedListener;
 
-public class Filtersmenu extends Activity {
+public class FiltersMenu extends Activity {
 
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";

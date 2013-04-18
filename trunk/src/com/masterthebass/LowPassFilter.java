@@ -11,13 +11,16 @@ public class LowPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
 	@SuppressWarnings("unused")
 	private static final String LogTag = "Low-Pass Filter";
-	private static final double twoPI = Math.PI * 2;
-	private double[] filteredPCM;
 	private double prevAlpha;
+	private boolean lastSampleSet;
+	private double lastSample;
 	
-	// Use the default contstructor
+	// Use the default constructor
 	public LowPassFilter(int ID, String name) {
 		super(ID, name);
+		this.setMaxCutoffFrequency(10000);
+		this.setMinCutoffFrequency(0);
+		lastSampleSet = false;
 	}
 	
 	// Maps the current oscillation value
@@ -46,47 +49,51 @@ public class LowPassFilter extends IIRFilter {
 	@Override
 	public short[] applyFilter (short[] rawPCM) {
 		int count = rawPCM.length;
+		int ramp = 0;
+		final int rampNum = 900; // TODO - this shouldn't be a magic number!
+		double delta;
+		double[] filteredPCM = shortArrayToDoubleArray(rawPCM);
+		double alpha = getAlpha(count);
 		
-		// Initially, store the array so that we can use it
-		// as a positive feedback for the filter.
-		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
-			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
-		} else {
-			int ramp = 0;
-			final int rampNum = 900;
-			double sample;
-			double delta;
-			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
-			double alpha = getAlpha(count);
-			
-			// Ramp up the alpha value of the filter
-			// This ensures when the cutoff frequency
-			// is dramatically changed, the waveform stays
-			// roughly continuous and artifacts are not heard.
-			if (prevAlpha == alpha) {
-				ramp = rampNum+1;
-				delta = 0;
-			}
-			else {
-				delta = (alpha - prevAlpha)/rampNum;
-				alpha = prevAlpha;
-			}
-			
-			// Apply the simple low-pass filter to each sample.
-			// This uses the feedback array to smooth the values,
-			// this has the effect of low-passing the frequencies.
-			for (int i=0;i<count;i++) {
-				if (ramp <= rampNum) {
-					alpha += delta;
-					ramp++;
-				}
-				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
-				filteredPCM[i] = sample;
-			}
-			
-			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
-			prevAlpha = alpha;
+		// Ramp up the alpha value of the filter
+		// This ensures when the cutoff frequency
+		// is dramatically changed, the waveform stays
+		// roughly continuous and artifacts are not heard.
+		if (prevAlpha == alpha) {
+			ramp = rampNum+1;
+			delta = 0;
 		}
+		else {
+			delta = (alpha - prevAlpha)/rampNum;
+			alpha = prevAlpha;
+		}
+		
+		// If possible, set the first sample to be
+		// the previous sample from the last data.
+		// If a stream of data is the input, as multiple
+		// samples, this should ensure continuous filtering.
+		if (lastSampleSet) {
+			filteredPCM[0] = lastSample;
+		} else {
+			lastSampleSet = true;
+		}
+		
+		// Apply the simple low-pass filter to each sample.
+		// This uses the feedback array to smooth the values,
+		// this has the effect of low-passing the frequencies.
+		for (int i=1;i<count;i++) {
+			if (ramp <= rampNum) {
+				alpha += delta;
+				ramp++;
+			}
+			filteredPCM[i] = filteredPCM[i-1] + alpha * (filteredPCM[i] - filteredPCM[i-1]);
+		}
+		
+		// Set the last sample variable
+		lastSample = filteredPCM[count-1];
+		
+		rawPCM = doubleArrayToShortArray(filteredPCM);
+		prevAlpha = alpha;
 		
 		return rawPCM;
 	}
@@ -95,28 +102,19 @@ public class LowPassFilter extends IIRFilter {
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
 		int count = rawPCM.length;
 		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		double alpha;
+		double[] filteredPCM = shortArrayToDoubleArray(rawPCM);
 		
-		// Initially, store the array so that we can use it
-		// as a positive feedback for the filter.
-		if (filteredPCM == null || filteredPCM.length != rawPCM.length) {
-			filteredPCM = shortArrayToDoubleArray(rawPCM.clone());
-		} else {
-			double sample;
-			double alpha;
-			double[] inputPCM = shortArrayToDoubleArray(rawPCM);
-			
-			// Apply the simple low-pass filter to each sample.
-			// This uses the feedback array to smooth the values,
-			// this has the effect of low-passing the frequencies.
-			for (int i=0;i<count;i++) {
-				setCutoffFrequency (map (LFOData[i]));
-				alpha = getAlpha(count);
-				sample = filteredPCM[i] + (alpha * (inputPCM[i] - filteredPCM[i]));
-				filteredPCM[i] = sample;
-			}
-			
-			rawPCM = doubleArrayToShortArray(filteredPCM.clone());
+		// Apply the simple low-pass filter to each sample.
+		// This uses the feedback array to smooth the values,
+		// this has the effect of low-passing the frequencies.
+		for (int i=0;i<count;i++) {
+			setCutoffFrequency (map (LFOData[i]));
+			alpha = getAlpha(count);
+			filteredPCM[i] = filteredPCM[i-1] + alpha * (filteredPCM[i] - filteredPCM[i-1]);
 		}
+		
+		rawPCM = doubleArrayToShortArray(filteredPCM);
 		
 		return rawPCM;
 	}
