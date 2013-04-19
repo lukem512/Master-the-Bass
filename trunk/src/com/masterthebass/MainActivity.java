@@ -104,7 +104,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	private double noteDuration;
 	private double volume;
-	private double noteFrequency;
+	private int noteNumber;
 	
 	private double maxCutoffFreq;
 	private double minCutoffFreq;
@@ -179,7 +179,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C2;
+		noteNumber = 24;
 		volume = 1.0;
 		noteDuration = 0.01;
 		
@@ -569,34 +569,30 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     
     // When octave up button is pressed
     public void octaveUp(View view){
-    	int n = MidiNote.getNoteFromFrequency(noteFrequency);
-    	noteFrequency = MidiNote.getNoteFrequency(MidiNote.upOctave(n));
+    	noteNumber = MidiNote.upOctave(noteNumber);
     }
     
     // When octave down button is pressed
     public void octaveDown(View view){
-    	int n = MidiNote.getNoteFromFrequency(noteFrequency);
-    	noteFrequency = MidiNote.getNoteFrequency(MidiNote.downOctave(n));
+    	noteNumber = MidiNote.downOctave(noteNumber);
     }
     
     // Methods for main slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
+		// Do nothing
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
+		// TODO
+		// int n = 
 	}
     
     //*********************gesture code****************************
@@ -854,7 +850,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
             	if (audioman.isPlaying()) {
             		if (sampleList.size() < sampleListMaxSize) {
             			// Generate the tone
-            			sampleData = soundman.generateTone(noteDuration, noteFrequency, volume, sampleRate);
+            			sampleData = soundman.generateTone(noteDuration, MidiNote.getNoteFrequency(noteNumber), volume, sampleRate);
             			soundman.commit();
 	            	
 		            	// Apply filters
