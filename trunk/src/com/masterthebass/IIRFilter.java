@@ -67,7 +67,7 @@ public class IIRFilter extends Filter {
 	// Maps the current oscillation value
 	// to a cutoff frequency between the bounds
 	protected float map(double oscillation) {		
-		return (float) ((oscillation * (getMaxCutoffFrequency() - getMinCutoffFrequency())) + getMinCutoffFrequency());
+		return map(Math.abs(oscillation), getMinCutoffFrequency(), getMaxCutoffFrequency());
 	}
 	
 	// convert an array of shorts to an array of doubles

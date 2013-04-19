@@ -66,4 +66,8 @@ public class Filter implements Serializable {
 	public int getSampleRate () {
 		return sampleRate;
 	}
+
+	protected float map(double oscillation, double min, double max) {		
+		return (float) ((oscillation * (max - min)) + min);
+	}
 }

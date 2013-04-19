@@ -104,7 +104,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	private double noteDuration;
 	private double volume;
-	private double noteFrequency;
+	private int noteNumber;
 	
 	private double maxCutoffFreq;
 	private double minCutoffFreq;
@@ -179,7 +179,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
    	
    	private void initAudio () {
    		// Set up default values
-		noteFrequency = MidiNote.C2;
+		noteNumber = 24;
 		volume = 1.0;
 		noteDuration = 0.01;
 		
@@ -214,7 +214,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         }
         screenQuadrantBoundary.x = screenSize.x/2;
         screenQuadrantBoundary.y = screenSize.y/2;
-        SeekBar bar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
+        SeekBar bar = (SeekBar)findViewById(R.id.seekBarFrequency); // make seekbar object
         bar.setOnSeekBarChangeListener(this); // set seekbar listener.
         
         initiateLayout();   
@@ -231,7 +231,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         Button speaker = (Button)findViewById(R.id.speaker);
         Button octaveup = (Button)findViewById(R.id.octaveup);
         Button octavedown = (Button)findViewById(R.id.octavedown);
-        SeekBar seek = (SeekBar)findViewById(R.id.seekBar1);
+        SeekBar seek = (SeekBar)findViewById(R.id.seekBarFrequency);
         
 
         RelativeLayout.LayoutParams parms,lparms,bparms;
@@ -567,13 +567,14 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	if (settings[4]) v.vibrate(300);
     }
     
-    //when octave up button is pressed
+    // When octave up button is pressed
     public void octaveUp(View view){
-    	//do stuff
+    	noteNumber = MidiNote.upOctave(noteNumber);
     }
-    //when octave down button is pressed
+    
+    // When octave down button is pressed
     public void octaveDown(View view){
-    	//do stuff
+    	noteNumber = MidiNote.downOctave(noteNumber);
     }
     //*****methods for main slider*****
 	//Gets value while user drags the thumb (gets called only if value is changed!)
@@ -586,7 +587,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		
+		// Do nothing
 	}
 
 	//Seek Bar value when user lifts his finger off screen
@@ -851,7 +852,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
             	if (audioman.isPlaying()) {
             		if (sampleList.size() < sampleListMaxSize) {
             			// Generate the tone
-            			sampleData = soundman.generateTone(noteDuration, noteFrequency, volume, sampleRate);
+            			sampleData = soundman.generateTone(noteDuration, MidiNote.getNoteFrequency(noteNumber), volume, sampleRate);
             			soundman.commit();
 	            	
 		            	// Apply filters
