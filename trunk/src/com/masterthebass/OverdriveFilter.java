@@ -72,7 +72,7 @@ public class OverdriveFilter extends Filter {
 		int count = rawPCM.length;
 		
 		for (int i = 0; i < count; i++) {
-			processSample(rawPCM[i]);
+			rawPCM[i] = processSample(rawPCM[i]);
 		}
 		
 		return rawPCM;
@@ -87,7 +87,7 @@ public class OverdriveFilter extends Filter {
 		for (int i = 0; i < count; i++) {
 			newGain = map(LFOData[i], getMinGain(), getMaxGain());
 			setGain(newGain);
-			processSample(rawPCM[i]);
+			rawPCM[i] = processSample(rawPCM[i]);
 		}
 		
 		return rawPCM;
