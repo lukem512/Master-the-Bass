@@ -567,17 +567,19 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	if (settings[4]) v.vibrate(300);
     }
     
-    //when octave up button is pressed
+    // When octave up button is pressed
     public void octaveUp(View view){
-    	//do stuff
+    	int n = MidiNote.getNoteFromFrequency(noteFrequency);
+    	noteFrequency = MidiNote.getNoteFrequency(MidiNote.upOctave(n));
     }
     
-    //when octave down button is pressed
+    // When octave down button is pressed
     public void octaveDown(View view){
-    	//do stuff
+    	int n = MidiNote.getNoteFromFrequency(noteFrequency);
+    	noteFrequency = MidiNote.getNoteFrequency(MidiNote.downOctave(n));
     }
     
-    //methods for main slider
+    // Methods for main slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {

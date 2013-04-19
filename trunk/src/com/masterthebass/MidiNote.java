@@ -65,96 +65,66 @@ public final class MidiNote {
 	
 	public final static float C8 = 4186f;
 	
-	/* MIDI numbers */
+	/* Conversion methods */
 	
-	public final static float MIDI21 = A0;
-	public final static float MIDI22 = 29.135f;
-	public final static float MIDI23 = B0;
-	public final static float MIDI24 = C1;
-	public final static float MIDI25 = 34.648f;
-	public final static float MIDI26 = D1;
-	public final static float MIDI27 = 38.891f;	
-	public final static float MIDI28 = E1;
-	public final static float MIDI29 = F1;
+	// Lots of the conversion heavily utilises: http://www.musicdsp.org/showone.php?id=125
 	
-	public final static float MIDI30 = B7;
-	public final static float MIDI31 = B7;
-	public final static float MIDI32 = B7;
-	public final static float MIDI33 = B7;
-	public final static float MIDI34 = B7;
-	public final static float MIDI35 = B7;
-	public final static float MIDI36 = B7;
-	public final static float MIDI37 = B7;
-	public final static float MIDI38 = B7;
-	public final static float MIDI39 = B7;
-	public final static float MIDI40 = B7;
-	public final static float MIDI41 = B7;
-	public final static float MIDI42 = B7;
-	public final static float MIDI43 = B7;
-	public final static float MIDI44 = B7;
-	public final static float MIDI45 = B7;
-	public final static float MIDI46 = B7;
-	public final static float MIDI47 = B7;
-	public final static float MIDI48 = B7;
-	public final static float MIDI49 = B7;
-	public final static float MIDI50 = B7;
-	public final static float MIDI51 = B7;
-	public final static float MIDI52 = B7;
-	public final static float MIDI53 = B7;
-	public final static float MIDI54 = B7;
-	public final static float MIDI55 = B7;
-	public final static float MIDI56 = B7;
-	public final static float MIDI57 = B7;
-	public final static float MIDI58 = B7;
-	public final static float MIDI59 = B7;
-	public final static float MIDI60 = B7;
-	public final static float MIDI61 = B7;
-	public final static float MIDI62 = B7;
-	public final static float MIDI63 = B7;
-	public final static float MIDI64 = B7;
-	public final static float MIDI65 = B7;
-	public final static float MIDI66 = B7;
-	public final static float MIDI67 = B7;
-	public final static float MIDI68 = B7;
-	public final static float MIDI69 = B7;
-	public final static float MIDI70 = B7;
-	public final static float MIDI71 = B7;
-	public final static float MIDI72 = B7;
-	public final static float MIDI73 = B7;
-	public final static float MIDI74 = B7;
-	public final static float MIDI75 = B7;
-	public final static float MIDI76 = B7;
-	public final static float MIDI77 = B7;
-	public final static float MIDI78 = B7;
-	public final static float MIDI79 = B7;	
-	public final static float MIDI80 = B7;
-	public final static float MIDI81 = B7;
-	public final static float MIDI82 = B7;
-	public final static float MIDI83 = B7;
-	public final static float MIDI84 = B7;
-	public final static float MIDI85 = B7;
-	public final static float MIDI86 = B7;
-	public final static float MIDI87 = B7;
-	public final static float MIDI88 = B7;
-	public final static float MIDI89 = B7;
-	public final static float MIDI90 = B7;
-	public final static float MIDI91 = B7;
-	public final static float MIDI92 = B7;
+	private static final String[] notes = new String[] {"C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "};
 	
-	public final static float MIDI93 = A6;
-	public final static float MIDI94 = 1864.7f;
-	public final static float MIDI95 = B6;
-	public final static float MIDI96 = C7;
-	public final static float MIDI97 = 2217.5f;
-	public final static float MIDI98 = D7;
-	public final static float MIDI99 = 2489f;
-	public final static float MIDI100 = E7;
-	public final static float MIDI101 = F7;
-	public final static float MIDI102 = 2960f;
-	public final static float MIDI103 = G7;
-	public final static float MIDI104 = 3322.4f;
-	public final static float MIDI105 = A7;
-	public final static float MIDI106 = 3729.3f;
-	public final static float MIDI107 = B7;
-	public final static float MIDI108 = C8;
+	private static boolean noteValid(int n) {
+		if (n >= 0) {
+			if (n <= 119) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static double getNoteFrequency (int n) {
+		return A4 * Math.pow(2,(n-57.0)/12.0);
+	}
+
+	public static int getNoteFromFrequency (double f) {
+		return (int) (Math.round(12*(Math.log(f/A4))/Math.log(2))+57);
+	}
+	
+	public static int upOctave (int n) {
+		int newNote = n + 12;
+
+		if (noteValid(newNote)) {
+			return newNote;
+		} else {
+			return n;
+		}
+	}
+
+	public static int downOctave (int n) {
+		int newNote = n - 12;
+
+		if (noteValid(newNote)) {
+			return newNote;
+		} else {
+			return n;
+		}
+	}
+	
+	public static int upSemiTone (int n) {
+		int newNote = n + 1;
+
+		if (noteValid(newNote)) {
+			return newNote;
+		} else {
+			return n;
+		}
+	}
+
+	public static int downSemiTone (int n) {
+		int newNote = n - 1;
+
+		if (noteValid(newNote)) {
+			return newNote;
+		} else {
+			return n;
+		}
+	}
 }
