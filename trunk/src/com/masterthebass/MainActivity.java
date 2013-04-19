@@ -214,7 +214,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         }
         screenQuadrantBoundary.x = screenSize.x/2;
         screenQuadrantBoundary.y = screenSize.y/2;
-        SeekBar bar = (SeekBar)findViewById(R.id.seekBar1); // make seekbar object
+        SeekBar bar = (SeekBar)findViewById(R.id.seekBarFrequency); // make seekbar object
         bar.setOnSeekBarChangeListener(this); // set seekbar listener.
         
         initiateLayout();   
@@ -231,7 +231,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         Button speaker = (Button)findViewById(R.id.speaker);
         Button octaveup = (Button)findViewById(R.id.octaveup);
         Button octavedown = (Button)findViewById(R.id.octavedown);
-        SeekBar seek = (SeekBar)findViewById(R.id.seekBar1);
+        SeekBar seek = (SeekBar)findViewById(R.id.seekBarFrequency);
         
 
         RelativeLayout.LayoutParams parms,lparms,bparms;
@@ -571,10 +571,12 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     public void octaveUp(View view){
     	//do stuff
     }
+    
     //when octave down button is pressed
     public void octaveDown(View view){
     	//do stuff
     }
+    
     //methods for main slider
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,

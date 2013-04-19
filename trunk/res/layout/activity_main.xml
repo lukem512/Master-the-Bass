@@ -135,7 +135,7 @@
         android:onClick="octaveUp" />
 
     <SeekBar
-        android:id="@+id/seekBar1"
+        android:id="@+id/seekBarFrequency"
         android:layout_below="@id/filters"
         android:layout_toRightOf="@id/octavedown"
         android:layout_toLeftOf="@id/octaveup"
