@@ -1,11 +1,13 @@
 package com.masterthebass;
 
+import android.util.Log;
+
 public class OverdriveFilter extends Filter {
 	private static final long serialVersionUID = -4543222800830811103L;
-	private int gain, maxGain, minGain;
-	private final static int defaultGain = 3;
-	private final static int defaultMinGain = 0;
-	private final static int defaultMaxGain = 5;
+	private double gain, maxGain, minGain;
+	private final static double defaultGain = 3;
+	private final static double defaultMinGain = 0;
+	private final static double defaultMaxGain = 5;
 
 	public OverdriveFilter(int ID, String name) {
 		super(ID, name);
@@ -13,37 +15,39 @@ public class OverdriveFilter extends Filter {
 		// set default gain values
 		setGain (defaultGain);
 		setMaxGain (defaultMaxGain);
-		setMaxGain (defaultMinGain);
+		setMinGain (defaultMinGain);
 	}
 	
-	public OverdriveFilter(int ID, String name, double amplitude) {
+	public OverdriveFilter(int ID, String name, double gain) {
 		super(ID, name);
 		
 		// set default gain value
-		setGain (defaultGain);
+		setGain (gain);
+		setMaxGain (defaultMaxGain);
+		setMinGain (defaultMinGain);
 	}
 	
-	public void setGain (int newGain) {		
+	public void setGain (double newGain) {		
 		this.gain = newGain;
 	}
 	
-	public int getGain () {
+	public double getGain () {
 		return gain;
 	}
 	
-	public void setMaxGain (int maxGain) {		
+	public void setMaxGain (double maxGain) {		
 		this.maxGain = maxGain;
 	}
 	
-	public int getMaxGain () {
+	public double getMaxGain () {
 		return maxGain;
 	}
 	
-	public void setMinGain (int minGain) {		
+	public void setMinGain (double minGain) {		
 		this.minGain = minGain;
 	}
 	
-	public int getMinGain () {
+	public double getMinGain () {
 		return minGain;
 	}
 	
@@ -78,9 +82,11 @@ public class OverdriveFilter extends Filter {
 	public short[] applyFilterWithOscillator (short[] rawPCM, Oscillator LFO) {
 		int count = rawPCM.length;
 		double[] LFOData = LFO.getSample(getDuration(rawPCM));
+		double newGain;
 		
 		for (int i = 0; i < count; i++) {
-			setGain((int) map(LFOData[i], getMinGain(), getMaxGain()));
+			newGain = map(LFOData[i], getMinGain(), getMaxGain());
+			setGain(newGain);
 			processSample(rawPCM[i]);
 		}
 		
