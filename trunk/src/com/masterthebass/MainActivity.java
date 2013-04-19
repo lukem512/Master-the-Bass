@@ -575,23 +575,24 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     public void octaveDown(View view){
     	//do stuff
     }
-    //methods for main slider
+    //*****methods for main slider*****
+	//Gets value while user drags the thumb (gets called only if value is changed!)
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		// TODO Auto-generated method stub
 		
+		Log.i(TAG,"Current seekbar value: " + progress);
 	}
-
+	
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
 		
 	}
 
+	//Seek Bar value when user lifts his finger off screen
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
+		Log.i(TAG,"Stopped at: "+seekBar.getProgress());
 		
 	}
     

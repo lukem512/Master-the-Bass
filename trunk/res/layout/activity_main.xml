@@ -143,6 +143,7 @@
         android:layout_height="wrap_content"
         android:thumb="@drawable/knob"
         android:thumbOffset="-5dp"
+        android:max="11"
         android:background="@drawable/bar"
         android:progressDrawable="@android:color/transparent"/>
     
