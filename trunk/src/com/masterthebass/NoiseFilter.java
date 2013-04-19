@@ -2,9 +2,14 @@ package com.masterthebass;
 
 import java.util.Random;
 
+import android.util.Log;
+
 public class NoiseFilter extends Filter  {
 	private static final long serialVersionUID = 3476866265760242267L;
-	private int range;
+	private static final int defaultMinRange = 1;
+	private static final int defaultMaxRange = Short.MAX_VALUE;
+	private static final String LogTag = "NoiseFilter";
+	private int range, minRange, maxRange;
 	
 	// constructor
 	public NoiseFilter(int ID, String name) {
@@ -17,6 +22,21 @@ public class NoiseFilter extends Filter  {
 	public NoiseFilter(int ID, String name, int range) {
 		super(ID, name);
 		
+		// set the bounds
+		setMinRange(defaultMinRange);
+		setMinRange(defaultMaxRange);
+		
+		// set the range to specified value
+		setRange (range);
+	}
+	
+	public NoiseFilter(int ID, String name, int range, int min, int max) {
+		super(ID, name);
+		
+		// set the bounds to specified values
+		setMinRange(min);
+		setMinRange(max);
+		
 		// set the range to specified value
 		setRange (range);
 	}
@@ -28,23 +48,53 @@ public class NoiseFilter extends Filter  {
 		}
 	}
 	
+	// sets the minimum range to map to (for oscillating filter)
+	public void setMinRange(int min){
+		if (min >= 0) {
+			minRange = min;
+		}
+	}
+	
+	// sets the maximum range to map to (for oscillating filter)
+	public void setMaxRange(int max){
+		if (range >= 0) {
+			maxRange = max;
+		}
+	}
+
 	// returns the current range of the noise
 	public int getRange(){
 		return range;
 	}
+
+	// returns the current minimum range of the noise
+	public int getMinRange(){
+		return minRange;
+	}
 	
-	// maps a floating point value to a range between
-	// 0 and Short.MAX_VALUE
-	private int map(double d) {
-		return (int) (d*Short.MAX_VALUE);
+	// returns the current maximum range of the noise
+	public int getMaxRange(){
+		return maxRange;
+	}
+	
+	// maps a floating point value to a range
+	private int map(double oscillation) {
+		return (int) ((oscillation * (getMaxRange() - getMinRange())) + getMinRange());
 	}
 	
 	// filter an individual sample
 	// removed to share common code
 	private short processSample (short s, Random generator) {
-		int randomValue = (generator.nextInt(range) - (range/2));
+		// return if no noise is required
+		if (getRange() == 0) {
+			return s;
+		}
+		
+		// otherwise, create the random amount
+		int randomValue = generator.nextInt(getRange()) - (getRange()/2);
 		int newValue = s + randomValue;
 		
+		// check type bounds
 		if (newValue < Short.MAX_VALUE) {
 			if (newValue > Short.MIN_VALUE) {
 				return (short) newValue;
