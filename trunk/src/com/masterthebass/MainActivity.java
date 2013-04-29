@@ -607,7 +607,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     //*********************gesture code****************************
     
     private static final int defaultMinSliderValue = 0;
-	private static final int defaultMaxSliderValue = 500;
+	private static final int defaultMaxSliderValue = 200;
 	private static int[] sliderValues = new int[]{defaultMinSliderValue,defaultMaxSliderValue};
 	private static int[] filterarray = new int[]{1,3,4,5};
 	
