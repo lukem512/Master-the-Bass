@@ -104,6 +104,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	private double noteDuration;
 	private double volume;
+	private int octaveNumber;
 	private int noteNumber;
 	
 	private double maxCutoffFreq;
@@ -179,7 +180,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
    	
    	private void initAudio () {
    		// Set up default values
-		noteNumber = 24;
+   		octaveNumber = 24;
+		noteNumber = 0;
 		volume = 1.0;
 		noteDuration = 0.01;
 		
@@ -216,6 +218,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         screenQuadrantBoundary.y = screenSize.y/2;
         SeekBar bar = (SeekBar)findViewById(R.id.seekBarFrequency); // make seekbar object
         bar.setOnSeekBarChangeListener(this); // set seekbar listener.
+        bar.setMax(12); // 12 semi-tones / octave
+        bar.setProgress(0); // set to initially be note 24\
         
         initiateLayout();   
     }
@@ -569,20 +573,23 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     
     // When octave up button is pressed
     public void octaveUp(View view){
-    	noteNumber = MidiNote.upOctave(noteNumber);
+    	octaveNumber = MidiNote.upOctave(octaveNumber);
+    	Log.i(LogTag, "octaveNumber = " + octaveNumber);
     }
     
     // When octave down button is pressed
     public void octaveDown(View view){
-    	noteNumber = MidiNote.downOctave(noteNumber);
+    	octaveNumber = MidiNote.downOctave(octaveNumber);
+    	Log.i(LogTag, "octaveNumber = " + octaveNumber);
     }
+    
     //*****methods for main slider*****
 	//Gets value while user drags the thumb (gets called only if value is changed!)
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		
-		Log.i(TAG,"Current seekbar value: " + progress);
+		noteNumber = progress;
+		//Log.i(LogTag, "noteNumber = " + noteNumber);
 	}
 	
 	@Override
@@ -593,7 +600,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	//Seek Bar value when user lifts his finger off screen
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		Log.i(TAG,"Stopped at: "+seekBar.getProgress());
+		// Do nothing
 		
 	}
     
@@ -792,12 +799,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	        // Compute the new cutoff frequency
 	        // The sensor returns a value between 0 and 90
 	    	double newCutoff = minCutoffFreq + Math.abs(mOrientation[1]*con) * ((maxCutoffFreq - minCutoffFreq)/90);
-	    	
-	    	// Get the left-right orientation
-	    	// This is a value between -180 and 180
-	    	// TODO - change frequency based upon this value?
-	    	double setFreq = (mOrientation[2]*con);
-	    	//Log.i(LogTag, "Setting frequency to : " + setFreq); 
 			
 			// Get the low-pass filter
             LowPassFilter lpf = (LowPassFilter) filterman.getFilter (0);
@@ -852,7 +853,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
             	if (audioman.isPlaying()) {
             		if (sampleList.size() < sampleListMaxSize) {
             			// Generate the tone
-            			sampleData = soundman.generateTone(noteDuration, MidiNote.getNoteFrequency(noteNumber), volume, sampleRate);
+            			sampleData = soundman.generateTone(noteDuration, MidiNote.getNoteFrequency(octaveNumber+noteNumber), volume, sampleRate);
             			soundman.commit();
 	            	
 		            	// Apply filters
