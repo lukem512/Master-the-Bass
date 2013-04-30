@@ -59,6 +59,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	Vibrator v;
 
+	public final static String WAVE = "com.masterthebass.WAVE";
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
@@ -110,6 +111,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	private double maxCutoffFreq;
 	private double minCutoffFreq;
 
+	
+	
 	private static Handler handler;
 	private static final int HANDLER_MESSAGE_BUFFER_FULL = 0;
 	private static final int HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED = 1;
@@ -128,6 +131,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	   
    	@SuppressLint("HandlerLeak")
 	private void instantiate() {
+   		
    		audioman 	= new AudioOutputManager();
    		soundman	= new SoundManager();
    		fileman 	= new FileManager();
@@ -362,20 +366,38 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	CharSequence wave;
     	if (requestCode == 1) {
 
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(FiltersMenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
     			setLowPassFilterCutoffFrequencies();
+    			wave = data.getCharSequenceExtra(WAVE);
     			if (settings[5] == true) {
     				calibrating = true;
     			}
+    			
+    		//TODO switch on wave 
+    			 if (wave == "Sine Wave") soundman.setWave(new SineWave());
+    			 else if (wave ==  "Square Wave") soundman.setWave(new SquareWave());
+    			 else if (wave == "Harmonic Square Wave")soundman.setWave(new HarmonicSquareWave());
+    			 else if  (wave == "Triangle Wave") soundman.setWave(new TriangleWave());
+    			 else if (wave == "Rising Saw-Tooth Wave")  soundman.setWave(new RisingSawToothWave());
+    			 else if (wave == "Falling Saw-Tooth Wave") soundman.setWave(new FallingSawToothWave());
+     
+    			
+    			 
+    			
     		}
 
+    	    		
+    		
     		if (resultCode == RESULT_CANCELED) {
     			//Write code on no result return 
     		}
+    		
+    		
     	}
     }
     

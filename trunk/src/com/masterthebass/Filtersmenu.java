@@ -22,22 +22,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import com.masterthebass.WaveButton.onWaveChangeListener;
+
 
 
 import com.masterthebass.SliderView;
 import com.masterthebass.SliderView.KnobValuesChangedListener;
 
+
 public class FiltersMenu extends Activity {
 
+	public final static String WAVE = "com.masterthebass.WAVE";
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
 	public final static int NUM_SETTINGS = 6;
 	
 	public final static String LogTag = "FiltersMenu";
+
 	
 	private SliderView slider;
 	private TextView text_interval;
+	
 	
 	private String[] filterListNames;	
 	private ArrayList<String> filters  = new ArrayList<String>();
@@ -72,6 +78,7 @@ public class FiltersMenu extends Activity {
 		sliderValues = bundle.getIntArray("sliderValues");
 		filterdropdown = bundle.getIntArray("filters");
 		filterListNames = bundle.getStringArray("FILTERMAN_FILTER_NAMES");
+		
       
         btn4.setChecked(settings[4]);
 
@@ -221,12 +228,18 @@ public class FiltersMenu extends Activity {
 	
 	//******************************************************************************************	
 	
+
+	
+
+	
 	@Override
     public void onBackPressed(){
+		WaveButton b = (WaveButton) findViewById(R.id.btnWave);		
         Intent a = new Intent(getApplicationContext(),MainActivity.class);
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
         a.putExtra(TAG, sliderValues);
+        a.putExtra(WAVE, b.getText());
         setResult(RESULT_OK,a);
         finish();
     }	
