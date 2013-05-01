@@ -59,7 +59,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	Vibrator v;
 
-	public final static String WAVE = "com.masterthebass.WAVE";
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
@@ -124,6 +123,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	private int lastButton = 5;
 	private boolean leftButton = true;
 	
+	private Wave[] waves;
+	
 	// Log output tag
 	private final static String LogTag = "Main";
 	
@@ -157,6 +158,17 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
    			}
    		};
    	}
+   	
+	private void initialiseWavesArray() {
+		waves = new Wave[6];
+		
+		waves[0] = new SineWave();
+		waves[1] = new SquareWave();
+		waves[2] = new HarmonicSquareWave();
+		waves[3] = new TriangleWave();
+		waves[4] = new RisingSawToothWave();
+		waves[5] = new FallingSawToothWave();
+	}
    	
    	private void initSensors () {
    		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -225,7 +237,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         bar.setMax(12); // 12 semi-tones / octave
         bar.setProgress(0); // set to initially be note 24\
         
-        initiateLayout();   
+        initiateLayout(); 
+        initialiseWavesArray();
     }
     //scaling layout for different displays
     private void initiateLayout(){
@@ -240,6 +253,9 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         Button octaveup = (Button)findViewById(R.id.octaveup);
         Button octavedown = (Button)findViewById(R.id.octavedown);
         SeekBar seek = (SeekBar)findViewById(R.id.seekBarFrequency);
+        Button wavef = (Button)findViewById(R.id.btnWave);
+        wavef.setText("Sine Wave");
+
         
 
         RelativeLayout.LayoutParams parms,lparms,bparms;
@@ -366,31 +382,24 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	CharSequence wave;
     	if (requestCode == 1) {
 
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(FiltersMenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
     			setLowPassFilterCutoffFrequencies();
-    			wave = data.getCharSequenceExtra(WAVE);
     			if (settings[5] == true) {
     				calibrating = true;
     			}
     			
     		//TODO switch on wave 
-    			 if (wave == "Sine Wave") soundman.setWave(new SineWave());
-    			 else if (wave ==  "Square Wave") soundman.setWave(new SquareWave());
-    			 else if (wave == "Harmonic Square Wave")soundman.setWave(new HarmonicSquareWave());
-    			 else if  (wave == "Triangle Wave") soundman.setWave(new TriangleWave());
-    			 else if (wave == "Rising Saw-Tooth Wave")  soundman.setWave(new RisingSawToothWave());
-    			 else if (wave == "Falling Saw-Tooth Wave") soundman.setWave(new FallingSawToothWave());
+    		
      
     			
-    			 
+    		} 
     			
-    		}
-
+    		
+    			
     	    		
     		
     		if (resultCode == RESULT_CANCELED) {
@@ -597,6 +606,37 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     public void octaveUp(View view){
     	octaveNumber = MidiNote.upOctave(octaveNumber);
     	Log.i(LogTag, "octaveNumber = " + octaveNumber);
+    }
+    
+    //When wave button is pressed
+    public void changeWave(View view){
+    	Button b = (Button)view;
+    	String wave = b.getText().toString();
+    	 if (wave == "Sine Wave"){
+    		 b.setText("Square Wave");
+    		 soundman.setWave(new SquareWave());
+    	 }
+		 else if (wave ==  "Square Wave"){
+    		 b.setText("Harmonic Square Wave");
+			 soundman.setWave(new HarmonicSquareWave());
+		 }
+		 else if (wave == "Harmonic Square Wave"){
+    		 b.setText("Triangle Wave");
+			 soundman.setWave(new TriangleWave());
+		 }
+		 else if  (wave == "Triangle Wave"){
+    		 b.setText("Rising Saw-Tooth Wave");
+			 soundman.setWave(new RisingSawToothWave());
+		 }
+		 else if (wave == "Rising Saw-Tooth Wave"){
+    		 b.setText("Falling Saw-Tooth Wave");
+			 soundman.setWave(new FallingSawToothWave());
+		 }
+		 else if (wave == "Falling Saw-Tooth Wave"){
+    		 b.setText("Sine Wave");
+			 soundman.setWave(new SineWave());
+		 }
+    	
     }
     
     // When octave down button is pressed

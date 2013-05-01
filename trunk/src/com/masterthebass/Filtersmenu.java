@@ -32,7 +32,6 @@ import com.masterthebass.SliderView.KnobValuesChangedListener;
 
 public class FiltersMenu extends Activity {
 
-	public final static String WAVE = "com.masterthebass.WAVE";
 	public final static String TAG = "com.masterthebass.FILTERS";
 	public final static String EXTRA_MESSAGE = "com.masterthebass.MESSAGE";
 	public final static String FILTERMAN_FILTER_NAMES = "com.masterthebass.FILTERMAN_FILTER_NAMES";
@@ -234,12 +233,10 @@ public class FiltersMenu extends Activity {
 	
 	@Override
     public void onBackPressed(){
-		WaveButton b = (WaveButton) findViewById(R.id.btnWave);		
         Intent a = new Intent(getApplicationContext(),MainActivity.class);
         a.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         a.putExtra(EXTRA_MESSAGE, settings);
         a.putExtra(TAG, sliderValues);
-        a.putExtra(WAVE, b.getText());
         setResult(RESULT_OK,a);
         finish();
     }	

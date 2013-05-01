@@ -23,14 +23,7 @@
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"/>
  	    
-	    <com.masterthebass.WaveButton
-        android:id="@+id/btnWave"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_height="wrap_content"
-        android:text="" />
-	    
+
  	    
        <TextView
            android:id="@+id/CustomFontText"

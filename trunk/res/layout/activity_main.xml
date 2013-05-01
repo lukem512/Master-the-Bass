@@ -12,6 +12,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
     
+
+	    
 	<LinearLayout
         android:id="@+id/filters"
 	    android:baselineAligned="false"
@@ -133,6 +135,15 @@
         android:layout_alignTop="@id/octavedown"
         android:background="@drawable/selector_up"
         android:onClick="octaveUp" />
+    
+     <Button
+        android:id="@+id/btnWave"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/octaveup"
+        android:layout_centerHorizontal="true"
+        android:onClick="changeWave" />
 
     <SeekBar
         android:id="@+id/seekBarFrequency"
@@ -146,6 +157,5 @@
         android:max="11"
         android:background="@drawable/bar"
         android:progressDrawable="@android:color/transparent"/>
-    
 </RelativeLayout>
 
