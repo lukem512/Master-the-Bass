@@ -69,6 +69,7 @@ public final class MidiNote {
 	
 	// Lots of the conversion heavily utilises: http://www.musicdsp.org/showone.php?id=125
 	
+	@SuppressWarnings("unused")
 	private static final String[] notes = new String[] {"C ","C#","D ","D#","E ","F ","F#","G ","G#","A ","A#","B "};
 	
 	private static boolean noteValid(int n) {

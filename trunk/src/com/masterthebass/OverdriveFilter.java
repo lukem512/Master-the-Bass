@@ -1,7 +1,5 @@
 package com.masterthebass;
 
-import android.util.Log;
-
 public class OverdriveFilter extends Filter {
 	private static final long serialVersionUID = -4543222800830811103L;
 	private double gain, maxGain, minGain;

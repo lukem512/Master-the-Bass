@@ -44,9 +44,10 @@ public class FilterManager implements Serializable {
 		FilterList.put(1, new AmplitudeFilter(1, "Tremolo", 1.0));
 		FilterList.put(2, new NoiseFilter(2, "Noise", 4086));
 		FilterList.put(3, new OverdriveFilter(3, "Overdrive"));
-		FilterList.put(4, new EchoFilter(4, "Echo", 3));
-		FilterList.put(5, new HighPassFilter(5, "High Pass"));
-		FilterList.put(6, new WahWahFilter(6, "Wah Wah"));
+		FilterList.put(4, new WahWahFilter(4, "Wah Wah"));
+		FilterList.put(5, new DistortionFilter(5, "Distortion"));
+		//FilterList.put(4, new EchoFilter(6, "Echo", 3));
+		//FilterList.put(5, new HighPassFilter(7, "High Pass"));
 		
 		// Add oscillators to the relevant filters
 		attachOscillator(1, new Oscillator(new SineWave(), 1.0, 3.0));

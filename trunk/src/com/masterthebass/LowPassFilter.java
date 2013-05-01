@@ -5,11 +5,11 @@ package com.masterthebass;
 
 public class LowPassFilter extends IIRFilter {
 	private static final long serialVersionUID = 7533216475347295857L;
-	private static final String LogTag = "Low-Pass Filter";
-	private static final double twoPI = Math.PI * 2;
-	private final static double amplitudeScalar = 4;
 	private double[] filteredPCM;
 	private double prevAlpha;
+	
+	@SuppressWarnings("unused")
+	private static final String LogTag = "Low-Pass Filter";
 
 	public LowPassFilter(int ID, String name) {
 		super(ID, name);
@@ -24,12 +24,7 @@ public class LowPassFilter extends IIRFilter {
 	// this function returns a value between 0 and 1
 	// smaller means more smoothing
 	private double getAlpha(int sampleLength) {
-		double T;
-		double tau;
 	    double alpha;
-
-	    //tau = RC; // time constant for decay in seconds
-	    //fc = 1/(twoPI*tau); // cutoff frequency
 
 	    // TODO - hack, this could be nicer! and more mathematically correct
 	    alpha = getCutoffFrequency()/(getMaxCutoffFrequency() - getMinCutoffFrequency());

@@ -2,14 +2,14 @@ package com.masterthebass;
 
 import java.util.Random;
 
-import android.util.Log;
-
 public class NoiseFilter extends Filter  {
 	private static final long serialVersionUID = 3476866265760242267L;
 	private static final int defaultMinRange = 1;
 	private static final int defaultMaxRange = Short.MAX_VALUE;
-	private static final String LogTag = "NoiseFilter";
 	private int range, minRange, maxRange;
+	
+	@SuppressWarnings("unused")
+	private static final String LogTag = "NoiseFilter";
 	
 	// constructor
 	public NoiseFilter(int ID, String name) {

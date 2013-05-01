@@ -383,7 +383,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == 1) {
-
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(FiltersMenu.EXTRA_MESSAGE);
     			sliderValues = data.getIntArrayExtra(TAG);
@@ -391,22 +390,11 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     			if (settings[5] == true) {
     				calibrating = true;
     			}
-    			
-    		//TODO switch on wave 
-    		
-     
-    			
     		} 
-    			
-    		
-    			
-    	    		
-    		
+
     		if (resultCode == RESULT_CANCELED) {
     			//Write code on no result return 
-    		}
-    		
-    		
+    		}    		
     	}
     }
     
@@ -612,23 +600,22 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     public void changeWave(View view){
     	Button b = (Button)view;
     	String wave = b.getText().toString();
-    	 if (wave == "Sine Wave"){
-    		 b.setText("Square Wave");
-    		 soundman.setWave(new SquareWave());
-    	 }
-		 else if (wave ==  "Square Wave"){
-    		 b.setText("Harmonic Square Wave");
-			 soundman.setWave(new HarmonicSquareWave());
-		 }
-		 else if (wave == "Harmonic Square Wave"){
-    		 b.setText("Falling Saw-Tooth Wave");
-			 soundman.setWave(new FallingSawToothWave());
-		 }
-		 else if (wave == "Falling Saw-Tooth Wave"){
-    		 b.setText("Sine Wave");
-			 soundman.setWave(new SineWave());
-		 }
-    	
+    	if (wave == "Sine Wave"){
+    		b.setText("Square Wave");
+    		soundman.setWave(new SquareWave());
+    	}
+		else if (wave ==  "Square Wave"){
+			b.setText("Harmonic Square Wave");
+			soundman.setWave(new HarmonicSquareWave());
+		}
+		else if (wave == "Harmonic Square Wave"){
+			b.setText("Falling Saw-Tooth Wave");
+			soundman.setWave(new FallingSawToothWave());
+		}
+		else if (wave == "Falling Saw-Tooth Wave"){
+			b.setText("Sine Wave");
+			soundman.setWave(new SineWave());
+		}
     }
     
     // When octave down button is pressed
