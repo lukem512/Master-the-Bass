@@ -621,14 +621,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 			 soundman.setWave(new HarmonicSquareWave());
 		 }
 		 else if (wave == "Harmonic Square Wave"){
-    		 b.setText("Triangle Wave");
-			 soundman.setWave(new TriangleWave());
-		 }
-		 else if  (wave == "Triangle Wave"){
-    		 b.setText("Rising Saw-Tooth Wave");
-			 soundman.setWave(new RisingSawToothWave());
-		 }
-		 else if (wave == "Rising Saw-Tooth Wave"){
     		 b.setText("Falling Saw-Tooth Wave");
 			 soundman.setWave(new FallingSawToothWave());
 		 }
