@@ -38,6 +38,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.support.v4.view.MotionEventCompat;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class MainActivity extends Activity implements SensorEventListener,OnSeekBarChangeListener {
@@ -732,11 +733,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	public boolean dispatchTouchEvent(MotionEvent me) {
 		float x = me.getRawX();
     	float y = me.getRawY();
-    	//if outside of speaker and filters area
-    	if (y > (screenSize.y/2 + screenSize.x/2)){
-    		super.dispatchTouchEvent(me);
-    		return true;
-    	}
     	//when finger is lifted off screen
     	if (me.getAction() == MotionEvent.ACTION_UP){
     		if (audioman.isPlaying() == true) toggleplayonoff();
@@ -748,6 +744,19 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     		if (isInSpeaker(x,y)){
     			leftButton = true;
     			toggleplayonoff();
+        		if (me.getPointerCount() > 1){
+        			MotionEvent me2 = MotionEvent.obtain(me);
+        		    int mActivePointerId = me.getPointerId(1);
+        		    int pointerIndex = me.findPointerIndex(mActivePointerId);
+        			float x2 = MotionEventCompat.getX(me, pointerIndex);
+        			float y2 = MotionEventCompat.getY(me, pointerIndex);
+        			int action = MotionEventCompat.getActionMasked(me);
+        			if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
+        			else if (action == MotionEvent.ACTION_POINTER_UP) action = MotionEvent.ACTION_UP;
+        			me2.setLocation(x2, y2);
+        			me2.setAction(action);
+        			super.dispatchTouchEvent(me2);
+        		}
     		}else{
         		super.dispatchTouchEvent(me);
     		}
@@ -771,9 +780,36 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	} else {
     		leftButton = true;
     	}
-	    return true;
+		if (me.getPointerCount() > 1){
+			MotionEvent me2 = MotionEvent.obtain(me);
+		    int mActivePointerId = me.getPointerId(1);
+		    int pointerIndex = me.findPointerIndex(mActivePointerId);
+			float x2 = MotionEventCompat.getX(me, pointerIndex);
+			float y2 = MotionEventCompat.getY(me, pointerIndex);
+			int action = MotionEventCompat.getActionMasked(me);
+			if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
+			else if (action == MotionEvent.ACTION_POINTER_UP) action = MotionEvent.ACTION_UP;
+			me2.setLocation(x2, y2);
+			me2.setAction(action);
+			super.dispatchTouchEvent(me2);
+		}
+    	return true;
 	}
 
+	public static String actionToString(int action) {
+	    switch (action) {
+	                
+	        case MotionEvent.ACTION_DOWN: return "Down";
+	        case MotionEvent.ACTION_MOVE: return "Move";
+	        case MotionEvent.ACTION_POINTER_DOWN: return "Pointer Down";
+	        case MotionEvent.ACTION_UP: return "Up";
+	        case MotionEvent.ACTION_POINTER_UP: return "Pointer Up";
+	        case MotionEvent.ACTION_OUTSIDE: return "Outside";
+	        case MotionEvent.ACTION_CANCEL: return "Cancel";
+	    }
+	    return "";
+	}
+	
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 		// Auto-generated method stub
