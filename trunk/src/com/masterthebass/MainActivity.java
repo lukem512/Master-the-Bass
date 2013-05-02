@@ -126,6 +126,9 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	
 	private Wave[] waves;
 	
+	private int topbarEnd;
+	private int bottombarStart;
+	
 	// Log output tag
 	private final static String LogTag = "Main";
 	
@@ -268,6 +271,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	lparms.width = screenSize.x;
     	lparms.height = (int)(coefficient*screenSize.x);
         l.setLayoutParams(lparms);
+        topbarEnd = screenSize.y/2 - lparms.height/2;
+        bottombarStart = screenSize.y/2 + lparms.height/2;
         
         //speaker
         parms = (RelativeLayout.LayoutParams)speaker.getLayoutParams();
@@ -729,39 +734,111 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 		return true;
 	}
 	
+	private boolean isInFilters(float x, float y){
+		if ((y > bottombarStart)||(y < topbarEnd)) return false;
+		else return true;
+	}
+	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent me) {
-		float x = me.getRawX();
-    	float y = me.getRawY();
-    	//when finger is lifted off screen
-    	if (me.getAction() == MotionEvent.ACTION_UP){
-    		if (audioman.isPlaying() == true) toggleplayonoff();
-    		super.dispatchTouchEvent(me);
-    		return true;
+		int pointNum = me.getPointerCount();
+		int mActivePointerId;
+		int pointerIndex;
+		int speakerPointerId = 0;
+		boolean infiltertouch = false;
+		int action = MotionEventCompat.getActionMasked(me);
+		int actionIndex = me.getActionIndex();
+		float x = MotionEventCompat.getX(me, actionIndex);
+    	float y = MotionEventCompat.getY(me, actionIndex);
+		//Log.i(TAG,actionToString(action)+"X: "+x+"Y: "+y);
+		//check for multitouch
+		if (pointNum > 1){
+			//go through each pointer
+			for (int i = 0; i < pointNum; i++){
+				mActivePointerId = me.getPointerId(i);
+				pointerIndex = me.findPointerIndex(mActivePointerId);
+				infiltertouch = infiltertouch | isInFilters(me.getX(pointerIndex),me.getY(pointerIndex));
+				if (infiltertouch){
+					//identify which one touches the speaker
+					if (isInSpeaker(me.getX(pointerIndex),me.getY(pointerIndex))){
+						speakerPointerId = mActivePointerId;
+					}
+				}
+				boolean temp = isInFilters(MotionEventCompat.getX(me, pointerIndex),MotionEventCompat.getY(me, pointerIndex));
+				if ((action == MotionEvent.ACTION_MOVE)&&(!temp)){
+					MotionEvent me2 = MotionEvent.obtain(me);
+					float x2 = MotionEventCompat.getX(me, pointerIndex);
+					float y2 = MotionEventCompat.getY(me, pointerIndex);
+					me2.setLocation(x2, y2);
+					super.dispatchTouchEvent(me2);
+					//return true;
+				}
+			}
+		} else{
+			infiltertouch = isInFilters(x,y);
+		}
+		//if none of the pointers are in filters 
+		if (!infiltertouch){
+			super.dispatchTouchEvent(me);
+			return true;
+		}
+		actionIndex = me.getActionIndex();
+		mActivePointerId = me.getPointerId(actionIndex);
+    	if ((action == MotionEvent.ACTION_MOVE) &&(mActivePointerId != speakerPointerId)){
+    		Log.i(TAG,"YO!");
+			super.dispatchTouchEvent(me);
+			return true;
+    	}
+    	//when any finger is lifted off screen
+    	if ((action == MotionEvent.ACTION_UP)||(action == MotionEvent.ACTION_POINTER_UP)){
+    		//if speaker pointer lifted
+    		if (actionIndex == me.findPointerIndex(speakerPointerId)){
+    			if (audioman.isPlaying() == true) toggleplayonoff();
+    			Log.i(TAG,"UP!");
+    			super.dispatchTouchEvent(me);
+    			return true;
+    		}
+    		//if non-speaker pointer lifted
+			MotionEvent me2 = MotionEvent.obtain(me);
+			float x2 = MotionEventCompat.getX(me, actionIndex);
+			float y2 = MotionEventCompat.getY(me, actionIndex);
+			int action2 = MotionEvent.ACTION_UP;
+			me2.setLocation(x2, y2);
+			me2.setAction(action2);
+			super.dispatchTouchEvent(me2);
+			return true;
     	}
     	//when finger touches the screen
-    	if (me.getAction() == MotionEvent.ACTION_DOWN){
+    	if (action == MotionEvent.ACTION_POINTER_DOWN){
+    		if (isInSpeaker(me.getX(actionIndex),me.getY(actionIndex))){
+    			leftButton = true;
+    			toggleplayonoff();
+    		} else {
+    			MotionEvent me2 = MotionEvent.obtain(me);
+    			float x2 = MotionEventCompat.getX(me, actionIndex);
+    			float y2 = MotionEventCompat.getY(me, actionIndex);
+    			int action2 = MotionEvent.ACTION_DOWN;
+    			me2.setLocation(x2, y2);
+    			me2.setAction(action2);
+    			super.dispatchTouchEvent(me2);
+    			return true;
+    		}
+    	}
+    	if (action == MotionEvent.ACTION_DOWN){
     		if (isInSpeaker(x,y)){
     			leftButton = true;
     			toggleplayonoff();
-        		if (me.getPointerCount() > 1){
-        			MotionEvent me2 = MotionEvent.obtain(me);
-        		    int mActivePointerId = me.getPointerId(1);
-        		    int pointerIndex = me.findPointerIndex(mActivePointerId);
-        			float x2 = MotionEventCompat.getX(me, pointerIndex);
-        			float y2 = MotionEventCompat.getY(me, pointerIndex);
-        			int action = MotionEventCompat.getActionMasked(me);
-        			if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
-        			else if (action == MotionEvent.ACTION_POINTER_UP) action = MotionEvent.ACTION_UP;
-        			me2.setLocation(x2, y2);
-        			me2.setAction(action);
-        			super.dispatchTouchEvent(me2);
-        		}
     		}else{
         		super.dispatchTouchEvent(me);
     		}
     		return true;
     	}
+    	/*
+    	if (actionIndex != me.findPointerIndex(speakerPointerId)){
+    		Log.i(TAG,actionToString(action));
+    		super.dispatchTouchEvent(me);
+    		return true;
+    	} */
     	//if swipe
     	if (!isInSpeaker(x,y)){
     		int currentButton;
@@ -780,10 +857,11 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	} else {
     		leftButton = true;
     	}
+    	/*
 		if (me.getPointerCount() > 1){
 			MotionEvent me2 = MotionEvent.obtain(me);
-		    int mActivePointerId = me.getPointerId(1);
-		    int pointerIndex = me.findPointerIndex(mActivePointerId);
+		    mActivePointerId = me.getPointerId(1);
+		    pointerIndex = me.findPointerIndex(mActivePointerId);
 			float x2 = MotionEventCompat.getX(me, pointerIndex);
 			float y2 = MotionEventCompat.getY(me, pointerIndex);
 			int action = MotionEventCompat.getActionMasked(me);
@@ -793,6 +871,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 			me2.setAction(action);
 			super.dispatchTouchEvent(me2);
 		}
+		*/
     	return true;
 	}
 
