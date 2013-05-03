@@ -259,7 +259,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         Button octavedown = (Button)findViewById(R.id.octavedown);
         SeekBar seek = (SeekBar)findViewById(R.id.seekBarFrequency);
         Button wavef = (Button)findViewById(R.id.btnWave);
-        wavef.setText("Sine Wave");
+      //  wavef.setText("Sine Wave");
 
         
 
@@ -603,25 +603,31 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	Log.i(LogTag, "octaveNumber = " + octaveNumber);
     }
     
+    private int waveArray = 0;
     //When wave button is pressed
     public void changeWave(View view){
     	Button b = (Button)view;
-    	String wave = b.getText().toString();
-    	if (wave == "Sine Wave"){
-    		b.setText("Square Wave");
+    	//String wave = b.getText().toString();
+    	if (waveArray==0){
+    		b.setBackgroundResource(R.drawable.square_wave);
     		soundman.setWave(new SquareWave());
+    		waveArray = 1;
     	}
-		else if (wave ==  "Square Wave"){
-			b.setText("Harmonic Square Wave");
+    		//get the picture for the new wave here
+		else if (waveArray==1){
+			b.setBackgroundResource(R.drawable.square_wave);
 			soundman.setWave(new HarmonicSquareWave());
+			waveArray = 2;
 		}
-		else if (wave == "Harmonic Square Wave"){
-			b.setText("Falling Saw-Tooth Wave");
+		else if (waveArray==2){
+			b.setBackgroundResource(R.drawable.sawtooth_wave);
 			soundman.setWave(new FallingSawToothWave());
+			waveArray =3;
 		}
-		else if (wave == "Falling Saw-Tooth Wave"){
-			b.setText("Sine Wave");
+		else if (waveArray==3){
+			b.setBackgroundResource(R.drawable.sin_wave);
 			soundman.setWave(new SineWave());
+			waveArray = 0;
 		}
     }
     
