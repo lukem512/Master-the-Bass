@@ -117,6 +117,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	private static final int HANDLER_MESSAGE_BUFFER_FULL = 0;
 	private static final int HANDLER_MESSAGE_BUFFER_NOT_INSTANTIATED = 1;
 
+	private Button speaker;
 	private ToggleButton fb1;
 	private ToggleButton fb2;
 	private ToggleButton fb3;
@@ -253,7 +254,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         Button record = (Button)findViewById(R.id.buttonrecord);
         Button help = (Button)findViewById(R.id.buttonplay);
         Button settings = (Button)findViewById(R.id.btnSettings);
-        Button speaker = (Button)findViewById(R.id.speaker);
+        speaker = (Button)findViewById(R.id.speaker);
         Button octaveup = (Button)findViewById(R.id.octaveup);
         Button octavedown = (Button)findViewById(R.id.octavedown);
         SeekBar seek = (SeekBar)findViewById(R.id.seekBarFrequency);
@@ -728,7 +729,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	private boolean isInSpeaker(float x, float y){
 		int dispX = screenQuadrantBoundary.x;
 		int dispY = screenQuadrantBoundary.y;
-		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > (dispX - 50)){
+		if (Math.sqrt((dispX - x)*(dispX - x)+(dispY-y)*(dispY-y)) > speaker.getWidth()/2){
 			return false;
 		}
 		return true;
@@ -782,19 +783,16 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 			super.dispatchTouchEvent(me);
 			return true;
 		}
-		actionIndex = me.getActionIndex();
-		mActivePointerId = me.getPointerId(actionIndex);
-    	if ((action == MotionEvent.ACTION_MOVE) &&(mActivePointerId != speakerPointerId)){
-    		Log.i(TAG,"YO!");
-			super.dispatchTouchEvent(me);
-			return true;
-    	}
     	//when any finger is lifted off screen
     	if ((action == MotionEvent.ACTION_UP)||(action == MotionEvent.ACTION_POINTER_UP)){
     		//if speaker pointer lifted
     		if (actionIndex == me.findPointerIndex(speakerPointerId)){
     			if (audioman.isPlaying() == true) toggleplayonoff();
     			Log.i(TAG,"UP!");
+    			super.dispatchTouchEvent(me);
+    			return true;
+    		}
+    		if (pointNum == 1){
     			super.dispatchTouchEvent(me);
     			return true;
     		}
@@ -833,12 +831,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     		}
     		return true;
     	}
-    	/*
-    	if (actionIndex != me.findPointerIndex(speakerPointerId)){
-    		Log.i(TAG,actionToString(action));
-    		super.dispatchTouchEvent(me);
-    		return true;
-    	} */
     	//if swipe
     	if (!isInSpeaker(x,y)){
     		int currentButton;
@@ -857,21 +849,6 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	} else {
     		leftButton = true;
     	}
-    	/*
-		if (me.getPointerCount() > 1){
-			MotionEvent me2 = MotionEvent.obtain(me);
-		    mActivePointerId = me.getPointerId(1);
-		    pointerIndex = me.findPointerIndex(mActivePointerId);
-			float x2 = MotionEventCompat.getX(me, pointerIndex);
-			float y2 = MotionEventCompat.getY(me, pointerIndex);
-			int action = MotionEventCompat.getActionMasked(me);
-			if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
-			else if (action == MotionEvent.ACTION_POINTER_UP) action = MotionEvent.ACTION_UP;
-			me2.setLocation(x2, y2);
-			me2.setAction(action);
-			super.dispatchTouchEvent(me2);
-		}
-		*/
     	return true;
 	}
 
