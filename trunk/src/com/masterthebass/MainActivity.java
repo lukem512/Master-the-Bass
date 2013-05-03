@@ -903,8 +903,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	    			SensorManager.getRotationMatrix(mRCal, null, mLastAccelerometer, mLastMagnetometer);
 	        		SensorManager.getOrientation(mRCal, mOrientation);
 	        		det = 	 (mRCal[0]*(mRCal[4]*mRCal[8]-mRCal[5]*mRCal[7]))
-	        				-(mRCal[3]*(mRCal[1]*mRCal[8]-mRCal[2]*mRCal[7]))
-	        				+(mRCal[6]*(mRCal[1]*mRCal[5]-mRCal[2]*mRCal[4]));
+	        				-(mRCal[1]*(mRCal[1]*mRCal[8]-mRCal[2]*mRCal[7]))
+	        				+(mRCal[2]*(mRCal[1]*mRCal[5]-mRCal[2]*mRCal[4]));
 	        		mRInv[0] = (1/det)*(mRCal[4]*mRCal[8]-mRCal[7]*mRCal[5]); 	 mRInv[1] = (-1)*(1/det)*(mRCal[1]*mRCal[8]-mRCal[7]*mRCal[2]); mRInv[2] = (1/det)*(mRCal[1]*mRCal[5]-mRCal[4]*mRCal[2]);
 	        		mRInv[3] = (-1)*(1/det)*(mRCal[3]*mRCal[8]-mRCal[6]*mRCal[5]); mRInv[4] = (1/det)*(mRCal[0]*mRCal[8]-mRCal[6]*mRCal[2]); 	  mRInv[5] = (-1)*(1/det)*(mRCal[0]*mRCal[5]-mRCal[3]*mRCal[2]);
 	        		mRInv[6] = (1/det)*(mRCal[3]*mRCal[7]-mRCal[6]*mRCal[4]); 	 mRInv[7] = (-1)*(1/det)*(mRCal[0]*mRCal[7]-mRCal[6]*mRCal[1]); mRInv[8] = (1/det)*(mRCal[0]*mRCal[4]-mRCal[3]*mRCal[1]);
