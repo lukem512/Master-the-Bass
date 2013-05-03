@@ -615,7 +615,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	}
     		//get the picture for the new wave here
 		else if (waveArray==1){
-			b.setBackgroundResource(R.drawable.square_wave);
+			b.setBackgroundResource(R.drawable.harm_square_wave);
 			soundman.setWave(new HarmonicSquareWave());
 			waveArray = 2;
 		}
