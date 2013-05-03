@@ -18,7 +18,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.text.InputType;
 import android.util.Log;
@@ -388,7 +387,8 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
     	
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == 1) {
     		if(resultCode == RESULT_OK){
     			settings = data.getBooleanArrayExtra(FiltersMenu.EXTRA_MESSAGE);
@@ -951,6 +951,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	/** Audio threads **/
 	
 	Runnable writerThreadObj = new Runnable() {
+		@Override
 		public void run() {
 			boolean running = true;
 			short[] sampleData;
@@ -972,6 +973,7 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
 	};
 
 	Runnable generatorThreadObj = new Runnable() {
+		@Override
 		public void run() {
 			int sampleRate = audioman.getSampleRate();
             boolean running = true;

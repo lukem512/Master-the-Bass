@@ -63,7 +63,7 @@ public class WahWahFilter extends IIRFilter {
 		 double depth = 0.7f;
 		 double res = 2.5f;
 		 double freqofs = 0.3f;
-		 double lfoskip = (freq * twopi / (double) getSampleRate());
+		 double lfoskip = (freq * twopi / getSampleRate());
 		 int skipcount = 0;
 		 double frequency, omega, sn, cs, alpha;
 		 frequency = (1 + Math.cos(skipcount * lfoskip)) / 2;

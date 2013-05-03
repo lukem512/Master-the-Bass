@@ -75,6 +75,7 @@ public class SliderView extends View {
 		canvas.drawBitmap(knobs[1].getBitmap(), knobs[1].getX(), knobs[1].getY(), null);
 	}
 	    
+	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int eventaction = event.getAction();     
 		int X = (int)event.getX(); 
@@ -90,7 +91,7 @@ public class SliderView extends View {
 					int centerX = knob.getX() + knob.getBitmap().getHeight();
 					int centerY = knob.getY() + knob.getBitmap().getHeight();
 	        		// calculate the radius from the touch to the centre of the knob
-					double radCircle  = Math.sqrt( (double) (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
+					double radCircle  = Math.sqrt( (((centerX-X)*(centerX-X)) + (centerY-Y)*(centerY-Y)));
 	        		// if the radius is smaller then 33 (radius of a knob is 22), then it must be on the ball
 					if (radCircle < 3*knob.getBitmap().getHeight()/2.0){
 						balID = knob.getID();

@@ -99,7 +99,7 @@ public class FiltersMenu extends Activity {
         //setting centre for filter buttons
         RelativeLayout.LayoutParams fparms = (RelativeLayout.LayoutParams)findViewById(R.id.filterbuttons).getLayoutParams();
         Button bcentre = (Button)findViewById(R.id.midbutton);
-        LayoutParams sp = (LayoutParams)findViewById(R.id.spinner1).getLayoutParams();
+        LayoutParams sp = findViewById(R.id.spinner1).getLayoutParams();
         RelativeLayout.LayoutParams centreparms = (RelativeLayout.LayoutParams)bcentre.getLayoutParams();
         Log.i(TAG, "TOP: " + findViewById(R.id.spinner1).getLayoutParams().width);
         centreparms.width = sp.width/2 + 10;

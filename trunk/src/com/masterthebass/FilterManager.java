@@ -66,7 +66,7 @@ public class FilterManager implements Serializable {
 		Iterator<Integer> itr = keys.iterator();
 		
 	    while(itr.hasNext()) {
-	      IDs[index] = ((Integer) itr.next());
+	      IDs[index] = itr.next();
 	      index++;
 	    }
 		
@@ -95,7 +95,7 @@ public class FilterManager implements Serializable {
 		int id;
 		
 	    while(itr.hasNext()) {
-	      id = ((Integer) itr.next());
+	      id = itr.next();
 	      
 	      if (getFilter(id).getState()) {
 	    	  list.add(id);

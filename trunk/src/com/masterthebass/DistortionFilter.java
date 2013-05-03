@@ -15,7 +15,7 @@ public class DistortionFilter extends Filter {
 	private short processSample (short s) {
 	    double out = 0.0;
 	    
-		double in = multiplier*(double)s;
+		double in = multiplier*s;
         double absIn = java.lang.Math.abs(in);
         if(absIn<th){
             out=(s*2*multiplier);
