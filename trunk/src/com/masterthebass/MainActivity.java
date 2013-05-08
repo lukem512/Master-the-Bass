@@ -300,12 +300,12 @@ public class MainActivity extends Activity implements SensorEventListener,OnSeek
         parms.leftMargin = (screenSize.x/2 - parms.width/2)/2 - parms.width/2;
         record.setLayoutParams(parms);
         
-        parms = (RelativeLayout.LayoutParams)octavedown.getLayoutParams();
-        parms.topMargin = (screenSize.y/2-lparms.height/2)/2 - parms.height/2;
-        octavedown.setLayoutParams(parms);
+        //parms = (RelativeLayout.LayoutParams)octavedown.getLayoutParams();
+        //parms.topMargin = (screenSize.y/2-lparms.height/2)/2 - parms.height/2;
+        //octavedown.setLayoutParams(parms);
         
         parms = (RelativeLayout.LayoutParams)seek.getLayoutParams();
-        parms.topMargin = (screenSize.y/2-lparms.height/2)/2 - 20;
+        parms.topMargin = bparms.height/2 - 20;
         seek.setLayoutParams(parms);
     }
     

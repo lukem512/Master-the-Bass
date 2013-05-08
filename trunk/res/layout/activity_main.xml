@@ -145,9 +145,9 @@
 
     <SeekBar
         android:id="@+id/seekBarFrequency"
-        android:layout_below="@id/filters"
         android:layout_toRightOf="@id/octavedown"
         android:layout_toLeftOf="@id/octaveup"
+        android:layout_below="@id/filters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:thumb="@drawable/knob"
