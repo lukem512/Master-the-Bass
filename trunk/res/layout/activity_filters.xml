@@ -5,7 +5,8 @@
        android:screenOrientation="portrait"        
        android:background="@drawable/settings_background">
 
- 	    <com.masterthebass.SliderView android:id="@+id/slider"
+ 	    <com.masterbass.SliderView
+            android:id="@+id/slider"
 			android:layout_width ="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
